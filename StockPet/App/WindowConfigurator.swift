@@ -30,6 +30,8 @@ struct WindowConfigurator: NSViewRepresentable {
         window.identifier = NSUserInterfaceItemIdentifier(Self.windowIdentifier)
         window.titleVisibility = .hidden
         window.titlebarAppearsTransparent = true
+        window.titlebarSeparatorStyle = .none
+        window.styleMask.insert(.fullSizeContentView)
         window.backgroundColor = .clear
         window.isOpaque = false
         window.hasShadow = false
