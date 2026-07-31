@@ -99,7 +99,7 @@ async function fetchEastmoney(symbol) {
     ndays: "1",
   });
   const response = await requestJSON(
-    `https://push2his.eastmoney.com/api/qt/stock/trends2/get?${params}`,
+    `https://push2delay.eastmoney.com/api/qt/stock/trends2/get?${params}`,
   );
   if (response?.rc !== 0 || !response.data) throw new Error("东方财富分时暂不可用");
   const points = (response.data.trends || []).map(parseTrend).filter(Boolean);

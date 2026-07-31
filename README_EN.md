@@ -21,7 +21,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/assets/hero-bull-alert.gif" width="760" alt="Stock Pet bull alert demo">
+  <img src="docs/assets/hero-bull-alert-en.gif" width="760" alt="Stock Pet bull alert demo">
 </p>
 
 ## Contents

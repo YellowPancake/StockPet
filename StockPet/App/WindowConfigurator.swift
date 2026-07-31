@@ -28,10 +28,10 @@ struct WindowConfigurator: NSViewRepresentable {
     private func configure(_ window: NSWindow?, coordinator: Coordinator) {
         guard let window else { return }
         window.identifier = NSUserInterfaceItemIdentifier(Self.windowIdentifier)
+        window.styleMask = .borderless
         window.titleVisibility = .hidden
         window.titlebarAppearsTransparent = true
         window.titlebarSeparatorStyle = .none
-        window.styleMask.insert(.fullSizeContentView)
         window.backgroundColor = .clear
         window.isOpaque = false
         window.hasShadow = false
