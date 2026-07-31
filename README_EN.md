@@ -21,7 +21,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/assets/hero-bull-alert.gif" width="680" alt="Stock Pet bull alert demo">
+  <img src="docs/assets/hero-bull-alert.gif" width="760" alt="Stock Pet bull alert demo">
 </p>
 
 ## Contents
@@ -34,9 +34,9 @@
 
 ## Background
 
-Keeping a full market app open while working takes up screen space, and switching back and forth interrupts your flow. At the same time, missing an important move in a stock you follow can be frustrating.
+Keeping a full market app open while working takes up screen space, frequent switching interrupts your flow, and coworkers or managers may easily notice it.
 
-Stock Pet keeps company names, today's intraday charts, latest prices, and percentage changes on the desktop, with support for A-shares, Hong Kong stocks, and US stocks. It stays quiet during normal work and brings out a little bull or bear when an alert condition is met. Scaling, opacity, mouse passthrough, and quick hiding help it stay out of your way.
+Stock Pet keeps company names, today's intraday charts, latest prices, and percentage changes on the desktop, with support for A-shares, Hong Kong stocks, and US stocks. It stays quiet during normal work and brings out a little bull or bear when an alert condition is met. Scaling, opacity, mouse passthrough, and quick hiding keep market watching from interrupting your work—and make casual checks less noticeable.
 
 ## Quick Start
 
@@ -61,7 +61,11 @@ Visit [GitHub Releases](https://github.com/YellowPancake/StockPet/releases/lates
 
 > These builds are not signed with a commercial code-signing certificate, so the operating system may show a source warning on first launch.
 
-After adding stocks, adjust the display size, opacity, bull and bear alerts, and show/hide shortcut as needed.
+### Get Started in Three Steps
+
+1. **Add stocks:** double-click Stock Pet to open Settings, then search by company name or ticker, such as `Kweichow Moutai`, `00700`, or `AAPL`.
+2. **Make it yours:** adjust the overall size, chart opacity, text and number opacity, and background opacity.
+3. **Put the bull and bear on duty:** set rise and fall thresholds, then choose a convenient show/hide shortcut.
 
 Default shortcut:
 
@@ -75,7 +79,7 @@ Default shortcut:
 ### Desktop View: Quiet While You Work
 
 <p align="center">
-  <img src="docs/assets/screenshot-stock-list-en.jpg" width="680" alt="Stock Pet English desktop watchlist">
+  <img src="docs/assets/screenshot-stock-list-en.webp" width="760" alt="Stock Pet English watchlist on a real desktop background">
 </p>
 
 - Watch A-shares, Hong Kong stocks, and US stocks together, with no watchlist limit.
@@ -87,7 +91,7 @@ Default shortcut:
 ### Bull & Bear Threshold Alerts: They Arrive When Needed
 
 <p align="center">
-  <img src="docs/assets/screenshot-alerts-en.jpg" width="640" alt="Stock Pet English bull and bear alert settings">
+  <img src="docs/assets/screenshot-alerts-en.webp" width="752" alt="Stock Pet English bull and bear alert settings">
 </p>
 
 - Choose alerts based on the latest price versus the previous close, or set individual bull and bear target prices for each stock.
@@ -98,7 +102,7 @@ Default shortcut:
 - Each crossing alerts once. The price must return inside the threshold before the alert re-arms, preventing repeated alerts around the boundary.
 
 <p align="center">
-  <img src="docs/assets/screenshot-target-price-en.jpg" width="640" alt="Stock Pet English per-stock target price settings">
+  <img src="docs/assets/screenshot-target-price-en.webp" width="752" alt="Stock Pet English per-stock target price settings">
 </p>
 
 For example, with a `+3.0%` rise threshold: the first touch at `+3.0%` alerts; a pullback below `+2.85%` re-arms it; only a new move to `+3.0%` alerts again.
@@ -106,7 +110,11 @@ For example, with a `+3.0%` rise threshold: the first touch at `+3.0%` alerts; a
 ### Low-Profile Privacy Controls: Blend In or Hide Instantly
 
 <p align="center">
-  <img src="docs/assets/screenshot-appearance-en.jpg" width="640" alt="Stock Pet English appearance and shortcut settings">
+  <img src="docs/assets/screenshot-appearance-en.webp" width="752" alt="Stock Pet English appearance and shortcut settings">
+</p>
+
+<p align="center">
+  <img src="docs/assets/opacity-demo-en.gif" width="760" alt="Stock Pet background fades first, followed by charts and text together">
 </p>
 
 - **Overall scale:** resize the watchlist, charts, and panel together from `65%` to `160%`.

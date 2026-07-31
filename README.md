@@ -21,7 +21,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/assets/hero-bull-alert.gif" width="680" alt="盘宠牛牛涨幅提醒演示">
+  <img src="docs/assets/hero-bull-alert.gif" width="760" alt="盘宠牛牛涨幅提醒演示">
 </p>
 
 ## 目录
@@ -34,9 +34,9 @@
 
 ## 背景介绍
 
-在电脑前工作时，很难一直开着完整的行情软件：窗口占地方，频繁切换又会打断工作节奏，但错过关注股票的关键变化也让人不放心。
+在电脑前工作时，很难一直开着完整的行情软件：窗口占地方，频繁切换会打断工作节奏，还容易被同事/老板看到……
 
-盘宠把股票名称、当日分时线、最新价和涨跌幅留在桌面上，支持 A 股、港股和美股。平时它安静展示行情，触及设定条件时再由小牛或小熊提醒；同时提供缩放、不透明度、鼠标穿透和快捷隐藏等设置，让看盘尽量不打扰工作。
+盘宠把股票名称、当日分时线、最新价和涨跌幅留在桌面上，支持 A 股、港股和美股。平时它安静展示行情，触及设定条件时再由小牛或小熊提醒；同时提供缩放、不透明度、鼠标穿透和快捷隐藏等设置，让看盘不打扰工作（摸鱼不被发现）。
 
 ## 快速开始
 
@@ -61,7 +61,11 @@
 
 > 当前发布包未使用商业代码签名证书，因此系统首次打开时可能显示来源提醒。
 
-添加股票后，可以继续调整显示大小、不透明度、牛熊提醒和显示 / 隐藏快捷键。
+### 三步开始
+
+1. **添加股票**：双击桌宠进入设置，搜索名称或代码，例如 `贵州茅台`、`00700`、`AAPL`。
+2. **调成喜欢的样子**：设置大小、曲线不透明度、名称与数字不透明度、背景板不透明度。
+3. **交给牛熊值班**：设置上涨和下跌阈值，再选一组顺手的显示 / 隐藏快捷键。
 
 默认快捷键：
 
@@ -75,7 +79,7 @@
 ### 桌面状态：平时，它安安静静
 
 <p align="center">
-  <img src="docs/assets/screenshot-stock-list.png" width="680" alt="盘宠桌面自选股行情">
+  <img src="docs/assets/screenshot-stock-list.webp" width="760" alt="盘宠在真实桌面背景上显示自选股行情">
 </p>
 
 - 同时查看 A 股、港股和美股，自选股数量不设上限。
@@ -87,7 +91,7 @@
 ### 牛熊阈值提醒：需要时，牛牛和小熊会来
 
 <p align="center">
-  <img src="docs/assets/screenshot-alerts.png" width="640" alt="盘宠牛熊提醒设置">
+  <img src="docs/assets/screenshot-alerts.webp" width="752" alt="盘宠牛熊提醒设置">
 </p>
 
 - 支持按“最新价相对昨收的涨跌幅”提醒，也支持为每只股票设置“小牛目标价 / 小熊目标价”。
@@ -98,7 +102,7 @@
 - 每次越界只提醒一次；价格回到阈值内侧后才会重新布防，避免在边缘反复提醒。
 
 <p align="center">
-  <img src="docs/assets/screenshot-target-price-zh.jpg" width="640" alt="盘宠逐股目标价格提醒设置">
+  <img src="docs/assets/screenshot-target-price-zh.webp" width="752" alt="盘宠逐股目标价格提醒设置">
 </p>
 
 例如上涨阈值设为 `+3.0%`：首次达到 `+3.0%` 时提醒；回落到 `+2.85%` 以下后重新布防；再次达到 `+3.0%` 时才会再次提醒。
@@ -106,7 +110,11 @@
 ### 摸鱼隐私设置：融进桌面，也能随时收起来
 
 <p align="center">
-  <img src="docs/assets/screenshot-appearance.png" width="640" alt="盘宠外观、交互与快捷键设置">
+  <img src="docs/assets/screenshot-appearance.webp" width="752" alt="盘宠外观、交互与快捷键设置">
+</p>
+
+<p align="center">
+  <img src="docs/assets/opacity-demo-zh.gif" width="760" alt="盘宠背景板先变透明，文字与曲线再同步变透明">
 </p>
 
 - **整体缩放**：从 `65%` 到 `160%`，股票、曲线和背景板一起变化。
