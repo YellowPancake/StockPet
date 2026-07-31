@@ -6,6 +6,7 @@ const {
   colorFor,
   evaluatePriceThreshold,
   evaluateThreshold,
+  hasDrawableIntradayData,
   marketForSearchItem,
   parseTencentMinute,
   parseTrend,
@@ -47,6 +48,12 @@ test("minute formats are parsed into chart points", () => {
     high: 13,
     low: 11.8,
   });
+});
+
+test("a single Tencent point is not enough to draw an intraday chart", () => {
+  assert.equal(hasDrawableIntradayData([]), false);
+  assert.equal(hasDrawableIntradayData([{ price: 333.43 }]), false);
+  assert.equal(hasDrawableIntradayData([{ price: 333.43 }, { price: 333.5 }]), true);
 });
 
 test("threshold gate fires once and rearms after hysteresis", () => {

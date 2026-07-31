@@ -10,8 +10,17 @@ actor MarketQuoteService: QuoteProviding {
     private let decoder = JSONDecoder()
     private let searchToken = "D43BF722C8E33DA55D5C6812C6C46"
 
-    init(session: URLSession = .shared) {
-        self.session = session
+    init(session: URLSession? = nil) {
+        if let session {
+            self.session = session
+        } else {
+            let configuration = URLSessionConfiguration.ephemeral
+            configuration.timeoutIntervalForRequest = 15
+            configuration.timeoutIntervalForResource = 20
+            configuration.waitsForConnectivity = false
+            configuration.connectionProxyDictionary = [:]
+            self.session = URLSession(configuration: configuration)
+        }
     }
 
     func search(query: String) async throws -> [StockSymbol] {
@@ -61,7 +70,7 @@ actor MarketQuoteService: QuoteProviding {
     private func fetchEastmoneyIntraday(for symbol: StockSymbol) async throws -> StockQuote {
         var components = URLComponents()
         components.scheme = "https"
-        components.host = "push2his.eastmoney.com"
+        components.host = "push2delay.eastmoney.com"
         components.path = "/api/qt/stock/trends2/get"
         components.queryItems = [
             URLQueryItem(name: "secid", value: symbol.quoteID),
@@ -79,7 +88,10 @@ actor MarketQuoteService: QuoteProviding {
         }
 
         let points = payload.trends.compactMap(Self.parseTrend)
-        guard let first = points.first, let last = points.last else {
+        guard Self.hasDrawableIntradayData(points),
+              let first = points.first,
+              let last = points.last
+        else {
             throw QuoteServiceError.noIntradayData
         }
 
@@ -122,7 +134,11 @@ actor MarketQuoteService: QuoteProviding {
         let points = payload.minute.values.compactMap {
             Self.parseTencentMinute($0, date: date, market: symbol.market)
         }
-        guard let last = points.last else { throw QuoteServiceError.noIntradayData }
+        guard Self.hasDrawableIntradayData(points),
+              let last = points.last
+        else {
+            throw QuoteServiceError.noIntradayData
+        }
 
         let dayOpen = Double(quoteFields[5]).flatMap { $0 > 0 ? $0 : nil }
             ?? points.first?.close
@@ -172,6 +188,10 @@ actor MarketQuoteService: QuoteProviding {
             return .unitedStates
         }
         return nil
+    }
+
+    static func hasDrawableIntradayData(_ points: [IntradayPoint]) -> Bool {
+        points.count >= 2
     }
 
     static func parseTrend(_ raw: String) -> IntradayPoint? {

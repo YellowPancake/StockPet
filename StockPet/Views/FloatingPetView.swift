@@ -76,10 +76,6 @@ struct FloatingPetView: View {
     private var panelBackground: some View {
         RoundedRectangle(cornerRadius: 18, style: .continuous)
             .fill(Color.black.opacity(store.backgroundOpacity))
-            .overlay {
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .stroke(Color.white.opacity(store.backgroundOpacity > 0.05 ? 0.14 : 0), lineWidth: 0.7)
-            }
     }
 
     private var emptyState: some View {

@@ -68,6 +68,10 @@ function parseTrend(raw) {
   return { time: values[0], open, price: close, high, low };
 }
 
+function hasDrawableIntradayData(points) {
+  return Array.isArray(points) && points.length >= 2;
+}
+
 function evaluateThreshold(previousState, percent, risingThreshold, fallingThreshold, hysteresis = 0.15) {
   let state = previousState || "armed";
   let direction = null;
@@ -170,6 +174,7 @@ module.exports = {
   colorFor,
   evaluatePriceThreshold,
   evaluateThreshold,
+  hasDrawableIntradayData,
   marketForSearchItem,
   parseTencentMinute,
   parseTrend,
