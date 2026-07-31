@@ -3,6 +3,7 @@
 const { net } = require("electron");
 const {
   changePercent,
+  hasDrawableIntradayData,
   marketForSearchItem,
   parseTencentMinute,
   parseTrend,
@@ -71,7 +72,7 @@ async function fetchTencent(symbol) {
   const points = (payload.data?.data || [])
     .map((item) => parseTencentMinute(item, rawDate))
     .filter(Boolean);
-  if (!points.length) throw new Error("今天暂无分时数据");
+  if (!hasDrawableIntradayData(points)) throw new Error("今天暂无完整分时数据");
   const lastPoint = points.at(-1);
   const dayOpen = Number(quoteFields[5]) > 0 ? Number(quoteFields[5]) : points[0].price;
   const previousClose = Number(quoteFields[4]) > 0 ? Number(quoteFields[4]) : dayOpen;
@@ -102,7 +103,7 @@ async function fetchEastmoney(symbol) {
   );
   if (response?.rc !== 0 || !response.data) throw new Error("东方财富分时暂不可用");
   const points = (response.data.trends || []).map(parseTrend).filter(Boolean);
-  if (!points.length) throw new Error("今天暂无分时数据");
+  if (!hasDrawableIntradayData(points)) throw new Error("今天暂无完整分时数据");
   const dayOpen = points[0].open > 0 ? points[0].open : points[0].price;
   const previousClose = Number(response.data.preClose) > 0
     ? Number(response.data.preClose)

@@ -79,7 +79,10 @@ actor MarketQuoteService: QuoteProviding {
         }
 
         let points = payload.trends.compactMap(Self.parseTrend)
-        guard let first = points.first, let last = points.last else {
+        guard Self.hasDrawableIntradayData(points),
+              let first = points.first,
+              let last = points.last
+        else {
             throw QuoteServiceError.noIntradayData
         }
 
@@ -122,7 +125,11 @@ actor MarketQuoteService: QuoteProviding {
         let points = payload.minute.values.compactMap {
             Self.parseTencentMinute($0, date: date, market: symbol.market)
         }
-        guard let last = points.last else { throw QuoteServiceError.noIntradayData }
+        guard Self.hasDrawableIntradayData(points),
+              let last = points.last
+        else {
+            throw QuoteServiceError.noIntradayData
+        }
 
         let dayOpen = Double(quoteFields[5]).flatMap { $0 > 0 ? $0 : nil }
             ?? points.first?.close
@@ -172,6 +179,10 @@ actor MarketQuoteService: QuoteProviding {
             return .unitedStates
         }
         return nil
+    }
+
+    static func hasDrawableIntradayData(_ points: [IntradayPoint]) -> Bool {
+        points.count >= 2
     }
 
     static func parseTrend(_ raw: String) -> IntradayPoint? {

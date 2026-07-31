@@ -33,6 +33,19 @@ final class StockPetTests: XCTestCase {
         XCTAssertEqual(point.close, 1329.50, accuracy: 0.001)
     }
 
+    func testSingleTencentPointFallsBackInsteadOfProducingAnEmptyChart() throws {
+        let point = try XCTUnwrap(
+            MarketQuoteService.parseTencentMinute(
+                "1600 333.43 74817792",
+                date: "2026-07-30",
+                market: .unitedStates
+            )
+        )
+
+        XCTAssertFalse(MarketQuoteService.hasDrawableIntradayData([point]))
+        XCTAssertTrue(MarketQuoteService.hasDrawableIntradayData([point, point]))
+    }
+
     func testTencentCodeMappingForThreeMarkets() {
         XCTAssertEqual(MarketQuoteService.tencentCode(for: StockSymbol.initialSymbols[0]), "sh600519")
         XCTAssertEqual(MarketQuoteService.tencentCode(for: StockSymbol.initialSymbols[1]), "hk00700")
