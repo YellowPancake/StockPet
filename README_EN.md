@@ -1,16 +1,15 @@
 <p align="center">
+  <a href="README.md">Chinese</a> · <strong>English</strong>
+</p>
+
+<p align="center">
   <img src="docs/assets/app-icon.png" width="112" alt="Stock Pet icon">
 </p>
 
 <h1 align="center">Stock Pet</h1>
 
 <p align="center">
-  <strong>Your desktop stock-watching companion—stay aware of price moves while you work.</strong><br>
-  Keep the market on your desktop: quiet intraday charts, with a little bull or bear when something matters.
-</p>
-
-<p align="center">
-  <a href="README.md">Chinese</a> · <strong>English</strong>
+  <strong>Stay on top of stock price movements while you work—your stock-watching desktop pet</strong>
 </p>
 
 <p align="center">
@@ -27,25 +26,42 @@
 
 ## Contents
 
-- [Quick start](#quick-start)
-- [Why Stock Pet?](#why-stock-pet)
-- [Quiet while you work](#quiet-while-you-work)
-- [The bull and bear know when to interrupt](#the-bull-and-bear-know-when-to-interrupt)
-- [Blend in, then disappear in one keystroke](#blend-in-then-disappear-in-one-keystroke)
-- [Feature overview](#feature-overview)
-- [Downloads and installation](#downloads-and-installation)
-- [Data and risk notes](#data-and-risk-notes)
-- [FAQ](#faq)
-- [Feedback and license](#feedback-and-license)
-- [Buy the author a chicken leg 🍗~](#support-the-author)
+- [Background](#background)
+- [Quick Start](#quick-start)
+- [Feature Details](#feature-details)
+- [Data and Risk Notes](#data-and-risk-notes)
+- [Support the Author](#support-the-author)
 
-## Quick start
+## Background
 
-First visit [GitHub Releases](https://github.com/YellowPancake/StockPet/releases/latest), download the English Universal macOS or Windows x64 package, and launch it.
+Keeping a full market app open while working takes up screen space, and switching back and forth interrupts your flow. At the same time, missing an important move in a stock you follow can be frustrating.
 
-1. **Add stocks:** double-click the pet, then search by company name or ticker, such as `Kweichow Moutai`, `00700`, or `AAPL`.
-2. **Make it yours:** adjust overall size and the separate chart, text/number, and background opacity controls.
-3. **Put the animals on duty:** choose previous-close percentage or target-price alerts, then set a convenient show/hide shortcut.
+Stock Pet keeps company names, today's intraday charts, latest prices, and percentage changes on the desktop, with support for A-shares, Hong Kong stocks, and US stocks. It stays quiet during normal work and brings out a little bull or bear when an alert condition is met. Scaling, opacity, mouse passthrough, and quick hiding help it stay out of your way.
+
+## Quick Start
+
+Visit [GitHub Releases](https://github.com/YellowPancake/StockPet/releases/latest) and download the English package for your system:
+
+| System | English package |
+| --- | --- |
+| macOS 14 or later | `StockPet-macOS-English.zip`, for Apple Silicon and Intel Macs |
+| 64-bit Windows 10/11 | `StockPet-Windows-x64-English.zip` |
+
+### macOS
+
+1. Unzip the package and move Stock Pet into Applications.
+2. If macOS cannot verify the developer on first launch, confirm it under System Settings → Privacy & Security.
+3. Double-click the desktop market panel to open Settings, then search by company name or ticker to add stocks.
+
+### Windows
+
+1. Extract the complete archive, open the extracted folder, and run `StockPet.exe`.
+2. Keep `StockPet.exe` together with the adjacent `resources`, `locales`, and DLL files.
+3. Double-click the desktop market panel to open Settings, then search by company name or ticker to add stocks.
+
+> These builds are not signed with a commercial code-signing certificate, so the operating system may show a source warning on first launch.
+
+After adding stocks, adjust the display size, opacity, bull and bear alerts, and show/hide shortcut as needed.
 
 Default shortcut:
 
@@ -54,40 +70,32 @@ Default shortcut:
 | macOS | `⌘ + ⌥ + S` |
 | Windows | `Ctrl + Alt + S` |
 
-## Why Stock Pet?
+## Feature Details
 
-Keeping a full trading app open while working takes space and interrupts your flow—but missing an important price move is not ideal either.
-
-Stock Pet keeps only the useful pieces in a corner of your desktop: company name, today's intraday chart, latest price, and percentage change. It is a quiet **stock-watching companion** that helps you stay aware of market moves without staring at a trading window all day. When a threshold is crossed, a cartoon bull or bear comes out to tell you.
-
-Independently lower the opacity of charts, text, and the background so the market quietly blends into your desktop. **A coworker or manager glancing at your screen is far less likely to see a conspicuous trading window—making casual market checks much less awkward.**
-
-You can also resize it, drag it into a quiet corner, or let mouse clicks pass straight through. When you need a clean screen, join a meeting, or start sharing, one shortcut hides it instantly.
-
-## Quiet while you work
+### Desktop View: Quiet While You Work
 
 <p align="center">
   <img src="docs/assets/screenshot-stock-list-en.jpg" width="680" alt="Stock Pet English desktop watchlist">
 </p>
 
 - Watch A-shares, Hong Kong stocks, and US stocks together, with no watchlist limit.
-- Every stock has a real intraday chart, with the name on the left and latest price and change on the right.
+- Every stock has a real intraday chart, with the name on the left and the latest price and percentage change on the right.
 - A-shares and Hong Kong stocks use red for gains and green for losses; US stocks use the opposite convention.
 - Names, tickers, markets, prices, percentage changes, and charts share the same movement color.
-- Long watchlists scroll inside the pet instead of growing forever.
+- Long watchlists scroll inside the pet instead of making the window grow indefinitely.
 
-## The bull and bear know when to interrupt
+### Bull & Bear Threshold Alerts: They Arrive When Needed
 
 <p align="center">
-  <img src="docs/assets/screenshot-bull-alert-en.jpg" width="560" alt="Stock Pet English bull threshold alert">
+  <img src="docs/assets/screenshot-alerts-en.jpg" width="640" alt="Stock Pet English bull and bear alert settings">
 </p>
 
-- Choose between change from the previous close and per-stock target prices.
-- Target-price mode shows the latest quote for every watchlist stock. Generate upper and lower targets from the current price, then fine-tune each stock manually.
-- A cartoon bull or bear appears when a stock crosses its percentage threshold or target price.
-- Bull and bear sounds have independent switches, and all alerts can be disabled with one master switch.
-- Alert opacity is adjustable on its own.
-- Each crossing alerts once. The price must return inside the threshold before the alert re-arms, preventing chatter around the boundary.
+- Choose alerts based on the latest price versus the previous close, or set individual bull and bear target prices for each stock.
+- Target-price mode shows the latest quote for every watchlist stock. Generate upper and lower targets from the current price, then fine-tune them manually.
+- A little bull appears when the price crosses the rise threshold or bull target; a little bear appears when it crosses the fall threshold or bear target.
+- Bull and bear sounds have separate switches, and all alerts can be disabled with one master switch.
+- Alert opacity is adjustable independently.
+- Each crossing alerts once. The price must return inside the threshold before the alert re-arms, preventing repeated alerts around the boundary.
 
 <p align="center">
   <img src="docs/assets/screenshot-target-price-en.jpg" width="640" alt="Stock Pet English per-stock target price settings">
@@ -95,67 +103,39 @@ You can also resize it, drag it into a quiet corner, or let mouse clicks pass st
 
 For example, with a `+3.0%` rise threshold: the first touch at `+3.0%` alerts; a pullback below `+2.85%` re-arms it; only a new move to `+3.0%` alerts again.
 
-## Blend in, then disappear in one keystroke
+### Low-Profile Privacy Controls: Blend In or Hide Instantly
 
 <p align="center">
-  <img src="docs/assets/screenshot-appearance-en.jpg" width="680" alt="Stock Pet English appearance and shortcut settings">
+  <img src="docs/assets/screenshot-appearance-en.jpg" width="640" alt="Stock Pet English appearance and shortcut settings">
 </p>
 
 - **Overall scale:** resize the watchlist, charts, and panel together from `65%` to `160%`.
 - **Three opacity controls:** tune charts, text and numbers, and the background independently.
 - **Drag anywhere:** keep it wherever it feels least distracting.
-- **Double-click settings:** double-click the panel or a chart to open Settings.
-- **Global show/hide shortcut:** enable it, disable it, or choose a different combination.
+- **Double-click Settings:** double-click the panel or a chart to open Settings.
+- **Global show/hide shortcut:** enable it, disable it, or choose a different key combination.
 - **Mouse passthrough:** lock the pet so it never blocks clicks or scrolling below it.
 - **Always on top:** keep the market at the edge of your view while switching apps.
 
-## Feature overview
+**A coworker or manager glancing at your screen is far less likely to see a conspicuous trading window, making casual market checks much less awkward.**
+
+### Feature Overview
 
 | Feature | What it does |
 | --- | --- |
 | Three markets | Search and add A-shares, Hong Kong stocks, and US stocks |
 | Unlimited watchlist | Add, remove, and reorder stocks; long lists scroll |
-| Real intraday charts | Displays minute data and never invents a fake curve |
-| Market-aware colors | A/H: red up, green down; US: green up, red down |
-| Appearance controls | Overall scale plus three independent opacity settings |
-| Desktop interaction | Drag, double-click Settings, always-on-top, and mouse passthrough |
+| Real intraday charts | Displays minute data and never invents a chart |
+| Market-aware colors | A-shares / Hong Kong: red up and green down; US: green up and red down |
+| Appearance controls | Overall scale plus independent chart, text/number, and background opacity |
+| Desktop interaction | Drag, double-click Settings, always on top, and mouse passthrough |
 | Quick hiding | Customizable global shortcut to show or hide the pet |
-| Bull & bear alerts | Previous-close percentages or per-stock targets, live-price generation, master switch, opacity, and sounds |
-| Anti-repeat logic | Re-arms with percentage or target-price hysteresis |
-| Data resilience | Tencent primary, Eastmoney fallback, stale-data marking on failure |
-| Cross-platform | Universal macOS and Windows x64, each in Chinese and English |
+| Bull & bear alerts | Previous-close percentages or per-stock targets, live-price target generation, master switch, opacity, and sounds |
+| Anti-repeat logic | Re-arms after the price returns inside the threshold |
+| Data resilience | Tencent primary, Eastmoney fallback, and stale-data marking on failure |
+| Cross-platform | Universal macOS and Windows x64 |
 
-## Downloads and installation
-
-Download one of the four packages from [GitHub Releases](https://github.com/YellowPancake/StockPet/releases/latest):
-
-| File | Language and platform |
-| --- | --- |
-| `StockPet-macOS-Chinese.zip` | Chinese; Apple Silicon and Intel Macs |
-| `StockPet-Windows-x64-Chinese.zip` | Chinese; 64-bit Windows 10/11 |
-| `StockPet-macOS-English.zip` | English; Apple Silicon and Intel Macs |
-| `StockPet-Windows-x64-English.zip` | English; 64-bit Windows 10/11 |
-
-### macOS
-
-1. Unzip the package and drag the app into Applications.
-2. If macOS cannot verify the developer on first launch, confirm it under System Settings → Privacy & Security.
-3. Stock Pet is a menu bar app. If mouse passthrough is enabled, use the chart icon in the menu bar to turn it off.
-
-Requires macOS 14 or later.
-
-### Windows
-
-1. Extract the complete archive.
-2. Open its folder and run `StockPet.exe`.
-3. Do not move the EXE out by itself; it needs the adjacent `resources`, `locales`, and DLL files.
-4. If mouse passthrough is enabled, use the Stock Pet icon in the Windows system tray to turn it off.
-
-Requires 64-bit Windows 10 or 11.
-
-> These builds are not signed with a commercial code-signing certificate, so the operating system may show a source warning on first launch.
-
-## Data and risk notes
+## Data and Risk Notes
 
 - Search covers A-shares, Hong Kong stocks, and US stocks.
 - Tencent intraday quotes are the primary source; Eastmoney is the fallback.
@@ -166,40 +146,13 @@ Requires 64-bit Windows 10 or 11.
 > [!CAUTION]
 > Stock Pet is a personal market-viewing aid, not investment advice and not a trading-data service. Public web quotes are not guaranteed to be real-time, complete, or accurate. You remain responsible for every investment decision and outcome.
 
-## FAQ
-
-<details>
-<summary><strong>Can I add more than 10 stocks?</strong></summary>
-
-Yes. Stock Pet has no watchlist limit, and both the desktop list and search results can scroll. Larger watchlists also create more refresh requests.
-
-</details>
-
-<details>
-<summary><strong>Why does an alert not repeat continuously at the threshold?</strong></summary>
-
-That is intentional. Percentage alerts re-arm after the change moves at least `0.15` points inside the threshold; target-price alerts re-arm after the price moves at least `0.15%` back inside the target.
-
-</details>
-
-<details>
-<summary><strong>Will it get in the way of normal work?</strong></summary>
-
-Lower the three opacity controls, reduce the overall size, enable mouse passthrough, or hide it instantly with the global shortcut.
-
-</details>
-
-## Feedback and license
-
-Open an [Issue](https://github.com/YellowPancake/StockPet/issues) with your operating system, ticker, and reproduction steps. Please do not upload account, trading, or other sensitive information.
-
-Stock Pet is released under the [MIT License](LICENSE).
+To report a problem, open an [Issue](https://github.com/YellowPancake/StockPet/issues) without including account, trading, or other sensitive information. Stock Pet is released under the [MIT License](LICENSE).
 
 <a id="support-the-author"></a>
 
-## Buy the author a chicken leg 🍗~
+## Buy the Author a Chicken Leg 🍗~
 
-If Stock Pet helped you catch a market move without breaking your workday—or made a quick market check a little less awkward—you can buy the author a chicken leg. Thank you, and please only contribute if you are comfortable doing so.
+If you enjoy Stock Pet, feel free to buy the author a chicken leg 🍗~
 
 <table>
   <tr>
