@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Stock Pet</title>
+    <link rel="stylesheet" href="overlay.css" />
+  </head>
+  <body>
+    <main id="board" aria-label="Stock Pet 桌面行情">
+      <div id="rows"></div>
+      <div id="empty" hidden>双击这里添加股票</div>
+    </main>
+    <section id="alert" aria-live="polite" hidden>
+      <div id="mascot"></div>
+      <div>
+        <strong id="alert-title"></strong>
+        <span id="alert-detail"></span>
+      </div>
+    </section>
+    <script src="overlay.js"></script>
+  </body>
+</html>

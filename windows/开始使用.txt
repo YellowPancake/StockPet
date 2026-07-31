@@ -1,0 +1,14 @@
+Stock Pet Windows x64 版
+
+1. 请先完整解压 ZIP。
+2. 打开解压后的 StockPet-Windows-x64-Chinese 文件夹。
+3. 双击 StockPet.exe。
+4. 双击桌面行情板可以打开设置。
+5. 如果开启了“锁定并穿透鼠标”，请从 Windows 右下角系统托盘中的 Stock Pet 图标解除。
+
+首次运行时，Windows SmartScreen 可能提示来源未知：
+点击“更多信息”，确认文件来自你信任的发送者后，选择“仍要运行”。
+
+请不要只把 StockPet.exe 单独移出文件夹；它需要同目录下的 DLL、resources 和 locales 文件。
+
+系统要求：Windows 10/11 64 位，Intel 或 AMD x64 处理器。

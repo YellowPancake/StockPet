@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Stock Pet 设置</title>
+    <link rel="stylesheet" href="settings.css" />
+  </head>
+  <body>
+    <aside class="sidebar">
+      <div class="brand">
+        <img src="assets/app-icon.png" alt="" />
+        <div>
+          <strong>Stock Pet</strong>
+          <span>桌面看盘宠物</span>
+        </div>
+      </div>
+      <nav>
+        <button class="nav-item active" data-page="stocks"><span>☷</span>桌面股票</button>
+        <button class="nav-item" data-page="appearance"><span>✦</span>外观与交互</button>
+        <button class="nav-item" data-page="alerts"><span>♧</span>牛熊提醒</button>
+        <button class="nav-item" data-page="data"><span>◎</span>数据与刷新</button>
+      </nav>
+      <div class="version">Windows x64 · 0.3.0</div>
+    </aside>
+
+    <main class="content">
+      <section class="page active" id="page-stocks">
+        <header>
+          <h1>桌面股票</h1>
+          <p>支持 A 股、港股和美股，股票数量不设上限</p>
+        </header>
+        <div class="search-card card">
+          <form id="search-form">
+            <input id="search-input" autocomplete="off" placeholder="输入股票名称或代码，例如 600519、腾讯、AAPL" />
+            <button class="primary" type="submit">搜索</button>
+          </form>
+          <div id="search-message" class="message"></div>
+          <div id="search-results"></div>
+        </div>
+        <div class="section-title">
+          <h2>已放在桌面</h2>
+          <span id="stock-count">0 只</span>
+        </div>
+        <div id="current-stocks" class="stock-list card"></div>
+      </section>
+
+      <section class="page" id="page-appearance">
+        <header>
+          <h1>外观与交互</h1>
+          <p>调整桌宠大小、不透明度和桌面行为</p>
+        </header>
+        <div class="card settings-card">
+          <label class="setting-row">
+            <span><strong>整体大小</strong><small>股票、曲线和背景板一起缩放</small></span>
+            <span class="range-control"><input id="displayScale" type="range" min="0.65" max="1.6" step="0.05" /><output></output></span>
+          </label>
+          <label class="setting-row">
+            <span><strong>曲线不透明度</strong></span>
+            <span class="range-control"><input id="lineOpacity" type="range" min="0.1" max="1" step="0.05" /><output></output></span>
+          </label>
+          <label class="setting-row">
+            <span><strong>名称与数字不透明度</strong><small>名称、代码、市场、价格和涨跌幅</small></span>
+            <span class="range-control"><input id="labelOpacity" type="range" min="0.1" max="1" step="0.05" /><output></output></span>
+          </label>
+          <label class="setting-row">
+            <span><strong>背景板不透明度</strong></span>
+            <span class="range-control"><input id="backgroundOpacity" type="range" min="0.03" max="0.95" step="0.04" /><output></output></span>
+          </label>
+          <label class="setting-row">
+            <span><strong>始终置顶</strong><small>保持在其他窗口上方</small></span>
+            <input id="alwaysOnTop" class="switch" type="checkbox" />
+          </label>
+          <label class="setting-row">
+            <span><strong>锁定并穿透鼠标</strong><small>开启后请从系统托盘解除锁定</small></span>
+            <input id="clickThrough" class="switch" type="checkbox" />
+          </label>
+          <label class="setting-row">
+            <span><strong>快捷键显示/隐藏桌宠</strong><small>在其他软件中也可以使用</small></span>
+            <input id="shortcutEnabled" class="switch" type="checkbox" />
+          </label>
+          <div class="setting-row shortcut-row" id="shortcut-options">
+            <span><strong>快捷键组合</strong></span>
+            <span class="shortcut-control">
+              <select id="shortcutModifier">
+                <option value="Ctrl+Alt">Ctrl + Alt</option>
+                <option value="Ctrl+Shift">Ctrl + Shift</option>
+                <option value="Alt+Shift">Alt + Shift</option>
+                <option value="Ctrl+Alt+Shift">Ctrl + Alt + Shift</option>
+              </select>
+              <b>+</b>
+              <select id="shortcutKey">
+                <option value="S">S</option>
+                <option value="P">P</option>
+                <option value="H">H</option>
+                <option value="K">K</option>
+                <option value="D">D</option>
+                <option value="F">F</option>
+                <option value="Space">空格</option>
+              </select>
+            </span>
+          </div>
+        </div>
+        <button id="reset-appearance" class="secondary">恢复默认外观</button>
+      </section>
+
+      <section class="page" id="page-alerts">
+        <header>
+          <h1>牛熊提醒</h1>
+          <p id="alert-basis-description">涨跌幅以昨收为基准，每次越过阈值只提醒一次</p>
+        </header>
+        <div class="card settings-card">
+          <label class="setting-row">
+            <span><strong>开启牛熊提醒</strong><small>关闭后不再弹出小牛或小熊，也不会播放声音</small></span>
+            <input id="alertsEnabled" class="switch" type="checkbox" />
+          </label>
+          <label class="setting-row">
+            <span><strong>提醒依据</strong></span>
+            <select id="alertBasis">
+              <option value="percentage">昨收涨跌幅</option>
+              <option value="targetPrice">目标价格</option>
+            </select>
+          </label>
+          <div id="percentage-alert-controls">
+            <label class="setting-row">
+              <span class="alert-label"><b>🐂</b><strong>上涨超过</strong></span>
+              <span class="number-control"><input id="risingThreshold" type="number" min="0.1" max="30" step="0.1" /><i>%</i></span>
+            </label>
+            <label class="setting-row">
+              <span class="alert-label"><b>🐻</b><strong>下跌超过</strong></span>
+              <span class="number-control"><input id="fallingThreshold" type="number" min="0.1" max="30" step="0.1" /><i>%</i></span>
+            </label>
+          </div>
+          <div id="price-alert-controls" hidden>
+            <div class="price-alert-toolbar">
+              <div>
+                <strong>实时价格与逐股目标</strong>
+                <small>刷新实时价后，可一键按当前价生成目标或逐只调整</small>
+              </div>
+              <div class="button-row">
+                <button id="refresh-alert-prices" class="secondary" type="button">刷新实时价</button>
+                <button id="generate-price-targets" class="secondary" type="button">按现价生成目标</button>
+              </div>
+            </div>
+            <p id="price-alert-message" class="inline-message"></p>
+            <div id="price-alert-list"></div>
+          </div>
+          <label class="setting-row">
+            <span><strong>提醒不透明度</strong></span>
+            <span class="range-control"><input id="alertOpacity" type="range" min="0.2" max="1" step="0.05" /><output></output></span>
+          </label>
+          <label class="setting-row">
+            <span><strong>小牛提示音（短促牛叫）</strong></span>
+            <input id="bullSoundEnabled" class="switch" type="checkbox" />
+          </label>
+          <label class="setting-row">
+            <span><strong>小熊提示音（短促吼声）</strong></span>
+            <input id="bearSoundEnabled" class="switch" type="checkbox" />
+          </label>
+        </div>
+        <p id="alert-rearm-tip" class="tip">股票回到阈值内至少 0.15 个百分点后会重新布防，避免价格在边缘波动时连续提醒。</p>
+        <div class="button-row">
+          <button id="preview-bull" class="secondary">预览小牛与牛叫声</button>
+          <button id="preview-bear" class="secondary">预览小熊与短吼声</button>
+        </div>
+      </section>
+
+      <section class="page" id="page-data">
+        <header>
+          <h1>数据与刷新</h1>
+        </header>
+        <div class="card settings-card">
+          <label class="setting-row">
+            <span><strong>刷新频率</strong></span>
+            <select id="refreshInterval">
+              <option value="5">5 秒</option>
+              <option value="10">10 秒</option>
+              <option value="15">15 秒</option>
+              <option value="30">30 秒</option>
+              <option value="60">60 秒</option>
+            </select>
+          </label>
+          <div class="setting-row">
+            <span><strong>当前数据源</strong></span>
+            <span id="data-source">腾讯分时 · 东方财富备用</span>
+          </div>
+          <div class="setting-row">
+            <span><strong>最近刷新</strong></span>
+            <span id="last-refresh">尚未刷新</span>
+          </div>
+        </div>
+        <div id="source-error" class="error-card" hidden></div>
+        <button id="refresh-now" class="secondary">立即刷新全部股票</button>
+        <div class="usage">
+          <h3>使用说明</h3>
+          <ul>
+            <li>本应用仅用于个人辅助查看，不构成投资建议。</li>
+            <li>公开网页行情可能延迟、限流或调整，不应用于下单决策。</li>
+            <li>接口失败时不会生成假曲线，只保留最后一次成功数据并标记为过期。</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+
+    <script src="settings.js"></script>
+  </body>
+</html>

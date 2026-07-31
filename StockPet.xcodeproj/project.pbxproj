@@ -1,0 +1,797 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		00FD2CA971C6E03C4B84FEEE /* MascotAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42DD66D82AA68E5D9EC4A058 /* MascotAlertView.swift */; };
+		09929F2A48E5811F1CE58DE5 /* StockPetApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F5CCCE8736F7199FAD9B5E /* StockPetApp.swift */; };
+		0B631D1A21FB811752B03BB1 /* StockStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 643CC492EC969812FD112505 /* StockStore.swift */; };
+		0F5BD1129F006C6C6AEEF66B /* MascotAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42DD66D82AA68E5D9EC4A058 /* MascotAlertView.swift */; };
+		1FBF3F771EBFD225188C490B /* StockModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85FEAAF6B2924B4261419804 /* StockModels.swift */; };
+		2FB8C424A27402978773D729 /* GlobalHotKeyController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1EE4D069413303C0D0944C1 /* GlobalHotKeyController.swift */; };
+		3954B87067713B0CAE8640EE /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 332D83F9828B1E87666306B8 /* InfoPlist.strings */; };
+		3DC7FA530F64A3AD8F03557D /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42C7B2E12C206317F13E33AB /* SettingsView.swift */; };
+		4844480E66A5446EB787B1A7 /* StockPetApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F5CCCE8736F7199FAD9B5E /* StockPetApp.swift */; };
+		4A15E6A4D3A5C254B4B67353 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = EF7F9D7A30951FB08BC27AE4 /* Localizable.strings */; };
+		4D4C873F88FCD0599FE5611F /* StockModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85FEAAF6B2924B4261419804 /* StockModels.swift */; };
+		5DBFCEEFFD179D383DC37651 /* L10n.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4669FABCC327162CF506FD8B /* L10n.swift */; };
+		5FD19486972770068941BD75 /* StockRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 387D1719C7550FDF7A326367 /* StockRowView.swift */; };
+		652C7193EE90D4D4DBAA840D /* FloatingPetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D023907729A86A626525A005 /* FloatingPetView.swift */; };
+		6D56185FC85B4AE0C3BF767B /* StockPetEnglishTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F03C84922C944E8A3B96191 /* StockPetEnglishTests.swift */; };
+		7C3DEC5BFB97815AC726E993 /* GlobalHotKeyController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1EE4D069413303C0D0944C1 /* GlobalHotKeyController.swift */; };
+		7F733F6EE5DD2DF7DE6EC1E5 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42C7B2E12C206317F13E33AB /* SettingsView.swift */; };
+		823A84688E637D9EB75F73FD /* StockPetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCFEA7E0FF66798B70C4756D /* StockPetTests.swift */; };
+		8A550FA39E6E074F0465E0A3 /* WindowConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEE91BAA216640B55B058D80 /* WindowConfigurator.swift */; };
+		8CE722319ED89A59D7B785B4 /* StockRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 387D1719C7550FDF7A326367 /* StockRowView.swift */; };
+		90F70AD1CBEA5A8C6B1A0B83 /* bull-moo.wav in Resources */ = {isa = PBXBuildFile; fileRef = A1124137716B1A76226A5891 /* bull-moo.wav */; };
+		9C0E2CB185B7DA8A42D61E11 /* WindowConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEE91BAA216640B55B058D80 /* WindowConfigurator.swift */; };
+		A6C47587183ED8A363137CF9 /* StockStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 643CC492EC969812FD112505 /* StockStore.swift */; };
+		AA075524EDFEB9532289BA44 /* bull-moo.wav in Resources */ = {isa = PBXBuildFile; fileRef = A1124137716B1A76226A5891 /* bull-moo.wav */; };
+		AB330945E3B7638EDC4866D5 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0FA0167D166047CA9C9F6A09 /* Localizable.strings */; };
+		ABC2DC299365DB3DDADF33D0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4969C92FC959B479C72836FC /* Assets.xcassets */; };
+		C0F466A0FCD7468B31139CAB /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = B7251931FC200100A7DC8611 /* README.md */; };
+		C46998FC2DD00ABE3BEA9F35 /* bear-growl.wav in Resources */ = {isa = PBXBuildFile; fileRef = 27DCF7E08C464A0588B99499 /* bear-growl.wav */; };
+		C93599647FBF8280FE73FB0D /* QuoteService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B03DEF58EB797856C58357E /* QuoteService.swift */; };
+		D982A70987A81016114C6540 /* QuoteService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B03DEF58EB797856C58357E /* QuoteService.swift */; };
+		D9CBDB7FC741A7CFBA5BA294 /* bear-growl.wav in Resources */ = {isa = PBXBuildFile; fileRef = 27DCF7E08C464A0588B99499 /* bear-growl.wav */; };
+		E152E426999849CA6416B872 /* FloatingPetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D023907729A86A626525A005 /* FloatingPetView.swift */; };
+		EEE3A6002562F31675FBE5AD /* L10n.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4669FABCC327162CF506FD8B /* L10n.swift */; };
+		EFFC30878F27CBDFE5A51DC5 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = B7251931FC200100A7DC8611 /* README.md */; };
+		F0ECA41CDC31791D37631252 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4969C92FC959B479C72836FC /* Assets.xcassets */; };
+		F44B67D44A3E96AF012F5E1B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = FFE5FD659E6FA8C6B19F48BA /* InfoPlist.strings */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		2177C262A4F264D78262A289 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1FBC4EFD17FBC082D81CF501 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 59448BF4D585F08E4351D27A;
+			remoteInfo = StockPet;
+		};
+		FC0599369FDCD405F8DB510E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1FBC4EFD17FBC082D81CF501 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0A6D5733F0E479A016FB2AA7;
+			remoteInfo = StockPetEnglish;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0B03DEF58EB797856C58357E /* QuoteService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuoteService.swift; sourceTree = "<group>"; };
+		0FA0167D166047CA9C9F6A09 /* Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Localizable.strings; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		27DCF7E08C464A0588B99499 /* bear-growl.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "bear-growl.wav"; sourceTree = "<group>"; };
+		2F03C84922C944E8A3B96191 /* StockPetEnglishTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockPetEnglishTests.swift; sourceTree = "<group>"; };
+		332D83F9828B1E87666306B8 /* InfoPlist.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = InfoPlist.strings; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		3426BA86AFE0EF583C2A338D /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		387D1719C7550FDF7A326367 /* StockRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockRowView.swift; sourceTree = "<group>"; };
+		42C7B2E12C206317F13E33AB /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		42DD66D82AA68E5D9EC4A058 /* MascotAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MascotAlertView.swift; sourceTree = "<group>"; };
+		4669FABCC327162CF506FD8B /* L10n.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = L10n.swift; sourceTree = "<group>"; };
+		4969C92FC959B479C72836FC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		643CC492EC969812FD112505 /* StockStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockStore.swift; sourceTree = "<group>"; };
+		83F5CCCE8736F7199FAD9B5E /* StockPetApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockPetApp.swift; sourceTree = "<group>"; };
+		85FEAAF6B2924B4261419804 /* StockModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockModels.swift; sourceTree = "<group>"; };
+		A1124137716B1A76226A5891 /* bull-moo.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "bull-moo.wav"; sourceTree = "<group>"; };
+		A39308016EF242661287B096 /* StockPetEnglish.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StockPetEnglish.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA607DE1266D2BA55678B127 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		B1EE4D069413303C0D0944C1 /* GlobalHotKeyController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalHotKeyController.swift; sourceTree = "<group>"; };
+		B3238DF1A9C23C6887C696A0 /* StockPetEnglishTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StockPetEnglishTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B7251931FC200100A7DC8611 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		CC38FE3FE92F5301E5A91463 /* StockPetTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StockPetTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CCFEA7E0FF66798B70C4756D /* StockPetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockPetTests.swift; sourceTree = "<group>"; };
+		D023907729A86A626525A005 /* FloatingPetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingPetView.swift; sourceTree = "<group>"; };
+		D473D6C8AC3210FC0A30A8F7 /* StockPet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StockPet.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FEE91BAA216640B55B058D80 /* WindowConfigurator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowConfigurator.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		21E64091B7D89B6558F8790B /* StockPetEnglishTests */ = {
+			isa = PBXGroup;
+			children = (
+				2F03C84922C944E8A3B96191 /* StockPetEnglishTests.swift */,
+			);
+			path = StockPetEnglishTests;
+			sourceTree = "<group>";
+		};
+		29D2A737543E23D582838314 /* ChineseResources */ = {
+			isa = PBXGroup;
+			children = (
+				332D83F9828B1E87666306B8 /* InfoPlist.strings */,
+				0FA0167D166047CA9C9F6A09 /* Localizable.strings */,
+			);
+			path = ChineseResources;
+			sourceTree = "<group>";
+		};
+		36BC2FBE732FC8DC8DA00437 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				4969C92FC959B479C72836FC /* Assets.xcassets */,
+				A618CFB47EEDD896404AD7F3 /* Sounds */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		48C36B3E65DDC3328479E368 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D473D6C8AC3210FC0A30A8F7 /* StockPet.app */,
+				A39308016EF242661287B096 /* StockPetEnglish.app */,
+				B3238DF1A9C23C6887C696A0 /* StockPetEnglishTests.xctest */,
+				CC38FE3FE92F5301E5A91463 /* StockPetTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8194A5BD0A8F605EA5631062 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				D023907729A86A626525A005 /* FloatingPetView.swift */,
+				42DD66D82AA68E5D9EC4A058 /* MascotAlertView.swift */,
+				42C7B2E12C206317F13E33AB /* SettingsView.swift */,
+				387D1719C7550FDF7A326367 /* StockRowView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		84E9B4E7BD501F98F60CA55F /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				0B03DEF58EB797856C58357E /* QuoteService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		85D81DE53DE58957E032624F /* EnglishResources */ = {
+			isa = PBXGroup;
+			children = (
+				FFE5FD659E6FA8C6B19F48BA /* InfoPlist.strings */,
+				EF7F9D7A30951FB08BC27AE4 /* Localizable.strings */,
+			);
+			path = EnglishResources;
+			sourceTree = "<group>";
+		};
+		974008DF1361D23E72E89DD8 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				B1EE4D069413303C0D0944C1 /* GlobalHotKeyController.swift */,
+				83F5CCCE8736F7199FAD9B5E /* StockPetApp.swift */,
+				FEE91BAA216640B55B058D80 /* WindowConfigurator.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		A2138BFFFF17177BCF596845 /* StockPetTests */ = {
+			isa = PBXGroup;
+			children = (
+				CCFEA7E0FF66798B70C4756D /* StockPetTests.swift */,
+			);
+			path = StockPetTests;
+			sourceTree = "<group>";
+		};
+		A618CFB47EEDD896404AD7F3 /* Sounds */ = {
+			isa = PBXGroup;
+			children = (
+				27DCF7E08C464A0588B99499 /* bear-growl.wav */,
+				A1124137716B1A76226A5891 /* bull-moo.wav */,
+				B7251931FC200100A7DC8611 /* README.md */,
+			);
+			path = Sounds;
+			sourceTree = "<group>";
+		};
+		BA62C3AE5558E037D64C2206 /* StockPet */ = {
+			isa = PBXGroup;
+			children = (
+				974008DF1361D23E72E89DD8 /* App */,
+				DB8E00356A2A807FA82DBF5A /* Models */,
+				36BC2FBE732FC8DC8DA00437 /* Resources */,
+				84E9B4E7BD501F98F60CA55F /* Services */,
+				CD020836579399D770600B4B /* Stores */,
+				8194A5BD0A8F605EA5631062 /* Views */,
+			);
+			path = StockPet;
+			sourceTree = "<group>";
+		};
+		CD020836579399D770600B4B /* Stores */ = {
+			isa = PBXGroup;
+			children = (
+				643CC492EC969812FD112505 /* StockStore.swift */,
+			);
+			path = Stores;
+			sourceTree = "<group>";
+		};
+		DB8E00356A2A807FA82DBF5A /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				4669FABCC327162CF506FD8B /* L10n.swift */,
+				85FEAAF6B2924B4261419804 /* StockModels.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		F1A3122C5516AB4FE1CA0508 = {
+			isa = PBXGroup;
+			children = (
+				29D2A737543E23D582838314 /* ChineseResources */,
+				85D81DE53DE58957E032624F /* EnglishResources */,
+				BA62C3AE5558E037D64C2206 /* StockPet */,
+				21E64091B7D89B6558F8790B /* StockPetEnglishTests */,
+				A2138BFFFF17177BCF596845 /* StockPetTests */,
+				48C36B3E65DDC3328479E368 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		0A6D5733F0E479A016FB2AA7 /* StockPetEnglish */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3171B49815E40E567DCE13A7 /* Build configuration list for PBXNativeTarget "StockPetEnglish" */;
+			buildPhases = (
+				152DB5F4B571AD009236C942 /* Sources */,
+				23DA5B0ACAF6E446F3A5CD5C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = StockPetEnglish;
+			packageProductDependencies = (
+			);
+			productName = StockPetEnglish;
+			productReference = A39308016EF242661287B096 /* StockPetEnglish.app */;
+			productType = "com.apple.product-type.application";
+		};
+		59448BF4D585F08E4351D27A /* StockPet */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C532DB3065313307907EF1AA /* Build configuration list for PBXNativeTarget "StockPet" */;
+			buildPhases = (
+				C87D27F2312B85731B24CC5B /* Sources */,
+				B3B8B5DCFD6F66FBF4C40A0D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = StockPet;
+			packageProductDependencies = (
+			);
+			productName = StockPet;
+			productReference = D473D6C8AC3210FC0A30A8F7 /* StockPet.app */;
+			productType = "com.apple.product-type.application";
+		};
+		B6E354189E76AF8A94DBBBC2 /* StockPetTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C68E02FC50AC6ABAB3FD64AC /* Build configuration list for PBXNativeTarget "StockPetTests" */;
+			buildPhases = (
+				515DB52E417C0DD3B63745B1 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A43F744664483DCABA7179D8 /* PBXTargetDependency */,
+			);
+			name = StockPetTests;
+			packageProductDependencies = (
+			);
+			productName = StockPetTests;
+			productReference = CC38FE3FE92F5301E5A91463 /* StockPetTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		BEA00CB49D697D4501739177 /* StockPetEnglishTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 153D7D7FDA302C9131EFC46E /* Build configuration list for PBXNativeTarget "StockPetEnglishTests" */;
+			buildPhases = (
+				42CFAE045FF663BE1EB56DFC /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				96E52BF02CD8F786D09A954E /* PBXTargetDependency */,
+			);
+			name = StockPetEnglishTests;
+			packageProductDependencies = (
+			);
+			productName = StockPetEnglishTests;
+			productReference = B3238DF1A9C23C6887C696A0 /* StockPetEnglishTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		1FBC4EFD17FBC082D81CF501 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					0A6D5733F0E479A016FB2AA7 = {
+						ProvisioningStyle = Automatic;
+					};
+					59448BF4D585F08E4351D27A = {
+						ProvisioningStyle = Automatic;
+					};
+					B6E354189E76AF8A94DBBBC2 = {
+						ProvisioningStyle = Automatic;
+					};
+					BEA00CB49D697D4501739177 = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 2CFDD26B10164C3B0193D014 /* Build configuration list for PBXProject "StockPet" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+				"zh-Hans",
+			);
+			mainGroup = F1A3122C5516AB4FE1CA0508;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 48C36B3E65DDC3328479E368 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				59448BF4D585F08E4351D27A /* StockPet */,
+				0A6D5733F0E479A016FB2AA7 /* StockPetEnglish */,
+				BEA00CB49D697D4501739177 /* StockPetEnglishTests */,
+				B6E354189E76AF8A94DBBBC2 /* StockPetTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		23DA5B0ACAF6E446F3A5CD5C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F0ECA41CDC31791D37631252 /* Assets.xcassets in Resources */,
+				F44B67D44A3E96AF012F5E1B /* InfoPlist.strings in Resources */,
+				4A15E6A4D3A5C254B4B67353 /* Localizable.strings in Resources */,
+				EFFC30878F27CBDFE5A51DC5 /* README.md in Resources */,
+				D9CBDB7FC741A7CFBA5BA294 /* bear-growl.wav in Resources */,
+				90F70AD1CBEA5A8C6B1A0B83 /* bull-moo.wav in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B3B8B5DCFD6F66FBF4C40A0D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				ABC2DC299365DB3DDADF33D0 /* Assets.xcassets in Resources */,
+				3954B87067713B0CAE8640EE /* InfoPlist.strings in Resources */,
+				AB330945E3B7638EDC4866D5 /* Localizable.strings in Resources */,
+				C0F466A0FCD7468B31139CAB /* README.md in Resources */,
+				C46998FC2DD00ABE3BEA9F35 /* bear-growl.wav in Resources */,
+				AA075524EDFEB9532289BA44 /* bull-moo.wav in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		152DB5F4B571AD009236C942 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E152E426999849CA6416B872 /* FloatingPetView.swift in Sources */,
+				7C3DEC5BFB97815AC726E993 /* GlobalHotKeyController.swift in Sources */,
+				5DBFCEEFFD179D383DC37651 /* L10n.swift in Sources */,
+				00FD2CA971C6E03C4B84FEEE /* MascotAlertView.swift in Sources */,
+				C93599647FBF8280FE73FB0D /* QuoteService.swift in Sources */,
+				3DC7FA530F64A3AD8F03557D /* SettingsView.swift in Sources */,
+				4D4C873F88FCD0599FE5611F /* StockModels.swift in Sources */,
+				4844480E66A5446EB787B1A7 /* StockPetApp.swift in Sources */,
+				5FD19486972770068941BD75 /* StockRowView.swift in Sources */,
+				A6C47587183ED8A363137CF9 /* StockStore.swift in Sources */,
+				9C0E2CB185B7DA8A42D61E11 /* WindowConfigurator.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		42CFAE045FF663BE1EB56DFC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6D56185FC85B4AE0C3BF767B /* StockPetEnglishTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		515DB52E417C0DD3B63745B1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				823A84688E637D9EB75F73FD /* StockPetTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C87D27F2312B85731B24CC5B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				652C7193EE90D4D4DBAA840D /* FloatingPetView.swift in Sources */,
+				2FB8C424A27402978773D729 /* GlobalHotKeyController.swift in Sources */,
+				EEE3A6002562F31675FBE5AD /* L10n.swift in Sources */,
+				0F5BD1129F006C6C6AEEF66B /* MascotAlertView.swift in Sources */,
+				D982A70987A81016114C6540 /* QuoteService.swift in Sources */,
+				7F733F6EE5DD2DF7DE6EC1E5 /* SettingsView.swift in Sources */,
+				1FBF3F771EBFD225188C490B /* StockModels.swift in Sources */,
+				09929F2A48E5811F1CE58DE5 /* StockPetApp.swift in Sources */,
+				8CE722319ED89A59D7B785B4 /* StockRowView.swift in Sources */,
+				0B631D1A21FB811752B03BB1 /* StockStore.swift in Sources */,
+				8A550FA39E6E074F0465E0A3 /* WindowConfigurator.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		96E52BF02CD8F786D09A954E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0A6D5733F0E479A016FB2AA7 /* StockPetEnglish */;
+			targetProxy = FC0599369FDCD405F8DB510E /* PBXContainerItemProxy */;
+		};
+		A43F744664483DCABA7179D8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 59448BF4D585F08E4351D27A /* StockPet */;
+			targetProxy = 2177C262A4F264D78262A289 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		EF7F9D7A30951FB08BC27AE4 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				3426BA86AFE0EF583C2A338D /* en */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+		FFE5FD659E6FA8C6B19F48BA /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				AA607DE1266D2BA55678B127 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		4B64445ECE078486B1AD694B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.bingge.StockPetTests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/StockPet.app/Contents/MacOS/StockPet";
+			};
+			name = Release;
+		};
+		50501A4F193C3C27B153DC43 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.bingge.StockPetEnglishTests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/StockPetEnglish.app/Contents/MacOS/StockPetEnglish";
+			};
+			name = Release;
+		};
+		62B3D40AAEAEF738045ECF5C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDevelopmentRegion = zh_CN;
+				INFOPLIST_KEY_CFBundleDisplayName = "盘宠 StockPet";
+				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSHighResolutionCapable = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "仅供个人辅助查看，不构成投资建议";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.bingge.StockPet;
+				PRODUCT_NAME = StockPet;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		74FBEE23A6AA9ADE26BB0FC3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDevelopmentRegion = en;
+				INFOPLIST_KEY_CFBundleDisplayName = "Stock Pet";
+				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSHighResolutionCapable = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "For personal reference only. Not investment advice.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.bingge.StockPetEnglish;
+				PRODUCT_NAME = StockPetEnglish;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ENGLISH_BUILD";
+			};
+			name = Release;
+		};
+		76045BE434CE7737D6221120 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.bingge.StockPetTests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/StockPet.app/Contents/MacOS/StockPet";
+			};
+			name = Debug;
+		};
+		877A8B5CBB6A55B95BCB14EA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.bingge.StockPetEnglishTests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/StockPetEnglish.app/Contents/MacOS/StockPetEnglish";
+			};
+			name = Debug;
+		};
+		8CEC80231B05C17F5BD97F81 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDevelopmentRegion = zh_CN;
+				INFOPLIST_KEY_CFBundleDisplayName = "盘宠 StockPet";
+				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSHighResolutionCapable = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "仅供个人辅助查看，不构成投资建议";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.bingge.StockPet;
+				PRODUCT_NAME = StockPet;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		BA1FD30E26024BF2CF1D5788 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 4;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 0.3.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		E0C23FE32EFF2AB7B3834E2A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 4;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 0.3.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		FBFD7F6D15AB10755CE3ADF2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDevelopmentRegion = en;
+				INFOPLIST_KEY_CFBundleDisplayName = "Stock Pet";
+				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSHighResolutionCapable = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "For personal reference only. Not investment advice.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.bingge.StockPetEnglish;
+				PRODUCT_NAME = StockPetEnglish;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ENGLISH_BUILD";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		153D7D7FDA302C9131EFC46E /* Build configuration list for PBXNativeTarget "StockPetEnglishTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				877A8B5CBB6A55B95BCB14EA /* Debug */,
+				50501A4F193C3C27B153DC43 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		2CFDD26B10164C3B0193D014 /* Build configuration list for PBXProject "StockPet" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E0C23FE32EFF2AB7B3834E2A /* Debug */,
+				BA1FD30E26024BF2CF1D5788 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		3171B49815E40E567DCE13A7 /* Build configuration list for PBXNativeTarget "StockPetEnglish" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FBFD7F6D15AB10755CE3ADF2 /* Debug */,
+				74FBEE23A6AA9ADE26BB0FC3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		C532DB3065313307907EF1AA /* Build configuration list for PBXNativeTarget "StockPet" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8CEC80231B05C17F5BD97F81 /* Debug */,
+				62B3D40AAEAEF738045ECF5C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		C68E02FC50AC6ABAB3FD64AC /* Build configuration list for PBXNativeTarget "StockPetTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				76045BE434CE7737D6221120 /* Debug */,
+				4B64445ECE078486B1AD694B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 1FBC4EFD17FBC082D81CF501 /* Project object */;
+}

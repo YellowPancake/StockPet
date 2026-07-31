@@ -1,0 +1,28 @@
+# macOS and editors
+.DS_Store
+**/.DS_Store
+*.xcuserstate
+xcuserdata/
+
+# Build products and caches
+.build/
+.cache/
+DerivedData/
+build/
+dist/
+tmp/
+*.xcresult
+
+# Local previews and internal working notes
+sound-previews/
+coder_report.md
+devil_review.md
+final_summary.md
+pm_analysis.md
+reporter_weekly.md
+
+# Logs and local environment
+*.log
+.env
+.env.*
+!.env.example

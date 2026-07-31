@@ -1,0 +1,17 @@
+Stock Pet for Windows x64
+
+1. Extract the complete ZIP archive.
+2. Open the extracted StockPet-Windows-x64-English folder.
+3. Double-click StockPet.exe.
+4. Double-click the desktop stock board to open Settings.
+5. If mouse passthrough is enabled, use the Stock Pet icon in the Windows
+   system tray to turn it off.
+
+Windows SmartScreen may warn that the publisher is unknown the first time the
+app is opened. Select "More info" and only choose "Run anyway" after confirming
+that the file came from a source you trust.
+
+Do not move StockPet.exe out of its folder by itself. It requires the DLL,
+resources, and locales files next to it.
+
+Requirements: Windows 10/11 64-bit, Intel or AMD x64 processor.

@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Stock Pet Settings</title>
+    <link rel="stylesheet" href="settings.css" />
+  </head>
+  <body>
+    <aside class="sidebar">
+      <div class="brand">
+        <img src="assets/app-icon.png" alt="" />
+        <div>
+          <strong>Stock Pet</strong>
+          <span>Your desktop market companion</span>
+        </div>
+      </div>
+      <nav>
+        <button class="nav-item active" data-page="stocks"><span>☷</span>Watchlist</button>
+        <button class="nav-item" data-page="appearance"><span>✦</span>Appearance</button>
+        <button class="nav-item" data-page="alerts"><span>♧</span>Bull &amp; Bear Alerts</button>
+        <button class="nav-item" data-page="data"><span>◎</span>Data &amp; Refresh</button>
+      </nav>
+      <div class="version">Windows x64 · 0.3.0</div>
+    </aside>
+
+    <main class="content">
+      <section class="page active" id="page-stocks">
+        <header>
+          <h1>Watchlist</h1>
+          <p>A-share, Hong Kong, and US markets with no stock limit</p>
+        </header>
+        <div class="search-card card">
+          <form id="search-form">
+            <input id="search-input" autocomplete="off" placeholder="Enter a company name or ticker, e.g. 600519, 00700, AAPL" />
+            <button class="primary" type="submit">Search</button>
+          </form>
+          <div id="search-message" class="message"></div>
+          <div id="search-results"></div>
+        </div>
+        <div class="section-title">
+          <h2>On your desktop</h2>
+          <span id="stock-count">0 stocks</span>
+        </div>
+        <div id="current-stocks" class="stock-list card"></div>
+      </section>
+
+      <section class="page" id="page-appearance">
+        <header>
+          <h1>Appearance &amp; Interaction</h1>
+          <p>Adjust size, opacity, and desktop behavior</p>
+        </header>
+        <div class="card settings-card">
+          <label class="setting-row">
+            <span><strong>Overall size</strong><small>Scale stocks, charts, and background together</small></span>
+            <span class="range-control"><input id="displayScale" type="range" min="0.65" max="1.6" step="0.05" /><output></output></span>
+          </label>
+          <label class="setting-row">
+            <span><strong>Chart opacity</strong></span>
+            <span class="range-control"><input id="lineOpacity" type="range" min="0.1" max="1" step="0.05" /><output></output></span>
+          </label>
+          <label class="setting-row">
+            <span><strong>Text &amp; number opacity</strong><small>Name, ticker, market, price, and change</small></span>
+            <span class="range-control"><input id="labelOpacity" type="range" min="0.1" max="1" step="0.05" /><output></output></span>
+          </label>
+          <label class="setting-row">
+            <span><strong>Background opacity</strong></span>
+            <span class="range-control"><input id="backgroundOpacity" type="range" min="0.03" max="0.95" step="0.04" /><output></output></span>
+          </label>
+          <label class="setting-row">
+            <span><strong>Always on top</strong><small>Keep Stock Pet above other windows</small></span>
+            <input id="alwaysOnTop" class="switch" type="checkbox" />
+          </label>
+          <label class="setting-row">
+            <span><strong>Lock and ignore mouse events</strong><small>Use the system tray to turn passthrough off</small></span>
+            <input id="clickThrough" class="switch" type="checkbox" />
+          </label>
+          <label class="setting-row">
+            <span><strong>Show/hide global shortcut</strong><small>Works while you are using other apps</small></span>
+            <input id="shortcutEnabled" class="switch" type="checkbox" />
+          </label>
+          <div class="setting-row shortcut-row" id="shortcut-options">
+            <span><strong>Shortcut</strong></span>
+            <span class="shortcut-control">
+              <select id="shortcutModifier">
+                <option value="Ctrl+Alt">Ctrl + Alt</option>
+                <option value="Ctrl+Shift">Ctrl + Shift</option>
+                <option value="Alt+Shift">Alt + Shift</option>
+                <option value="Ctrl+Alt+Shift">Ctrl + Alt + Shift</option>
+              </select>
+              <b>+</b>
+              <select id="shortcutKey">
+                <option value="S">S</option>
+                <option value="P">P</option>
+                <option value="H">H</option>
+                <option value="K">K</option>
+                <option value="D">D</option>
+                <option value="F">F</option>
+                <option value="Space">Space</option>
+              </select>
+            </span>
+          </div>
+        </div>
+        <button id="reset-appearance" class="secondary">Restore default appearance</button>
+      </section>
+
+      <section class="page" id="page-alerts">
+        <header>
+          <h1>Bull &amp; Bear Alerts</h1>
+          <p id="alert-basis-description">Changes are measured from the previous close; each crossing alerts once</p>
+        </header>
+        <div class="card settings-card">
+          <label class="setting-row">
+            <span><strong>Enable bull &amp; bear alerts</strong><small>Turn off all mascot popups and alert sounds</small></span>
+            <input id="alertsEnabled" class="switch" type="checkbox" />
+          </label>
+          <label class="setting-row">
+            <span><strong>Alert basis</strong></span>
+            <select id="alertBasis">
+              <option value="percentage">Change from previous close</option>
+              <option value="targetPrice">Target price</option>
+            </select>
+          </label>
+          <div id="percentage-alert-controls">
+            <label class="setting-row">
+              <span class="alert-label"><b>🐂</b><strong>Rise above</strong></span>
+              <span class="number-control"><input id="risingThreshold" type="number" min="0.1" max="30" step="0.1" /><i>%</i></span>
+            </label>
+            <label class="setting-row">
+              <span class="alert-label"><b>🐻</b><strong>Fall below</strong></span>
+              <span class="number-control"><input id="fallingThreshold" type="number" min="0.1" max="30" step="0.1" /><i>%</i></span>
+            </label>
+          </div>
+          <div id="price-alert-controls" hidden>
+            <div class="price-alert-toolbar">
+              <div>
+                <strong>Live prices and per-stock targets</strong>
+                <small>Refresh prices, then generate targets or adjust them manually</small>
+              </div>
+              <div class="button-row">
+                <button id="refresh-alert-prices" class="secondary" type="button">Refresh live prices</button>
+                <button id="generate-price-targets" class="secondary" type="button">Generate from live price</button>
+              </div>
+            </div>
+            <p id="price-alert-message" class="inline-message"></p>
+            <div id="price-alert-list"></div>
+          </div>
+          <label class="setting-row">
+            <span><strong>Alert opacity</strong></span>
+            <span class="range-control"><input id="alertOpacity" type="range" min="0.2" max="1" step="0.05" /><output></output></span>
+          </label>
+          <label class="setting-row">
+            <span><strong>Bull sound (short moo)</strong></span>
+            <input id="bullSoundEnabled" class="switch" type="checkbox" />
+          </label>
+          <label class="setting-row">
+            <span><strong>Bear sound (short growl)</strong></span>
+            <input id="bearSoundEnabled" class="switch" type="checkbox" />
+          </label>
+        </div>
+        <p id="alert-rearm-tip" class="tip">Alerts re-arm after the change returns at least 0.15 percentage points inside the threshold, preventing repeated alerts near the boundary.</p>
+        <div class="button-row">
+          <button id="preview-bull" class="secondary">Preview bull and moo</button>
+          <button id="preview-bear" class="secondary">Preview bear and growl</button>
+        </div>
+      </section>
+
+      <section class="page" id="page-data">
+        <header>
+          <h1>Data &amp; Refresh</h1>
+        </header>
+        <div class="card settings-card">
+          <label class="setting-row">
+            <span><strong>Refresh interval</strong></span>
+            <select id="refreshInterval">
+              <option value="5">5 seconds</option>
+              <option value="10">10 seconds</option>
+              <option value="15">15 seconds</option>
+              <option value="30">30 seconds</option>
+              <option value="60">60 seconds</option>
+            </select>
+          </label>
+          <div class="setting-row">
+            <span><strong>Current data source</strong></span>
+            <span id="data-source">Tencent intraday · Eastmoney fallback</span>
+          </div>
+          <div class="setting-row">
+            <span><strong>Last refreshed</strong></span>
+            <span id="last-refresh">Not refreshed yet</span>
+          </div>
+        </div>
+        <div id="source-error" class="error-card" hidden></div>
+        <button id="refresh-now" class="secondary">Refresh all stocks now</button>
+        <div class="usage">
+          <h3>Usage notes</h3>
+          <ul>
+            <li>This app is for personal reference only and does not constitute investment advice.</li>
+            <li>Public market data may be delayed, rate-limited, or changed and should not be used for order decisions.</li>
+            <li>Failed requests never generate fake charts. The last successful data is retained and marked stale.</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+
+    <script src="settings.js"></script>
+  </body>
+</html>
