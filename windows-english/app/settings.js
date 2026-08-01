@@ -261,6 +261,7 @@ $("#reset-appearance").addEventListener("click", () => updateState({
 
 $("#preview-bull").addEventListener("click", () => window.stockPet.previewAlert("rising"));
 $("#preview-bear").addEventListener("click", () => window.stockPet.previewAlert("falling"));
+$("#github-author").addEventListener("click", () => window.stockPet.openAuthor());
 
 $("#price-alert-list").addEventListener("change", async (event) => {
   const item = event.target.closest("[data-price-alert-id]");

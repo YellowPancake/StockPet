@@ -20,6 +20,7 @@ contextBridge.exposeInMainWorld("stockPet", {
   refresh: () => ipcRenderer.invoke("quotes:refresh"),
   previewAlert: (direction) => ipcRenderer.invoke("alert:preview", direction),
   openSettings: () => ipcRenderer.invoke("settings:open"),
+  openAuthor: () => ipcRenderer.invoke("external:open-author"),
   showOverlay: () => ipcRenderer.invoke("overlay:show"),
   moveWindow: (deltaX, deltaY) => ipcRenderer.send("overlay:move", { deltaX, deltaY }),
   on: (channel, callback) => {

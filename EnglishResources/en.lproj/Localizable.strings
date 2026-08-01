@@ -67,6 +67,7 @@
 "尚未连接" = "Not connected yet";
 "立即刷新全部股票" = "Refresh all stocks now";
 "使用说明" = "Usage notes";
+"GitHub 作者" = "GitHub Author";
 "• 本应用仅用于个人辅助查看，不构成投资建议。" = "• This app is for personal reference only and does not constitute investment advice.";
 "• 公开网页行情可能延迟、限流或调整，不应用于下单决策。" = "• Public market data may be delayed, rate-limited, or changed and should not be used for order decisions.";
 "• 港股、美股实时权限受交易所授权约束；若需要交易级数据，可后续接入富途 OpenD 或券商行情。" = "• Real-time HK and US data is subject to exchange licensing. Connect a broker-grade source if trading-level data is required.";

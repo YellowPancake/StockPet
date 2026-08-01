@@ -8,6 +8,7 @@ const {
   Menu,
   nativeImage,
   screen,
+  shell,
   Tray,
 } = require("electron");
 const fs = require("node:fs");
@@ -369,6 +370,10 @@ function registerIPC() {
   });
   ipcMain.handle("settings:open", () => {
     openSettings();
+    return { ok: true };
+  });
+  ipcMain.handle("external:open-author", async () => {
+    await shell.openExternal("https://github.com/YellowPancake");
     return { ok: true };
   });
   ipcMain.handle("overlay:show", () => {

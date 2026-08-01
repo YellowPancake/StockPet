@@ -1,176 +1,156 @@
 <p align="center">
-  <strong>简体中文</strong> · <a href="README_EN.md">English</a>
+  <strong>English</strong> · <a href="README_ZH.md">简体中文</a>
 </p>
 
 <p align="center">
-  <img src="docs/assets/app-icon.png" width="112" alt="盘宠 StockPet 图标">
+  <img src="docs/assets/app-icon.png" width="112" alt="Stock Pet icon">
 </p>
 
-<h1 align="center">盘宠 StockPet</h1>
+<h1 align="center">Stock Pet</h1>
 
 <p align="center">
-  <strong>工作时也能及时关注股价变化，你的股票盯盘桌宠</strong>
+  <strong>Stay on top of stock price movements while you work—your stock-watching desktop pet</strong>
 </p>
 
 <p align="center">
   <img alt="macOS 14+" src="https://img.shields.io/badge/macOS-14%2B-111111?logo=apple">
   <img alt="Windows 10/11" src="https://img.shields.io/badge/Windows-10%20%2F%2011-0078D4?logo=windows">
-  <img alt="A股 港股 美股" src="https://img.shields.io/badge/市场-A股%20%7C%20港股%20%7C%20美股-EA4C61">
+  <img alt="A-share HK US" src="https://img.shields.io/badge/Markets-A--share%20%7C%20HK%20%7C%20US-EA4C61">
   <img alt="Version 0.3.0" src="https://img.shields.io/badge/version-0.3.0-5B67F1">
   <img alt="MIT License" src="https://img.shields.io/badge/license-MIT-4C9A2A">
 </p>
 
 <p align="center">
-  <img src="docs/assets/hero-bull-alert.gif" width="760" alt="盘宠牛牛涨幅提醒演示">
+  <img src="docs/assets/hero-bull-alert-en.gif" width="760" alt="Stock Pet bull alert demo">
 </p>
 
-## 目录
+## Contents
 
-- [背景介绍](#背景介绍)
-- [快速开始](#快速开始)
-- [功能详解](#功能详解)
-- [数据与风险说明](#数据与风险说明)
-- [打赏作者](#打赏作者)
+- [Background](#background)
+- [Quick Start](#quick-start)
+- [Feature Details](#feature-details)
+- [Data and Risk Notes](#data-and-risk-notes)
 
-## 背景介绍
+## Background
 
-在电脑前工作时，很难一直开着完整的行情软件：窗口占地方，频繁切换会打断工作节奏，还容易被同事/老板看到……
+Keeping a full market app open while working takes up screen space, frequent switching interrupts your flow, and coworkers or managers may easily notice it.
 
-盘宠把股票名称、当日分时线、最新价和涨跌幅留在桌面上，支持 A 股、港股和美股。平时它安静展示行情，触及设定条件时再由小牛或小熊提醒；同时提供缩放、不透明度、鼠标穿透和快捷隐藏等设置，让看盘不打扰工作（摸鱼不被发现）。
+Stock Pet keeps company names, today's intraday charts, latest prices, and percentage changes on the desktop, with support for A-shares, Hong Kong stocks, and US stocks. It stays quiet during normal work and brings out a little bull or bear when an alert condition is met. Scaling, opacity, mouse passthrough, and quick hiding keep market watching from interrupting your work—and make casual checks less noticeable.
 
-## 快速开始
+## Quick Start
 
-前往 [GitHub Releases](https://github.com/YellowPancake/StockPet/releases/latest)，根据电脑系统下载中文安装包：
+Visit [GitHub Releases](https://github.com/YellowPancake/StockPet/releases/latest) and download the English package for your system:
 
-| 系统 | 中文安装包 |
+| System | English package |
 | --- | --- |
-| macOS 14 或更高版本 | `StockPet-macOS-Chinese.zip`，支持 Apple 芯片与 Intel 芯片 |
-| Windows 10/11 64 位 | `StockPet-Windows-x64-Chinese.zip` |
+| macOS 14 or later | `StockPet-macOS-English.zip`, for Apple Silicon and Intel Macs |
+| 64-bit Windows 10/11 | `StockPet-Windows-x64-English.zip` |
 
 ### macOS
 
-1. 解压 ZIP，将盘宠拖入“应用程序”文件夹。
-2. 首次启动若提示无法验证开发者，请前往“系统设置 → 隐私与安全性”确认打开。
-3. 双击桌面行情区域打开设置，搜索名称或代码添加股票。
+1. Unzip the package and move Stock Pet into Applications.
+2. If macOS cannot verify the developer on first launch, confirm it under System Settings → Privacy & Security.
+3. Double-click the desktop market panel to open Settings, then search by company name or ticker to add stocks.
 
 ### Windows
 
-1. 完整解压 ZIP，进入解压后的文件夹并双击 `StockPet.exe`。
-2. 请保留 `StockPet.exe` 与同目录的 `resources`、`locales` 和 DLL 文件。
-3. 双击桌面行情区域打开设置，搜索名称或代码添加股票。
+1. Extract the complete archive, open the extracted folder, and run `StockPet.exe`.
+2. Keep `StockPet.exe` together with the adjacent `resources`, `locales`, and DLL files.
+3. Double-click the desktop market panel to open Settings, then search by company name or ticker to add stocks.
 
-> 当前发布包未使用商业代码签名证书，因此系统首次打开时可能显示来源提醒。
+> These builds are not signed with a commercial code-signing certificate, so the operating system may show a source warning on first launch.
 
-### 三步开始
+### Get Started in Three Steps
 
-1. **添加股票**：双击桌宠进入设置，搜索名称或代码，例如 `贵州茅台`、`00700`、`AAPL`。
-2. **调成喜欢的样子**：设置大小、曲线不透明度、名称与数字不透明度、背景板不透明度。
-3. **交给牛熊值班**：设置上涨和下跌阈值，再选一组顺手的显示 / 隐藏快捷键。
+1. **Add stocks:** double-click Stock Pet to open Settings, then search by company name or ticker, such as `Kweichow Moutai`, `00700`, or `AAPL`.
+2. **Make it yours:** adjust the overall size, chart opacity, text and number opacity, and background opacity.
+3. **Put the bull and bear on duty:** set rise and fall thresholds, then choose a convenient show/hide shortcut.
 
-默认快捷键：
+Default shortcut:
 
-| 平台 | 显示 / 隐藏桌宠 |
+| Platform | Show / hide Stock Pet |
 | --- | --- |
 | macOS | `⌘ + ⌥ + S` |
 | Windows | `Ctrl + Alt + S` |
 
-## 功能详解
+## Feature Details
 
-### 桌面状态：平时，它安安静静
-
-<p align="center">
-  <img src="docs/assets/screenshot-stock-list.webp" width="760" alt="盘宠在真实桌面背景上显示自选股行情">
-</p>
-
-- 同时查看 A 股、港股和美股，自选股数量不设上限。
-- 每只股票展示真实的当日分时曲线，左侧为名称，右侧为最新价与涨跌幅。
-- A 股、港股红涨绿跌；美股绿涨红跌。
-- 股票名称、代码、市场、价格、涨跌幅与曲线保持同一涨跌色。
-- 股票较多时可直接在桌宠内上下滚动。
-
-### 牛熊阈值提醒：需要时，牛牛和小熊会来
+### Desktop View: Quiet While You Work
 
 <p align="center">
-  <img src="docs/assets/screenshot-alerts.webp" width="752" alt="盘宠牛熊提醒设置">
+  <img src="docs/assets/screenshot-stock-list-en.webp" width="760" alt="Stock Pet English watchlist on a real desktop background">
 </p>
 
-- 支持按“最新价相对昨收的涨跌幅”提醒，也支持为每只股票设置“小牛目标价 / 小熊目标价”。
-- 目标价模式会实时显示自选股最新价，可按现价一键生成上下目标，也可以逐只修改。
-- 越过上涨阈值或小牛目标价时，小牛会冒出来；跌破下跌阈值或小熊目标价时，小熊会出现。
-- 牛叫与熊叫可以分别开启或关闭，整个牛熊提醒也可以一键关闭。
-- 提醒卡片可独立调节不透明度。
-- 每次越界只提醒一次；价格回到阈值内侧后才会重新布防，避免在边缘反复提醒。
+- Watch A-shares, Hong Kong stocks, and US stocks together, with no watchlist limit.
+- Every stock has a real intraday chart, with the name on the left and the latest price and percentage change on the right.
+- A-shares and Hong Kong stocks use red for gains and green for losses; US stocks use the opposite convention.
+- Names, tickers, markets, prices, percentage changes, and charts share the same movement color.
+- Long watchlists scroll inside the pet instead of making the window grow indefinitely.
+
+### Bull & Bear Threshold Alerts: They Arrive When Needed
 
 <p align="center">
-  <img src="docs/assets/screenshot-target-price-zh.webp" width="752" alt="盘宠逐股目标价格提醒设置">
+  <img src="docs/assets/screenshot-alerts-en.webp" width="752" alt="Stock Pet English bull and bear alert settings">
 </p>
 
-例如上涨阈值设为 `+3.0%`：首次达到 `+3.0%` 时提醒；回落到 `+2.85%` 以下后重新布防；再次达到 `+3.0%` 时才会再次提醒。
-
-### 摸鱼隐私设置：融进桌面，也能随时收起来
+- Choose alerts based on the latest price versus the previous close, or set individual bull and bear target prices for each stock.
+- Target-price mode shows the latest quote for every watchlist stock. Generate upper and lower targets from the current price, then fine-tune them manually.
+- A little bull appears when the price crosses the rise threshold or bull target; a little bear appears when it crosses the fall threshold or bear target.
+- Bull and bear sounds have separate switches, and all alerts can be disabled with one master switch.
+- Alert opacity is adjustable independently.
+- Each crossing alerts once. The price must return inside the threshold before the alert re-arms, preventing repeated alerts around the boundary.
 
 <p align="center">
-  <img src="docs/assets/screenshot-appearance.webp" width="752" alt="盘宠外观、交互与快捷键设置">
+  <img src="docs/assets/screenshot-target-price-en.webp" width="752" alt="Stock Pet English per-stock target price settings">
+</p>
+
+For example, with a `+3.0%` rise threshold: the first touch at `+3.0%` alerts; a pullback below `+2.85%` re-arms it; only a new move to `+3.0%` alerts again.
+
+### Low-Profile Privacy Controls: Blend In or Hide Instantly
+
+<p align="center">
+  <img src="docs/assets/screenshot-appearance-en.webp" width="752" alt="Stock Pet English appearance and shortcut settings">
 </p>
 
 <p align="center">
-  <img src="docs/assets/opacity-demo-zh.gif" width="760" alt="盘宠背景板先变透明，文字与曲线再同步变透明">
+  <img src="docs/assets/opacity-demo-en.gif" width="760" alt="Stock Pet background fades first, followed by charts and text together">
 </p>
 
-- **整体缩放**：从 `65%` 到 `160%`，股票、曲线和背景板一起变化。
-- **三组不透明度**：曲线、名称与数字、背景板分别调节。
-- **拖拽摆放**：放在桌面上任何顺眼的位置。
-- **双击设置**：双击行情板或曲线即可打开设置。
-- **快捷显示 / 隐藏**：全局快捷键可以开启、关闭和重新组合。
-- **锁定并穿透鼠标**：不挡住下方窗口的点击和滚动。
-- **始终置顶**：切换工作窗口时，行情仍留在视线边缘。
+- **Overall scale:** resize the watchlist, charts, and panel together from `65%` to `160%`.
+- **Three opacity controls:** tune charts, text and numbers, and the background independently.
+- **Drag anywhere:** keep it wherever it feels least distracting.
+- **Double-click Settings:** double-click the panel or a chart to open Settings.
+- **Global show/hide shortcut:** enable it, disable it, or choose a different key combination.
+- **Mouse passthrough:** lock the pet so it never blocks clicks or scrolling below it.
+- **Always on top:** keep the market at the edge of your view while switching apps.
 
-**同事或老板从身边经过时，不会一眼看到一个醒目的看盘窗口，少一点被撞见摸鱼的尴尬。**
+**A coworker or manager glancing at your screen is far less likely to see a conspicuous trading window, making casual market checks much less awkward.**
 
-### 功能一览
+### Feature Overview
 
-| 能力 | 说明 |
+| Feature | What it does |
 | --- | --- |
-| 多市场行情 | 搜索并添加 A 股、港股、美股 |
-| 不限自选股数量 | 可添加、删除、排序，长列表支持滚动 |
-| 当日分时曲线 | 展示真实分钟数据，不生成虚构曲线 |
-| 市场配色 | A 股 / 港股红涨绿跌，美股绿涨红跌 |
-| 外观控制 | 整体缩放，曲线、文字数字与背景板不透明度独立调节 |
-| 桌面交互 | 拖拽、双击设置、始终置顶、鼠标穿透 |
-| 快捷隐藏 | 自定义全局快捷键，一键显示或隐藏 |
-| 牛熊提醒 | 昨收涨跌幅或逐股目标价、实时价生成目标、总开关、不透明度和声音 |
-| 防重复提醒 | 回到阈值内侧后重新布防 |
-| 行情容错 | 腾讯分时为主、东方财富备用，失败时标记过期数据 |
-| 跨平台 | macOS Universal 与 Windows x64 |
+| Three markets | Search and add A-shares, Hong Kong stocks, and US stocks |
+| Unlimited watchlist | Add, remove, and reorder stocks; long lists scroll |
+| Real intraday charts | Displays minute data and never invents a chart |
+| Market-aware colors | A-shares / Hong Kong: red up and green down; US: green up and red down |
+| Appearance controls | Overall scale plus independent chart, text/number, and background opacity |
+| Desktop interaction | Drag, double-click Settings, always on top, and mouse passthrough |
+| Quick hiding | Customizable global shortcut to show or hide the pet |
+| Bull & bear alerts | Previous-close percentages or per-stock targets, live-price target generation, master switch, opacity, and sounds |
+| Anti-repeat logic | Re-arms after the price returns inside the threshold |
+| Data resilience | Tencent primary, Eastmoney fallback, and stale-data marking on failure |
+| Cross-platform | Universal macOS and Windows x64 |
 
-## 数据与风险说明
+## Data and Risk Notes
 
-- 股票搜索覆盖 A 股、港股和美股。
-- 腾讯分时行情为主数据源，东方财富作为故障备用。
-- 刷新频率可在设置中调整。
-- 接口失败时不会绘制随机或模拟曲线；有成功数据时会保留最后一次结果并标记为过期。
-- 港股、美股实时权限受交易所授权规则约束，公开行情可能存在延迟、限流或调整。
+- Search covers A-shares, Hong Kong stocks, and US stocks.
+- Tencent intraday quotes are the primary source; Eastmoney is the fallback.
+- Refresh frequency is configurable.
+- A failed request never creates a random or simulated chart. The last successful result may remain visible and is marked stale.
+- Real-time entitlements for Hong Kong and US markets are subject to exchange rules. Public quote endpoints may be delayed, rate-limited, or changed.
 
 > [!CAUTION]
-> 盘宠仅用于个人辅助查看行情，不构成投资建议，也不应作为下单依据。公开网页行情不保证交易级实时性、完整性或准确性。任何投资决策及其结果由使用者自行承担。
+> Stock Pet is a personal market-viewing aid, not investment advice and not a trading-data service. Public web quotes are not guaranteed to be real-time, complete, or accurate. You remain responsible for every investment decision and outcome.
 
-遇到问题可提交 [Issue](https://github.com/YellowPancake/StockPet/issues)，请勿上传账户、交易或其他敏感信息。本项目采用 [MIT License](LICENSE)。
-
-<a id="打赏作者"></a>
-
-## 给作者加个鸡腿🍗~
-
-如果觉得盘宠不错，欢迎给作者加个鸡腿🍗~
-
-<table>
-  <tr>
-    <td width="50%" align="center">
-      <strong>微信支付</strong><br><br>
-      <img src="docs/assets/donate-wechat.jpg" width="300" alt="微信支付打赏码">
-    </td>
-    <td width="50%" align="center">
-      <strong>支付宝</strong><br><br>
-      <img src="docs/assets/donate-alipay.jpg" width="300" alt="支付宝打赏码">
-    </td>
-  </tr>
-</table>
+To report a problem, open an [Issue](https://github.com/YellowPancake/StockPet/issues) without including account, trading, or other sensitive information. Stock Pet is released under the [MIT License](LICENSE).

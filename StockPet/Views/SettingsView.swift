@@ -528,6 +528,14 @@ struct SettingsView: View {
                 .padding(6)
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
+
+            SettingsCard {
+                HStack {
+                    Label("GitHub 作者", systemImage: "person.crop.circle")
+                    Spacer()
+                    Link("@YellowPancake", destination: URL(string: "https://github.com/YellowPancake")!)
+                }
+            }
         }
     }
 
