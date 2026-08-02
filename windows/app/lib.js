@@ -12,6 +12,31 @@ const INITIAL_SYMBOLS = Object.freeze([
   { code: "AAPL", name: "苹果", market: "unitedStates", quoteID: "105.AAPL" },
 ]);
 
+const OVERLAY_BASE_WIDTH = 860;
+const OVERLAY_ROW_HEIGHT = 82;
+const OVERLAY_VERTICAL_CHROME = 40;
+
+function overlayGeometry(symbolCount, displayScale, maximumHeight = Number.POSITIVE_INFINITY) {
+  const count = Number.isFinite(Number(symbolCount)) ? Number(symbolCount) : 0;
+  const scale = Math.min(1.6, Math.max(0.65, Number(displayScale) || 1));
+  const visibleRows = Math.max(1, Math.min(Math.floor(count), 8));
+  const baseHeight = Math.max(122, visibleRows * OVERLAY_ROW_HEIGHT + OVERLAY_VERTICAL_CHROME);
+  return {
+    baseWidth: OVERLAY_BASE_WIDTH,
+    baseHeight,
+    width: Math.round(OVERLAY_BASE_WIDTH * scale),
+    height: Math.min(Math.round(baseHeight * scale), Math.max(1, Math.floor(maximumHeight))),
+    scale,
+  };
+}
+
+function overlayDragPosition(windowStart, pointerStart, pointerCurrent) {
+  return {
+    x: Math.round(windowStart.x + pointerCurrent.x - pointerStart.x),
+    y: Math.round(windowStart.y + pointerCurrent.y - pointerStart.y),
+  };
+}
+
 function colorFor(market, changePercent) {
   const palette = MARKETS[market] || MARKETS.aShare;
   return changePercent >= 0 ? palette.rising : palette.falling;
@@ -176,6 +201,8 @@ module.exports = {
   evaluateThreshold,
   hasDrawableIntradayData,
   marketForSearchItem,
+  overlayDragPosition,
+  overlayGeometry,
   parseTencentMinute,
   parseTrend,
   sanitizeState,

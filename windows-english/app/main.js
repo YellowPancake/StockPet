@@ -13,7 +13,13 @@ const {
 } = require("electron");
 const fs = require("node:fs");
 const path = require("node:path");
-const { evaluatePriceThreshold, evaluateThreshold, sanitizeState } = require("./lib");
+const {
+  evaluatePriceThreshold,
+  evaluateThreshold,
+  overlayDragPosition,
+  overlayGeometry,
+  sanitizeState,
+} = require("./lib");
 const { fetchIntraday, searchStocks } = require("./quote-service");
 
 // Keep the English edition's defaults and preferences independent from the
@@ -31,6 +37,7 @@ let thresholdStates = {};
 let lastRefresh = null;
 let sourceError = null;
 let quitting = false;
+let overlayDragStart = null;
 
 const statePath = () => path.join(app.getPath("userData"), "settings.json");
 const quoteCachePath = () => path.join(app.getPath("userData"), "quote-cache.json");
@@ -85,18 +92,11 @@ function send(channel, payload) {
 
 function updateOverlayGeometry() {
   if (!overlayWindow || overlayWindow.isDestroyed()) return;
-  const scale = state.displayScale;
-  const baseWidth = 940;
-  const visibleRows = Math.max(1, Math.min(state.symbols.length, 8));
-  const baseHeight = Math.max(112, visibleRows * 82 + 26);
   const display = screen.getDisplayMatching(overlayWindow.getBounds());
   const maximumHeight = Math.floor(display.workAreaSize.height * 0.84);
-  overlayWindow.webContents.setZoomFactor(scale);
-  overlayWindow.setSize(
-    Math.round(baseWidth * scale),
-    Math.min(Math.round(baseHeight * scale), maximumHeight),
-    true,
-  );
+  const geometry = overlayGeometry(state.symbols.length, state.displayScale, maximumHeight);
+  overlayWindow.webContents.setZoomFactor(1);
+  overlayWindow.setSize(geometry.width, geometry.height, true);
   overlayWindow.setAlwaysOnTop(state.alwaysOnTop, "floating");
   overlayWindow.setIgnoreMouseEvents(state.clickThrough);
 }
@@ -124,10 +124,10 @@ function registerGlobalShortcut() {
 
 function createOverlayWindow() {
   overlayWindow = new BrowserWindow({
-    width: 940,
+    width: 860,
     height: 272,
-    minWidth: 560,
-    minHeight: 96,
+    minWidth: 540,
+    minHeight: 72,
     frame: false,
     transparent: true,
     backgroundColor: "#00000000",
@@ -152,6 +152,7 @@ function createOverlayWindow() {
     overlayWindow.showInactive();
   });
   overlayWindow.on("closed", () => {
+    overlayDragStart = null;
     overlayWindow = null;
   });
 }
@@ -380,10 +381,29 @@ function registerIPC() {
     overlayWindow?.showInactive();
     return { ok: true };
   });
-  ipcMain.on("overlay:move", (_event, { deltaX, deltaY }) => {
+  ipcMain.on("overlay:drag-start", (_event, point) => {
     if (!overlayWindow || state.clickThrough) return;
+    const pointer = { x: Number(point?.x), y: Number(point?.y) };
+    if (!Number.isFinite(pointer.x) || !Number.isFinite(pointer.y)) return;
     const [x, y] = overlayWindow.getPosition();
-    overlayWindow.setPosition(Math.round(x + deltaX), Math.round(y + deltaY), false);
+    overlayDragStart = {
+      window: { x, y },
+      pointer,
+    };
+  });
+  ipcMain.on("overlay:drag-move", (_event, point) => {
+    if (!overlayWindow || state.clickThrough || !overlayDragStart) return;
+    const pointer = { x: Number(point?.x), y: Number(point?.y) };
+    if (!Number.isFinite(pointer.x) || !Number.isFinite(pointer.y)) return;
+    const target = overlayDragPosition(
+      overlayDragStart.window,
+      overlayDragStart.pointer,
+      pointer,
+    );
+    overlayWindow.setPosition(target.x, target.y, false);
+  });
+  ipcMain.on("overlay:drag-end", () => {
+    overlayDragStart = null;
   });
 }
 

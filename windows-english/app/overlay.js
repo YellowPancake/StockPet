@@ -18,7 +18,14 @@ let state = null;
 let quotes = {};
 let alertTimer = null;
 let dragging = false;
-let lastPointer = null;
+
+function applyDisplayScale() {
+  if (!state) return;
+  const scale = Math.min(1.6, Math.max(0.65, Number(state.displayScale) || 1));
+  document.body.style.width = `${window.innerWidth / scale}px`;
+  document.body.style.height = `${window.innerHeight / scale}px`;
+  document.body.style.transform = `scale(${scale})`;
+}
 
 function stockColor(market, change) {
   const rising = market === "unitedStates" ? "#55d69e" : "#ff6673";
@@ -80,6 +87,7 @@ function baselineY(quote) {
 
 function render() {
   if (!state) return;
+  applyDisplayScale();
   document.documentElement.style.setProperty("--line-opacity", state.lineOpacity);
   document.documentElement.style.setProperty("--label-opacity", state.labelOpacity);
   boardElement.style.background = `rgba(19, 22, 30, ${state.backgroundOpacity})`;
@@ -142,35 +150,34 @@ function showAlert(alert) {
 
 boardElement.addEventListener("dblclick", (event) => {
   event.preventDefault();
-  dragging = false;
-  boardElement.classList.remove("dragging");
+  stopDragging();
   window.stockPet.openSettings();
 });
 
 boardElement.addEventListener("pointerdown", (event) => {
   if (event.button !== 0) return;
   dragging = true;
-  lastPointer = { x: event.screenX, y: event.screenY };
   boardElement.classList.add("dragging");
   boardElement.setPointerCapture(event.pointerId);
+  window.stockPet.beginWindowDrag(event.screenX, event.screenY);
 });
 
 boardElement.addEventListener("pointermove", (event) => {
-  if (!dragging || !lastPointer) return;
-  const deltaX = event.screenX - lastPointer.x;
-  const deltaY = event.screenY - lastPointer.y;
-  lastPointer = { x: event.screenX, y: event.screenY };
-  if (deltaX || deltaY) window.stockPet.moveWindow(deltaX, deltaY);
+  if (!dragging) return;
+  window.stockPet.dragWindow(event.screenX, event.screenY);
 });
 
 function stopDragging() {
+  if (dragging) window.stockPet.endWindowDrag();
   dragging = false;
-  lastPointer = null;
   boardElement.classList.remove("dragging");
 }
 
 boardElement.addEventListener("pointerup", stopDragging);
 boardElement.addEventListener("pointercancel", stopDragging);
+boardElement.addEventListener("lostpointercapture", stopDragging);
+window.addEventListener("blur", stopDragging);
+window.addEventListener("resize", applyDisplayScale);
 
 window.stockPet.on("state-changed", (nextState) => {
   state = nextState;

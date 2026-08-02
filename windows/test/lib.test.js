@@ -8,11 +8,39 @@ const {
   evaluateThreshold,
   hasDrawableIntradayData,
   marketForSearchItem,
+  overlayDragPosition,
+  overlayGeometry,
   parseTencentMinute,
   parseTrend,
   sanitizeState,
   tencentCode,
 } = require("../app/lib");
+
+test("overlay geometry scales the whole board linearly", () => {
+  const normal = overlayGeometry(3, 1, 2000);
+  const smaller = overlayGeometry(3, 0.65, 2000);
+  const larger = overlayGeometry(3, 1.6, 2000);
+  assert.deepEqual(normal, {
+    baseWidth: 860,
+    baseHeight: 286,
+    width: 860,
+    height: 286,
+    scale: 1,
+  });
+  assert.equal(smaller.width, Math.round(normal.width * 0.65));
+  assert.equal(smaller.height, Math.round(normal.height * 0.65));
+  assert.equal(larger.width, Math.round(normal.width * 1.6));
+  assert.equal(larger.height, Math.round(normal.height * 1.6));
+});
+
+test("overlay dragging uses the original window position without accumulating movement", () => {
+  const windowStart = { x: 100, y: 200 };
+  const pointerStart = { x: 500, y: 400 };
+  const pointerCurrent = { x: 545, y: 372 };
+  const expected = { x: 145, y: 172 };
+  assert.deepEqual(overlayDragPosition(windowStart, pointerStart, pointerCurrent), expected);
+  assert.deepEqual(overlayDragPosition(windowStart, pointerStart, pointerCurrent), expected);
+});
 
 test("A/H and US markets use opposite rise/fall colors", () => {
   assert.equal(colorFor("aShare", 1), "#ff6673");

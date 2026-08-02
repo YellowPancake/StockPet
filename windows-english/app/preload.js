@@ -22,7 +22,9 @@ contextBridge.exposeInMainWorld("stockPet", {
   openSettings: () => ipcRenderer.invoke("settings:open"),
   openAuthor: () => ipcRenderer.invoke("external:open-author"),
   showOverlay: () => ipcRenderer.invoke("overlay:show"),
-  moveWindow: (deltaX, deltaY) => ipcRenderer.send("overlay:move", { deltaX, deltaY }),
+  beginWindowDrag: (x, y) => ipcRenderer.send("overlay:drag-start", { x, y }),
+  dragWindow: (x, y) => ipcRenderer.send("overlay:drag-move", { x, y }),
+  endWindowDrag: () => ipcRenderer.send("overlay:drag-end"),
   on: (channel, callback) => {
     if (!eventChannels.has(channel)) return () => {};
     const listener = (_event, value) => callback(value);
