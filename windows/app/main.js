@@ -92,7 +92,10 @@ function updateOverlayGeometry() {
   const maximumHeight = Math.floor(display.workAreaSize.height * 0.84);
   const geometry = overlayGeometry(state.symbols.length, state.displayScale, maximumHeight);
   overlayWindow.webContents.setZoomFactor(1);
-  overlayWindow.setSize(geometry.width, geometry.height, true);
+  // Keep the native window and the rendered board on the same deterministic size.
+  // Animated resizing can briefly expose the old viewport to the renderer and make
+  // the board appear to stay fixed while its contents scale.
+  overlayWindow.setSize(geometry.width, geometry.height, false);
   overlayWindow.setAlwaysOnTop(state.alwaysOnTop, "floating");
   overlayWindow.setIgnoreMouseEvents(state.clickThrough);
 }

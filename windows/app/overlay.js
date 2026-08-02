@@ -19,11 +19,26 @@ let quotes = {};
 let alertTimer = null;
 let dragging = false;
 
+const OVERLAY_BASE_WIDTH = 860;
+const OVERLAY_ROW_HEIGHT = 82;
+const OVERLAY_VERTICAL_CHROME = 40;
+
 function applyDisplayScale() {
   if (!state) return;
   const scale = Math.min(1.6, Math.max(0.65, Number(state.displayScale) || 1));
-  document.body.style.width = `${window.innerWidth / scale}px`;
-  document.body.style.height = `${window.innerHeight / scale}px`;
+  const visibleRows = Math.max(1, Math.min(state.symbols.length, 8));
+  const baseHeight = Math.max(
+    122,
+    visibleRows * OVERLAY_ROW_HEIGHT + OVERLAY_VERTICAL_CHROME,
+  );
+  const expectedWindowWidth = Math.round(OVERLAY_BASE_WIDTH * scale);
+  const windowHasResized = Math.abs(window.innerWidth - expectedWindowWidth) <= 4;
+  const viewportHeight = windowHasResized ? window.innerHeight / scale : baseHeight;
+
+  // The board owns a stable logical canvas. The native window and this canvas are
+  // scaled by the same factor, so its background cannot remain at the old size.
+  document.body.style.width = `${OVERLAY_BASE_WIDTH}px`;
+  document.body.style.height = `${Math.min(baseHeight, viewportHeight)}px`;
   document.body.style.transform = `scale(${scale})`;
 }
 

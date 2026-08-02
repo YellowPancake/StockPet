@@ -113,11 +113,13 @@ test("persisted settings are clamped and a deliberately empty list stays empty",
     symbols: [],
     displayScale: 9,
     lineOpacity: -2,
+    backgroundOpacity: 0,
     refreshInterval: 1,
   });
   assert.deepEqual(state.symbols, []);
   assert.equal(state.displayScale, 1.6);
   assert.equal(state.lineOpacity, 0.1);
+  assert.equal(state.backgroundOpacity, 0);
   assert.equal(state.refreshInterval, 5);
 });
 

@@ -164,7 +164,7 @@ function sanitizeState(candidate = {}) {
     symbols,
     lineOpacity: number(candidate.lineOpacity, 0.92, 0.1, 1),
     labelOpacity: number(candidate.labelOpacity, 0.92, 0.1, 1),
-    backgroundOpacity: number(candidate.backgroundOpacity, 0.16, 0.03, 0.95),
+    backgroundOpacity: number(candidate.backgroundOpacity, 0.16, 0, 0.95),
     risingThreshold: number(candidate.risingThreshold, 3, 0.1, 30),
     fallingThreshold: number(candidate.fallingThreshold, 3, 0.1, 30),
     alertBasis: candidate.alertBasis === "targetPrice" ? "targetPrice" : "percentage",
