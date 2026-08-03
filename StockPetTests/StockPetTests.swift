@@ -94,6 +94,20 @@ final class StockPetTests: XCTestCase {
         XCTAssertFalse(SoftwareUpdateService.isVersion("0.3.9", newerThan: "0.4.0"))
     }
 
+    func testSoftwareUpdateDigestParsesExactReleaseAsset() {
+        let expected = String(repeating: "ab", count: 32)
+        let notes = """
+        StockPet v0.4.1
+        SHA256 (StockPet-macOS-Chinese.zip): \(expected.uppercased())
+        SHA256 (StockPet-Windows-x64-Chinese.zip): \(String(repeating: "cd", count: 32))
+        """
+        XCTAssertEqual(
+            SoftwareUpdateService.digest(for: "StockPet-macOS-Chinese.zip", in: notes),
+            "sha256:\(expected)"
+        )
+        XCTAssertNil(SoftwareUpdateService.digest(for: "StockPet-macOS-English.zip", in: notes))
+    }
+
     func testSearchMarketsMapToSupportedRegions() {
         let aShare = SearchItem(
             code: "600519",

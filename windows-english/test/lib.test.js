@@ -16,10 +16,21 @@ const {
   parseTencentMinute,
   parseTencentRealtime,
   parseTrend,
+  releaseDigest,
   sanitizeState,
   tencentCode,
   tencentRealtimeCode,
 } = require("../app/lib");
+
+test("release digest selects the exact package", () => {
+  const expected = "ab".repeat(32);
+  const notes = [
+    `SHA256 (StockPet-Windows-x64-English.zip): ${expected.toUpperCase()}`,
+    `SHA256 (StockPet-Windows-x64-Chinese.zip): ${"cd".repeat(32)}`,
+  ].join("\n");
+  assert.equal(releaseDigest(notes, "StockPet-Windows-x64-English.zip"), `sha256:${expected}`);
+  assert.equal(releaseDigest(notes, "StockPet-macOS-English.zip"), null);
+});
 
 test("overlay geometry scales the whole board linearly", () => {
   const normal = overlayGeometry(3, 1, 2000);

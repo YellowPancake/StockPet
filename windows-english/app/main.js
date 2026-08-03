@@ -26,6 +26,7 @@ const {
   isVersionNewer,
   overlayDragPosition,
   overlayGeometry,
+  releaseDigest,
   sanitizeState,
 } = require("./lib");
 const { fetchIntraday, fetchLatestQuotes, searchStocks } = require("./quote-service");
@@ -55,7 +56,8 @@ let overlayDragStart = null;
 let availableUpdate = null;
 
 const UPDATE_ASSET_NAME = "StockPet-Windows-x64-English.zip";
-const RELEASES_API = "https://api.github.com/repos/YellowPancake/StockPet/releases/latest";
+const GITHUB_RELEASES_API = "https://api.github.com/repos/YellowPancake/StockPet/releases/latest";
+const GITEE_RELEASES_API = "https://gitee.com/api/v5/repos/YBigPie/StockPet/releases/latest";
 
 const statePath = () => path.join(app.getPath("userData"), "settings.json");
 const quoteCachePath = () => path.join(app.getPath("userData"), "quote-cache.json");
@@ -88,33 +90,80 @@ function persistQuotes() {
   writeJSON(quoteCachePath(), quoteCache);
 }
 
-async function checkForSoftwareUpdate() {
-  const response = await net.fetch(RELEASES_API, {
+async function fetchUpdateJSON(url, headers = {}) {
+  const response = await net.fetch(url, {
     cache: "no-store",
     headers: {
-      Accept: "application/vnd.github+json",
-      "X-GitHub-Api-Version": "2022-11-28",
+      Accept: "application/json",
       "User-Agent": `StockPet/${app.getVersion()}`,
+      ...headers,
     },
   });
   if (!response.ok) throw new Error("Unable to check for updates. Please try again later.");
-  const release = await response.json();
+  return response.json();
+}
+
+async function githubUpdateCandidate() {
+  const release = await fetchUpdateJSON(GITHUB_RELEASES_API, {
+    Accept: "application/vnd.github+json",
+    "X-GitHub-Api-Version": "2022-11-28",
+  });
   const version = String(release.tag_name || "").replace(/^[vV]/, "").split("-")[0];
-  if (!isVersionNewer(version, app.getVersion())) {
-    availableUpdate = null;
-    return { status: "upToDate", currentVersion: app.getVersion() };
-  }
   const asset = (release.assets || []).find((item) => item.name === UPDATE_ASSET_NAME);
   if (!asset?.browser_download_url || !String(asset.digest || "").startsWith("sha256:")) {
     throw new Error("The new release does not include a package for this system.");
   }
-  availableUpdate = {
+  return {
     version,
     notes: release.body || "",
-    releasePageURL: release.html_url,
-    assetName: asset.name,
-    assetURL: asset.browser_download_url,
-    digest: String(asset.digest).toLowerCase(),
+    download: {
+      route: "routeOne",
+      assetName: asset.name,
+      assetURL: asset.browser_download_url,
+      digest: String(asset.digest).toLowerCase(),
+    },
+  };
+}
+
+async function giteeUpdateCandidate() {
+  const release = await fetchUpdateJSON(GITEE_RELEASES_API);
+  const attachments = await fetchUpdateJSON(
+    `https://gitee.com/api/v5/repos/YBigPie/StockPet/releases/${release.id}/attach_files?per_page=100`,
+  );
+  const asset = attachments.find((item) => item.name === UPDATE_ASSET_NAME);
+  const digest = releaseDigest(release.body, UPDATE_ASSET_NAME);
+  if (!asset?.browser_download_url || !digest) {
+    throw new Error("The new release does not include a package for this system.");
+  }
+  return {
+    version: String(release.tag_name || "").replace(/^[vV]/, "").split("-")[0],
+    notes: release.body || "",
+    download: {
+      route: "routeTwo",
+      assetName: asset.name,
+      assetURL: asset.browser_download_url,
+      digest,
+    },
+  };
+}
+
+async function checkForSoftwareUpdate() {
+  const results = await Promise.allSettled([githubUpdateCandidate(), giteeUpdateCandidate()]);
+  const candidates = results.filter((item) => item.status === "fulfilled").map((item) => item.value);
+  if (!candidates.length) throw new Error("Unable to check for updates. Please try again later.");
+  const newer = candidates.filter((item) => isVersionNewer(item.version, app.getVersion()));
+  if (!newer.length) {
+    availableUpdate = null;
+    return { status: "upToDate", currentVersion: app.getVersion() };
+  }
+  const latest = newer.reduce((selected, item) => (
+    isVersionNewer(item.version, selected.version) ? item : selected
+  ));
+  const matching = newer.filter((item) => item.version === latest.version);
+  availableUpdate = {
+    version: latest.version,
+    notes: matching.find((item) => item.notes)?.notes || "",
+    downloads: Object.fromEntries(matching.map((item) => [item.download.route, item.download])),
   };
   return { status: "available", update: availableUpdate };
 }
@@ -132,13 +181,17 @@ function availableDownloadPath(update) {
   return candidate;
 }
 
-async function downloadSoftwareUpdate() {
+async function downloadSoftwareUpdate(route) {
   if (!availableUpdate) await checkForSoftwareUpdate();
   if (!availableUpdate) return { status: "upToDate" };
   const update = availableUpdate;
-  const destination = availableDownloadPath(update);
+  const download = update.downloads?.[route];
+  if (!download) {
+    throw new Error("That download route is temporarily unavailable. Please try the other route.");
+  }
+  const destination = availableDownloadPath({ ...update, assetName: download.assetName });
   const temporary = `${destination}.download-${process.pid}-${Date.now()}`;
-  const response = await net.fetch(update.assetURL, {
+  const response = await net.fetch(download.assetURL, {
     cache: "no-store",
     headers: {
       Accept: "application/octet-stream",
@@ -168,7 +221,7 @@ async function downloadSoftwareUpdate() {
   try {
     await pipeline(Readable.fromWeb(response.body), verifier, fs.createWriteStream(temporary));
     const actualDigest = `sha256:${hash.digest("hex")}`;
-    if (actualDigest !== update.digest) {
+    if (actualDigest !== download.digest) {
       throw new Error("Update verification failed, so the download was stopped.");
     }
     await fs.promises.rename(temporary, destination);
@@ -619,7 +672,7 @@ function registerIPC() {
     return { ok: true };
   });
   ipcMain.handle("update:check", () => checkForSoftwareUpdate());
-  ipcMain.handle("update:download", () => downloadSoftwareUpdate());
+  ipcMain.handle("update:download", (_event, route) => downloadSoftwareUpdate(route));
   ipcMain.handle("overlay:show", () => {
     overlayWindow?.showInactive();
     return { ok: true };

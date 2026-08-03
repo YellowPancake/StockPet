@@ -76,12 +76,14 @@
 "使用说明" = "Usage notes";
 "GitHub 作者" = "GitHub Author";
 "软件更新" = "Software Update";
-"检查 GitHub 上是否有新版本，并下载适用于当前系统和语言的安装包。" = "Check GitHub for a new version and download the package for this system and language.";
+"检查是否有新版本，并下载适用于当前系统和语言的安装包。" = "Check whether a new version is available and download the package for this system and language.";
 "检查更新" = "Check for Updates";
 "正在检查更新…" = "Checking for updates…";
 "已经是最新版本" = "You're up to date";
 "重新检查" = "Check Again";
 "发现新版本 v%@" = "Version v%@ is available";
+"路线一" = "Route 1";
+"路线二" = "Route 2";
 "下载更新包" = "Download Update";
 "查看发布页面" = "View Release";
 "正在下载并校验 v%@…" = "Downloading and verifying v%@…";
@@ -100,6 +102,7 @@
 "实时价格暂时不可用，分时曲线仍会继续刷新" = "Fast quotes are temporarily unavailable; intraday charts will keep refreshing";
 "检查更新失败，请稍后重试" = "Unable to check for updates. Please try again later.";
 "新版本缺少适用于当前系统的安装包" = "The new release does not include a package for this system.";
+"所选下载路线暂时不可用，请尝试另一条路线" = "That download route is temporarily unavailable. Please try the other route.";
 "更新包下载失败，请稍后重试" = "Unable to download the update. Please try again later.";
 "更新包校验失败，已停止下载" = "Update verification failed, so the download was stopped.";
 "行情服务暂不可用" = "The market data service is temporarily unavailable";

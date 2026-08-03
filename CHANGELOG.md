@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.4.1
+
+- Added two independent update routes for version checks and verified package downloads.
+- Simplified update copy so the settings UI does not expose hosting-provider names.
+- Kept manual installation: the app downloads and verifies the selected package, opens its folder, and never silently replaces itself.
+
 ## v0.4.0
 
 - Added optional 1-second batch refresh for latest prices, percentage changes, and bull/bear alerts.

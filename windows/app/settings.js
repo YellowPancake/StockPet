@@ -275,14 +275,16 @@ $("#check-update").addEventListener("click", async () => {
   const button = $("#check-update");
   button.disabled = true;
   $("#update-status").textContent = "正在检查更新…";
-  $("#download-update").hidden = true;
+  $("#download-update-route-one").hidden = true;
+  $("#download-update-route-two").hidden = true;
   $("#update-notes").hidden = true;
   try {
     const result = await window.stockPet.checkForUpdate();
     if (result.status === "available") {
       availableUpdate = result.update;
       $("#update-status").textContent = `发现新版本 v${result.update.version}`;
-      $("#download-update").hidden = false;
+      $("#download-update-route-one").hidden = !result.update.downloads?.routeOne;
+      $("#download-update-route-two").hidden = !result.update.downloads?.routeTwo;
       $("#update-notes").textContent = result.update.notes || "已准备好适用于 Windows 中文版的更新包。";
       $("#update-notes").hidden = false;
     } else {
@@ -295,27 +297,30 @@ $("#check-update").addEventListener("click", async () => {
   button.disabled = false;
 });
 
-$("#download-update").addEventListener("click", async () => {
+async function downloadAvailableUpdate(route) {
   if (!availableUpdate) return;
-  const button = $("#download-update");
-  button.disabled = true;
+  const buttons = [$("#download-update-route-one"), $("#download-update-route-two")];
+  buttons.forEach((button) => { button.disabled = true; });
   $("#check-update").disabled = true;
   $("#update-progress").hidden = false;
   $("#update-progress").removeAttribute("value");
   $("#update-status").textContent = `正在下载并校验 v${availableUpdate.version}…`;
   try {
-    const result = await window.stockPet.downloadUpdate();
+    const result = await window.stockPet.downloadUpdate(route);
     $("#update-status").textContent = result.status === "downloaded"
       ? "更新包已下载并通过校验，已打开文件位置"
       : "已经是最新版本";
-    button.hidden = true;
+    buttons.forEach((button) => { button.hidden = true; });
   } catch (error) {
     $("#update-status").textContent = error.message || "更新包下载失败，请稍后重试";
   }
   $("#update-progress").hidden = true;
-  button.disabled = false;
+  buttons.forEach((button) => { button.disabled = false; });
   $("#check-update").disabled = false;
-});
+}
+
+$("#download-update-route-one").addEventListener("click", () => downloadAvailableUpdate("routeOne"));
+$("#download-update-route-two").addEventListener("click", () => downloadAvailableUpdate("routeTwo"));
 
 $("#price-alert-list").addEventListener("change", async (event) => {
   const item = event.target.closest("[data-price-alert-id]");

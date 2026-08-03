@@ -598,7 +598,7 @@ struct SettingsView: View {
         switch updateState {
         case .idle:
             HStack {
-                Text("检查 GitHub 上是否有新版本，并下载适用于当前系统和语言的安装包。")
+                Text("检查是否有新版本，并下载适用于当前系统和语言的安装包。")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 Spacer()
@@ -630,9 +630,13 @@ struct SettingsView: View {
                         .lineLimit(4)
                 }
                 HStack {
-                    Button("下载更新包") { downloadSoftwareUpdate(update) }
-                    Link("查看发布页面", destination: update.releasePageURL)
-                        .font(.caption)
+                    ForEach(SoftwareUpdateRoute.allCases, id: \.self) { route in
+                        if update.downloads[route] != nil {
+                            Button(route == .routeOne ? tr("路线一") : tr("路线二")) {
+                                downloadSoftwareUpdate(update, route: route)
+                            }
+                        }
+                    }
                 }
             }
         case .downloading(let version):
@@ -664,7 +668,7 @@ struct SettingsView: View {
 
     private var currentAppVersion: String {
         Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
-            ?? "0.4.0"
+            ?? "0.4.1"
     }
 
     private var updateAssetName: String {
@@ -695,11 +699,14 @@ struct SettingsView: View {
         }
     }
 
-    private func downloadSoftwareUpdate(_ update: AvailableSoftwareUpdate) {
+    private func downloadSoftwareUpdate(
+        _ update: AvailableSoftwareUpdate,
+        route: SoftwareUpdateRoute
+    ) {
         updateState = .downloading(version: update.version)
         Task {
             do {
-                let fileURL = try await Self.updateService.download(update)
+                let fileURL = try await Self.updateService.download(update, route: route)
                 updateState = .downloaded(fileURL)
                 NSWorkspace.shared.activateFileViewerSelecting([fileURL])
             } catch {
