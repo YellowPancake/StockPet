@@ -277,14 +277,16 @@ $("#check-update").addEventListener("click", async () => {
   const button = $("#check-update");
   button.disabled = true;
   $("#update-status").textContent = "Checking for updates…";
-  $("#download-update").hidden = true;
+  $("#download-update-route-one").hidden = true;
+  $("#download-update-route-two").hidden = true;
   $("#update-notes").hidden = true;
   try {
     const result = await window.stockPet.checkForUpdate();
     if (result.status === "available") {
       availableUpdate = result.update;
       $("#update-status").textContent = `Version v${result.update.version} is available`;
-      $("#download-update").hidden = false;
+      $("#download-update-route-one").hidden = !result.update.downloads?.routeOne;
+      $("#download-update-route-two").hidden = !result.update.downloads?.routeTwo;
       $("#update-notes").textContent = result.update.notes || "The Windows English update is ready to download.";
       $("#update-notes").hidden = false;
     } else {
@@ -297,27 +299,30 @@ $("#check-update").addEventListener("click", async () => {
   button.disabled = false;
 });
 
-$("#download-update").addEventListener("click", async () => {
+async function downloadAvailableUpdate(route) {
   if (!availableUpdate) return;
-  const button = $("#download-update");
-  button.disabled = true;
+  const buttons = [$("#download-update-route-one"), $("#download-update-route-two")];
+  buttons.forEach((button) => { button.disabled = true; });
   $("#check-update").disabled = true;
   $("#update-progress").hidden = false;
   $("#update-progress").removeAttribute("value");
   $("#update-status").textContent = `Downloading and verifying v${availableUpdate.version}…`;
   try {
-    const result = await window.stockPet.downloadUpdate();
+    const result = await window.stockPet.downloadUpdate(route);
     $("#update-status").textContent = result.status === "downloaded"
       ? "The update was verified; its folder is now open"
       : "You're up to date";
-    button.hidden = true;
+    buttons.forEach((button) => { button.hidden = true; });
   } catch (error) {
     $("#update-status").textContent = error.message || "Unable to download the update. Please try again later.";
   }
   $("#update-progress").hidden = true;
-  button.disabled = false;
+  buttons.forEach((button) => { button.disabled = false; });
   $("#check-update").disabled = false;
-});
+}
+
+$("#download-update-route-one").addEventListener("click", () => downloadAvailableUpdate("routeOne"));
+$("#download-update-route-two").addEventListener("click", () => downloadAvailableUpdate("routeTwo"));
 
 $("#price-alert-list").addEventListener("change", async (event) => {
   const item = event.target.closest("[data-price-alert-id]");

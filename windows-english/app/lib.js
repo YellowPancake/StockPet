@@ -266,6 +266,14 @@ function sanitizeState(candidate = {}) {
   };
 }
 
+function releaseDigest(notes, assetName) {
+  const escapedName = assetName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const match = String(notes || "").match(
+    new RegExp(`^SHA256\\s*\\(${escapedName}\\)\\s*:\\s*([0-9a-f]{64})\\s*$`, "im"),
+  );
+  return match ? `sha256:${match[1].toLowerCase()}` : null;
+}
+
 module.exports = {
   INITIAL_SYMBOLS,
   MARKETS,
@@ -283,6 +291,7 @@ module.exports = {
   parseTencentMinute,
   parseTencentRealtime,
   parseTrend,
+  releaseDigest,
   sanitizeState,
   tencentCode,
   tencentRealtimeCode,
