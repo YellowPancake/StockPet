@@ -510,6 +510,7 @@ struct SettingsView: View {
                     Label("刷新频率", systemImage: "arrow.clockwise")
                     Spacer()
                     Picker("", selection: $store.refreshInterval) {
+                        Text("5 秒").tag(5)
                         Text("15 秒").tag(15)
                         Text("30 秒").tag(30)
                         Text("60 秒").tag(60)

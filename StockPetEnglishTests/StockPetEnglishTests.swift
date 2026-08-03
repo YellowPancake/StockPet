@@ -21,5 +21,6 @@ final class StockPetEnglishTests: XCTestCase {
         XCTAssertEqual(tr("曲线宽度"), "Chart width")
         XCTAssertEqual(tr("字体大小"), "Font size")
         XCTAssertEqual(tr("显示股票代码与市场"), "Show ticker and market")
+        XCTAssertEqual(tr("5 秒"), "5 seconds")
     }
 }
