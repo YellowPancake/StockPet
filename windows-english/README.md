@@ -15,7 +15,9 @@ Portable Windows x64 edition. Extract the complete archive, then run
 - Customizable global shortcut to show or hide Stock Pet
 - Bull and bear alerts can use previous-close percentages or per-stock target prices
 - Live prices can generate upper and lower targets in one click; opacity and sounds remain configurable
-- Tencent intraday as the primary source and Eastmoney as fallback
+- Latest prices, changes, and alerts can use 1-second batch refresh; charts update independently every 15 seconds or slower
+- GitHub update checks download and verify the matching English Windows package without silently replacing the app
+- Tencent fast quotes and intraday data are primary, with Eastmoney fallback and adaptive failure backoff
 
 ## Requirements
 

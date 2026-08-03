@@ -6,8 +6,10 @@ const {
   hasDrawableIntradayData,
   marketForSearchItem,
   parseTencentMinute,
+  parseTencentRealtime,
   parseTrend,
   tencentCode,
+  tencentRealtimeCode,
 } = require("./lib");
 
 const SEARCH_TOKEN = "D43BF722C8E33DA55D5C6812C6C46";
@@ -25,6 +27,22 @@ async function requestJSON(url) {
     });
     if (!response.ok) throw new Error(`行情服务返回 ${response.status}`);
     return await response.json();
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+async function requestText(url, timeoutMilliseconds = 2000) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMilliseconds);
+  try {
+    const response = await net.fetch(url, {
+      signal: controller.signal,
+      cache: "no-store",
+      headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" },
+    });
+    if (!response.ok) throw new Error(`行情服务返回 ${response.status}`);
+    return Buffer.from(await response.arrayBuffer()).toString("latin1");
   } finally {
     clearTimeout(timeout);
   }
@@ -130,4 +148,23 @@ async function fetchIntraday(symbol) {
   }
 }
 
-module.exports = { fetchIntraday, searchStocks };
+async function fetchLatestQuotes(symbols) {
+  const updates = [];
+  let lastError = null;
+  for (let start = 0; start < symbols.length; start += 40) {
+    const batch = symbols.slice(start, start + 40);
+    const codes = batch.map(tencentRealtimeCode).join(",");
+    try {
+      const text = await requestText(
+        `https://qt.gtimg.cn/q=${encodeURIComponent(codes)}&_=${Date.now()}`,
+      );
+      updates.push(...parseTencentRealtime(text, batch));
+    } catch (error) {
+      lastError = error;
+    }
+  }
+  if (!updates.length && lastError) throw lastError;
+  return updates;
+}
+
+module.exports = { fetchIntraday, fetchLatestQuotes, searchStocks };

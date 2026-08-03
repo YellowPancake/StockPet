@@ -78,6 +78,69 @@ function tencentCode(symbol) {
   return `sz${symbol.code}`;
 }
 
+function tencentRealtimeCode(symbol) {
+  if (symbol.market === "hongKong") return `r_hk${symbol.code}`;
+  return tencentCode(symbol);
+}
+
+function parseTencentRealtime(raw, symbols) {
+  const byCode = new Map(symbols.map((symbol) => [tencentRealtimeCode(symbol), symbol]));
+  return String(raw || "").split(";").flatMap((row) => {
+    const match = row.trim().match(/^v_([^=]+)="?(.*)"?$/s);
+    if (!match) return [];
+    const symbol = byCode.get(match[1]);
+    if (!symbol) return [];
+    const fields = match[2].split("~");
+    const lastPrice = Number(fields[3]);
+    const previousClose = Number(fields[4]);
+    const sourceTimestamp = String(fields[30] || "").replaceAll('"', "").trim();
+    if (!(lastPrice > 0) || !(previousClose > 0) || !sourceTimestamp) return [];
+    return [{ symbol, lastPrice, previousClose, sourceTimestamp }];
+  });
+}
+
+function isMarketOpen(market, date = new Date()) {
+  const timeZone = market === "unitedStates"
+    ? "America/New_York"
+    : market === "hongKong" ? "Asia/Hong_Kong" : "Asia/Shanghai";
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat("en-US", {
+      timeZone,
+      weekday: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+      hourCycle: "h23",
+    }).formatToParts(date).map((part) => [part.type, part.value]),
+  );
+  if (!["Mon", "Tue", "Wed", "Thu", "Fri"].includes(parts.weekday)) return false;
+  const minutes = Number(parts.hour) * 60 + Number(parts.minute);
+  if (market === "aShare") {
+    return (minutes >= 570 && minutes <= 690) || (minutes >= 780 && minutes <= 900);
+  }
+  if (market === "hongKong") {
+    return (minutes >= 570 && minutes <= 720) || (minutes >= 780 && minutes <= 960);
+  }
+  return minutes >= 570 && minutes <= 960;
+}
+
+function failureBackoffSeconds(baseInterval, failureCount) {
+  const backoff = [3, 5, 15, 30, 60][Math.min(Math.max(1, failureCount) - 1, 4)];
+  return Math.max(Number(baseInterval) || 1, backoff);
+}
+
+function isVersionNewer(candidate, current) {
+  const normalize = (value) => String(value || "0")
+    .trim().replace(/^[vV]/, "").split("-")[0]
+    .split(".").map((part) => Number(part) || 0);
+  const left = normalize(candidate);
+  const right = normalize(current);
+  for (let index = 0; index < Math.max(left.length, right.length); index += 1) {
+    const difference = (left[index] || 0) - (right[index] || 0);
+    if (difference) return difference > 0;
+  }
+  return false;
+}
+
 function parseTencentMinute(raw, date) {
   const values = String(raw).trim().split(/\s+/);
   const price = Number(values[1]);
@@ -180,7 +243,7 @@ function sanitizeState(candidate = {}) {
     fallingThreshold: number(candidate.fallingThreshold, 3, 0.1, 30),
     alertBasis: candidate.alertBasis === "targetPrice" ? "targetPrice" : "percentage",
     priceAlertTargets,
-    refreshInterval: number(candidate.refreshInterval, 15, 5, 300),
+    refreshInterval: number(candidate.refreshInterval, 15, 1, 300),
     clickThrough: Boolean(candidate.clickThrough),
     alwaysOnTop: candidate.alwaysOnTop !== false,
     displayScale: number(candidate.displayScale, 1, 0.65, 1.6),
@@ -210,12 +273,17 @@ module.exports = {
   colorFor,
   evaluatePriceThreshold,
   evaluateThreshold,
+  failureBackoffSeconds,
   hasDrawableIntradayData,
   marketForSearchItem,
+  isMarketOpen,
+  isVersionNewer,
   overlayDragPosition,
   overlayGeometry,
   parseTencentMinute,
+  parseTencentRealtime,
   parseTrend,
   sanitizeState,
   tencentCode,
+  tencentRealtimeCode,
 };

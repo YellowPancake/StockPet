@@ -21,7 +21,7 @@
         <button class="nav-item" data-page="alerts"><span>♧</span>牛熊提醒</button>
         <button class="nav-item" data-page="data"><span>◎</span>数据与刷新</button>
       </nav>
-      <div class="version">Windows x64 · 0.3.0</div>
+      <div class="version">Windows x64 · 0.4.0</div>
     </aside>
 
     <main class="content">
@@ -183,8 +183,9 @@
         </header>
         <div class="card settings-card">
           <label class="setting-row">
-            <span><strong>刷新频率</strong></span>
+            <span><strong>刷新频率</strong><small>最新价、涨跌幅和提醒；分时曲线最快 15 秒刷新</small></span>
             <select id="refreshInterval">
+              <option value="1">1 秒（极速）</option>
               <option value="5">5 秒</option>
               <option value="10">10 秒</option>
               <option value="15">15 秒</option>
@@ -194,7 +195,7 @@
           </label>
           <div class="setting-row">
             <span><strong>当前数据源</strong></span>
-            <span id="data-source">腾讯分时 · 东方财富备用</span>
+            <span id="data-source">腾讯秒级报价 · 腾讯分时 · 东方财富备用</span>
           </div>
           <div class="setting-row">
             <span><strong>最近刷新</strong></span>
@@ -210,6 +211,17 @@
             <li>公开网页行情可能延迟、限流或调整，不应用于下单决策。</li>
             <li>接口失败时不会生成假曲线，只保留最后一次成功数据并标记为过期。</li>
           </ul>
+        </div>
+        <div class="card settings-card update-card">
+          <div class="setting-row">
+            <span><strong>软件更新</strong><small id="update-status">当前版本 v0.4.0</small></span>
+            <div class="update-actions">
+              <button id="check-update" class="secondary" type="button">检查更新</button>
+              <button id="download-update" class="primary compact-button" type="button" hidden>下载更新包</button>
+            </div>
+          </div>
+          <progress id="update-progress" max="1" value="0" hidden></progress>
+          <p id="update-notes" class="inline-message" hidden></p>
         </div>
         <div class="card settings-card author-card">
           <div class="setting-row">

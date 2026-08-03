@@ -3,6 +3,7 @@ import Foundation
 protocol QuoteProviding: Sendable {
     func search(query: String) async throws -> [StockSymbol]
     func fetchIntraday(for symbol: StockSymbol) async throws -> StockQuote
+    func fetchLatestQuotes(for symbols: [StockSymbol]) async throws -> [LatestQuoteUpdate]
 }
 
 actor MarketQuoteService: QuoteProviding {
@@ -65,6 +66,52 @@ actor MarketQuoteService: QuoteProviding {
         } catch {
             return try await fetchEastmoneyIntraday(for: symbol)
         }
+    }
+
+    func fetchLatestQuotes(for symbols: [StockSymbol]) async throws -> [LatestQuoteUpdate] {
+        guard !symbols.isEmpty else { return [] }
+
+        var updates: [LatestQuoteUpdate] = []
+        var lastError: Error?
+        for start in stride(from: 0, to: symbols.count, by: 40) {
+            let end = min(start + 40, symbols.count)
+            let batch = Array(symbols[start..<end])
+            do {
+                updates.append(contentsOf: try await fetchTencentLatestBatch(batch))
+            } catch {
+                lastError = error
+            }
+        }
+        if updates.isEmpty, let lastError {
+            throw lastError
+        }
+        return updates
+    }
+
+    private func fetchTencentLatestBatch(
+        _ symbols: [StockSymbol]
+    ) async throws -> [LatestQuoteUpdate] {
+        var components = URLComponents()
+        components.scheme = "https"
+        components.host = "qt.gtimg.cn"
+        components.path = "/q"
+        components.queryItems = [
+            URLQueryItem(
+                name: "q",
+                value: symbols.map(Self.tencentRealtimeCode(for:)).joined(separator: ",")
+            ),
+            URLQueryItem(name: "_", value: String(Int(Date().timeIntervalSince1970 * 1_000)))
+        ]
+        guard let url = components.url else { throw QuoteServiceError.invalidURL }
+
+        let data = try await request(url, timeout: 2)
+        // The payload is GBK, but every field used here is ASCII. Lossy UTF-8
+        // decoding keeps delimiters and numeric values intact without shipping a
+        // separate encoding dependency.
+        let text = String(decoding: data, as: UTF8.self)
+        let parsed = Self.parseTencentRealtime(text, symbols: symbols)
+        guard !parsed.isEmpty else { throw QuoteServiceError.invalidResponse }
+        return parsed
     }
 
     private func fetchEastmoneyIntraday(for symbol: StockSymbol) async throws -> StockQuote {
@@ -160,9 +207,12 @@ actor MarketQuoteService: QuoteProviding {
         )
     }
 
-    private func request(_ url: URL) async throws -> Data {
-        var request = URLRequest(url: url)
-        request.timeoutInterval = 15
+    private func request(_ url: URL, timeout: TimeInterval = 15) async throws -> Data {
+        var request = URLRequest(
+            url: url,
+            cachePolicy: .reloadIgnoringLocalCacheData,
+            timeoutInterval: timeout
+        )
         request.setValue(
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
             forHTTPHeaderField: "User-Agent"
@@ -223,6 +273,65 @@ actor MarketQuoteService: QuoteProviding {
             return "hk\(symbol.code)"
         case .unitedStates:
             return "us\(symbol.code.uppercased())"
+        }
+    }
+
+    static func tencentRealtimeCode(for symbol: StockSymbol) -> String {
+        switch symbol.market {
+        case .hongKong:
+            // Without r_ Tencent may return the free 15-minute delayed HK quote.
+            return "r_hk\(symbol.code)"
+        case .aShare, .unitedStates:
+            return tencentCode(for: symbol)
+        }
+    }
+
+    static func parseTencentRealtime(
+        _ raw: String,
+        symbols: [StockSymbol]
+    ) -> [LatestQuoteUpdate] {
+        let byCode = Dictionary(
+            uniqueKeysWithValues: symbols.map { (tencentRealtimeCode(for: $0), $0) }
+        )
+
+        return raw
+            .split(separator: ";", omittingEmptySubsequences: true)
+            .compactMap { row in
+                guard let equals = row.firstIndex(of: "=") else { return nil }
+                let variable = row[..<equals]
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+                guard variable.hasPrefix("v_") else { return nil }
+                let realtimeCode = String(variable.dropFirst(2))
+                guard let symbol = byCode[realtimeCode] else { return nil }
+
+                let fields = row.split(separator: "~", omittingEmptySubsequences: false)
+                guard fields.count > 30,
+                      let lastPrice = Double(fields[3]), lastPrice > 0,
+                      let previousClose = Double(fields[4]), previousClose > 0,
+                      let updatedAt = realtimeDate(
+                        String(fields[30]).trimmingCharacters(in: CharacterSet(charactersIn: "\"")),
+                        market: symbol.market
+                      )
+                else {
+                    return nil
+                }
+                return LatestQuoteUpdate(
+                    symbol: symbol,
+                    lastPrice: lastPrice,
+                    previousClose: previousClose,
+                    updatedAt: updatedAt
+                )
+            }
+    }
+
+    private static func realtimeDate(_ raw: String, market: StockMarket) -> Date? {
+        switch market {
+        case .aShare:
+            return aShareRealtimeDateFormatter.date(from: raw)
+        case .hongKong:
+            return hongKongRealtimeDateFormatter.date(from: raw)
+        case .unitedStates:
+            return unitedStatesRealtimeDateFormatter.date(from: raw)
         }
     }
 
@@ -297,6 +406,33 @@ actor MarketQuoteService: QuoteProviding {
         formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.timeZone = TimeZone(identifier: "Asia/Shanghai")
         formatter.dateFormat = "yyyy-MM-dd"
+        return formatter
+    }()
+
+    private static let aShareRealtimeDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.calendar = Calendar(identifier: .gregorian)
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(identifier: "Asia/Shanghai")
+        formatter.dateFormat = "yyyyMMddHHmmss"
+        return formatter
+    }()
+
+    private static let hongKongRealtimeDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.calendar = Calendar(identifier: .gregorian)
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(identifier: "Asia/Hong_Kong")
+        formatter.dateFormat = "yyyy/MM/dd HH:mm:ss"
+        return formatter
+    }()
+
+    private static let unitedStatesRealtimeDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.calendar = Calendar(identifier: .gregorian)
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(identifier: "America/New_York")
+        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         return formatter
     }()
 }

@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 
 struct SettingsView: View {
@@ -9,6 +10,9 @@ struct SettingsView: View {
     @State private var selectedSection: SettingsSection = .watchlist
     @State private var isRefreshingAlertPrices = false
     @State private var alertPriceMessage: String?
+    @State private var updateState: SoftwareUpdateUIState = .idle
+
+    private static let updateService = SoftwareUpdateService()
 
     var body: some View {
         NavigationSplitView {
@@ -502,15 +506,18 @@ struct SettingsView: View {
     }
 
     private var dataView: some View {
-        VStack(alignment: .leading, spacing: 22) {
-            pageTitle("数据与刷新")
+        ScrollView(.vertical) {
+            VStack(alignment: .leading, spacing: 22) {
+                pageTitle("数据与刷新")
 
             SettingsCard {
                 HStack {
                     Label("刷新频率", systemImage: "arrow.clockwise")
                     Spacer()
                     Picker("", selection: $store.refreshInterval) {
+                        Text("1 秒（极速）").tag(1)
                         Text("5 秒").tag(5)
+                        Text("10 秒").tag(10)
                         Text("15 秒").tag(15)
                         Text("30 秒").tag(30)
                         Text("60 秒").tag(60)
@@ -518,8 +525,14 @@ struct SettingsView: View {
                     .labelsHidden()
                     .frame(width: 100)
                 }
+                Text("最新价、涨跌幅和牛熊提醒按所选频率更新；分时曲线最快每 15 秒更新一次。")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
                 Divider()
-                LabeledContent("当前数据源", value: tr("腾讯分时 · 东方财富备用"))
+                LabeledContent(
+                    "当前数据源",
+                    value: tr("腾讯秒级报价 · 腾讯分时 · 东方财富备用")
+                )
                 Divider()
                 LabeledContent(
                     "最近刷新",
@@ -555,11 +568,142 @@ struct SettingsView: View {
             }
 
             SettingsCard {
-                HStack {
-                    Label("GitHub 作者", systemImage: "person.crop.circle")
-                    Spacer()
-                    Link("@YellowPancake", destination: URL(string: "https://github.com/YellowPancake")!)
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack {
+                        Label("软件更新", systemImage: "arrow.triangle.2.circlepath")
+                            .fontWeight(.semibold)
+                        Spacer()
+                        Text("v\(currentAppVersion)")
+                            .font(.caption.monospacedDigit())
+                            .foregroundStyle(.secondary)
+                    }
+                    softwareUpdateContent
                 }
+            }
+
+                SettingsCard {
+                    HStack {
+                        Label("GitHub 作者", systemImage: "person.crop.circle")
+                        Spacer()
+                        Link("@YellowPancake", destination: URL(string: "https://github.com/YellowPancake")!)
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    @ViewBuilder
+    private var softwareUpdateContent: some View {
+        switch updateState {
+        case .idle:
+            HStack {
+                Text("检查 GitHub 上是否有新版本，并下载适用于当前系统和语言的安装包。")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Spacer()
+                Button("检查更新") { checkSoftwareUpdate() }
+            }
+        case .checking:
+            HStack(spacing: 8) {
+                ProgressView().controlSize(.small)
+                Text("正在检查更新…").font(.caption).foregroundStyle(.secondary)
+            }
+        case .upToDate:
+            HStack {
+                Label("已经是最新版本", systemImage: "checkmark.circle.fill")
+                    .foregroundStyle(.green)
+                Spacer()
+                Button("重新检查") { checkSoftwareUpdate() }
+            }
+        case .available(let update):
+            VStack(alignment: .leading, spacing: 10) {
+                Label(
+                    String(format: tr("发现新版本 v%@"), update.version),
+                    systemImage: "sparkles"
+                )
+                .fontWeight(.semibold)
+                if !update.notes.isEmpty {
+                    Text(update.notes)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(4)
+                }
+                HStack {
+                    Button("下载更新包") { downloadSoftwareUpdate(update) }
+                    Link("查看发布页面", destination: update.releasePageURL)
+                        .font(.caption)
+                }
+            }
+        case .downloading(let version):
+            HStack(spacing: 8) {
+                ProgressView().controlSize(.small)
+                Text(String(format: tr("正在下载并校验 v%@…"), version))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        case .downloaded(let fileURL):
+            HStack {
+                Label("更新包已下载并通过校验", systemImage: "checkmark.shield.fill")
+                    .foregroundStyle(.green)
+                Spacer()
+                Button("在访达中显示") {
+                    NSWorkspace.shared.activateFileViewerSelecting([fileURL])
+                }
+            }
+        case .failed(let message):
+            HStack {
+                Label(message, systemImage: "exclamationmark.triangle.fill")
+                    .font(.caption)
+                    .foregroundStyle(.red)
+                Spacer()
+                Button("重试") { checkSoftwareUpdate() }
+            }
+        }
+    }
+
+    private var currentAppVersion: String {
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
+            ?? "0.4.0"
+    }
+
+    private var updateAssetName: String {
+#if ENGLISH_BUILD
+        "StockPet-macOS-English.zip"
+#else
+        "StockPet-macOS-Chinese.zip"
+#endif
+    }
+
+    private func checkSoftwareUpdate() {
+        updateState = .checking
+        Task {
+            do {
+                let result = try await Self.updateService.check(
+                    currentVersion: currentAppVersion,
+                    assetName: updateAssetName
+                )
+                switch result {
+                case .upToDate:
+                    updateState = .upToDate
+                case .available(let update):
+                    updateState = .available(update)
+                }
+            } catch {
+                updateState = .failed(error.localizedDescription)
+            }
+        }
+    }
+
+    private func downloadSoftwareUpdate(_ update: AvailableSoftwareUpdate) {
+        updateState = .downloading(version: update.version)
+        Task {
+            do {
+                let fileURL = try await Self.updateService.download(update)
+                updateState = .downloaded(fileURL)
+                NSWorkspace.shared.activateFileViewerSelecting([fileURL])
+            } catch {
+                updateState = .failed(error.localizedDescription)
             }
         }
     }
@@ -635,6 +779,16 @@ struct SettingsView: View {
                 .frame(width: 52, alignment: .trailing)
         }
     }
+}
+
+private enum SoftwareUpdateUIState {
+    case idle
+    case checking
+    case upToDate
+    case available(AvailableSoftwareUpdate)
+    case downloading(version: String)
+    case downloaded(URL)
+    case failed(String)
 }
 
 private enum SettingsSection: String, CaseIterable, Identifiable {

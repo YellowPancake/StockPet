@@ -16,7 +16,7 @@
   <img alt="macOS 14+" src="https://img.shields.io/badge/macOS-14%2B-111111?logo=apple">
   <img alt="Windows 10/11" src="https://img.shields.io/badge/Windows-10%20%2F%2011-0078D4?logo=windows">
   <img alt="A-share HK US" src="https://img.shields.io/badge/Markets-A--share%20%7C%20HK%20%7C%20US-EA4C61">
-  <img alt="Version 0.3.0" src="https://img.shields.io/badge/version-0.3.0-5B67F1">
+  <img alt="Version 0.4.0" src="https://img.shields.io/badge/version-0.4.0-5B67F1">
   <img alt="MIT License" src="https://img.shields.io/badge/license-MIT-4C9A2A">
 </p>
 
@@ -87,6 +87,7 @@ Default shortcut:
 - Stock names are larger by default; tickers and markets can be shown when needed.
 - Names, prices, percentage changes, and charts share the same movement color, with independent font-size and horizontal chart-width controls.
 - Long watchlists scroll inside the pet instead of making the window grow indefinitely.
+- Latest prices, percentage changes, and alerts can refresh as often as once per second; intraday charts use a separate, lighter schedule and update no faster than every 15 seconds.
 
 ### Bull & Bear Threshold Alerts: They Arrive When Needed
 
@@ -142,14 +143,18 @@ For example, with a `+3.0%` rise threshold: the first touch at `+3.0%` alerts; a
 | Quick hiding | Customizable global shortcut to show or hide the pet |
 | Bull & bear alerts | Previous-close percentages or per-stock targets, live-price target generation, master switch, opacity, and sounds |
 | Anti-repeat logic | Re-arms after the price returns inside the threshold |
-| Data resilience | Tencent primary, Eastmoney fallback, and stale-data marking on failure |
+| Fast quote refresh | Optional 1-second batch quotes for latest prices, changes, and alerts; charts update separately at 15 seconds or slower |
+| Software updates | Checks GitHub for a newer version, downloads the matching language/system package, verifies its SHA-256 digest, then shows it in Downloads |
+| Data resilience | Tencent fast quotes and intraday data, Eastmoney fallback, adaptive backoff, and stale-data marking on failure |
 | Cross-platform | Universal macOS and Windows x64 |
 
 ## Data and Risk Notes
 
 - Search covers A-shares, Hong Kong stocks, and US stocks.
-- Tencent intraday quotes are the primary source; Eastmoney is the fallback.
-- Refresh frequency is configurable.
+- Tencent fast quotes and intraday data are the primary sources; Eastmoney is the intraday fallback.
+- The selected refresh interval controls latest prices, percentage changes, and alerts. Intraday charts update no faster than every 15 seconds. Outside likely market hours the app slows requests automatically, and repeated failures use progressive backoff.
+- The `1 second` option is a request interval, not a guarantee that exchanges or public endpoints publish a new trade every second.
+- Software Update downloads the package only after you choose to do so. It verifies the SHA-256 digest published by GitHub and reveals the file in Downloads; it does not silently replace the running app.
 - A failed request never creates a random or simulated chart. The last successful result may remain visible and is marked stale.
 - Real-time entitlements for Hong Kong and US markets are subject to exchange rules. Public quote endpoints may be delayed, rate-limited, or changed.
 

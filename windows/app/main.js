@@ -7,25 +7,39 @@ const {
   ipcMain,
   Menu,
   nativeImage,
+  net,
   screen,
   shell,
   Tray,
 } = require("electron");
 const fs = require("node:fs");
 const path = require("node:path");
+const { createHash } = require("node:crypto");
+const { Readable, Transform } = require("node:stream");
+const { pipeline } = require("node:stream/promises");
 const {
+  changePercent,
   evaluatePriceThreshold,
   evaluateThreshold,
+  failureBackoffSeconds,
+  isMarketOpen,
+  isVersionNewer,
   overlayDragPosition,
   overlayGeometry,
   sanitizeState,
 } = require("./lib");
-const { fetchIntraday, searchStocks } = require("./quote-service");
+const { fetchIntraday, fetchLatestQuotes, searchStocks } = require("./quote-service");
 
 let overlayWindow = null;
 let settingsWindow = null;
 let tray = null;
-let refreshTimer = null;
+let latestRefreshTimer = null;
+let intradayRefreshTimer = null;
+let latestRefreshFailures = 0;
+let latestQuoteTimestamps = {};
+let intradayRefreshPromise = null;
+let latestRefreshPromise = null;
+let refreshGeneration = 0;
 let state = sanitizeState();
 let quotes = {};
 let quoteCache = {};
@@ -34,6 +48,10 @@ let lastRefresh = null;
 let sourceError = null;
 let quitting = false;
 let overlayDragStart = null;
+let availableUpdate = null;
+
+const UPDATE_ASSET_NAME = "StockPet-Windows-x64-Chinese.zip";
+const RELEASES_API = "https://api.github.com/repos/YellowPancake/StockPet/releases/latest";
 
 const statePath = () => path.join(app.getPath("userData"), "settings.json");
 const quoteCachePath = () => path.join(app.getPath("userData"), "quote-cache.json");
@@ -66,6 +84,94 @@ function persistQuotes() {
   writeJSON(quoteCachePath(), quoteCache);
 }
 
+async function checkForSoftwareUpdate() {
+  const response = await net.fetch(RELEASES_API, {
+    cache: "no-store",
+    headers: {
+      Accept: "application/vnd.github+json",
+      "X-GitHub-Api-Version": "2022-11-28",
+      "User-Agent": `StockPet/${app.getVersion()}`,
+    },
+  });
+  if (!response.ok) throw new Error("检查更新失败，请稍后重试");
+  const release = await response.json();
+  const version = String(release.tag_name || "").replace(/^[vV]/, "").split("-")[0];
+  if (!isVersionNewer(version, app.getVersion())) {
+    availableUpdate = null;
+    return { status: "upToDate", currentVersion: app.getVersion() };
+  }
+  const asset = (release.assets || []).find((item) => item.name === UPDATE_ASSET_NAME);
+  if (!asset?.browser_download_url || !String(asset.digest || "").startsWith("sha256:")) {
+    throw new Error("新版本缺少适用于当前系统的安装包");
+  }
+  availableUpdate = {
+    version,
+    notes: release.body || "",
+    releasePageURL: release.html_url,
+    assetName: asset.name,
+    assetURL: asset.browser_download_url,
+    digest: String(asset.digest).toLowerCase(),
+  };
+  return { status: "available", update: availableUpdate };
+}
+
+function availableDownloadPath(update) {
+  const extension = path.extname(update.assetName);
+  const baseName = path.basename(update.assetName, extension);
+  const directory = app.getPath("downloads");
+  let candidate = path.join(directory, `${baseName}-v${update.version}${extension}`);
+  let suffix = 2;
+  while (fs.existsSync(candidate)) {
+    candidate = path.join(directory, `${baseName}-v${update.version}-${suffix}${extension}`);
+    suffix += 1;
+  }
+  return candidate;
+}
+
+async function downloadSoftwareUpdate() {
+  if (!availableUpdate) await checkForSoftwareUpdate();
+  if (!availableUpdate) return { status: "upToDate" };
+  const update = availableUpdate;
+  const destination = availableDownloadPath(update);
+  const temporary = `${destination}.download-${process.pid}-${Date.now()}`;
+  const response = await net.fetch(update.assetURL, {
+    cache: "no-store",
+    headers: {
+      Accept: "application/octet-stream",
+      "User-Agent": `StockPet/${app.getVersion()}`,
+    },
+  });
+  if (!response.ok || !response.body) throw new Error("更新包下载失败，请稍后重试");
+
+  const total = Number(response.headers.get("content-length")) || 0;
+  let received = 0;
+  let lastProgressAt = 0;
+  const hash = createHash("sha256");
+  const verifier = new Transform({
+    transform(chunk, _encoding, callback) {
+      hash.update(chunk);
+      received += chunk.length;
+      const now = Date.now();
+      if (now - lastProgressAt >= 200 || received === total) {
+        send("update-download-progress", { received, total });
+        lastProgressAt = now;
+      }
+      callback(null, chunk);
+    },
+  });
+  try {
+    await pipeline(Readable.fromWeb(response.body), verifier, fs.createWriteStream(temporary));
+    const actualDigest = `sha256:${hash.digest("hex")}`;
+    if (actualDigest !== update.digest) throw new Error("更新包校验失败，已停止下载");
+    await fs.promises.rename(temporary, destination);
+  } catch (error) {
+    await fs.promises.unlink(temporary).catch(() => {});
+    throw error;
+  }
+  shell.showItemInFolder(destination);
+  return { status: "downloaded", filePath: destination };
+}
+
 function snapshot() {
   return {
     state,
@@ -73,7 +179,7 @@ function snapshot() {
     status: {
       lastRefresh,
       sourceError,
-      source: "腾讯分时 · 东方财富备用",
+      source: "腾讯秒级报价 · 腾讯分时 · 东方财富备用",
     },
   };
 }
@@ -231,8 +337,60 @@ function createTray() {
 }
 
 function resetRefreshTimer() {
-  if (refreshTimer) clearInterval(refreshTimer);
-  refreshTimer = setInterval(refreshAll, state.refreshInterval * 1000);
+  if (latestRefreshTimer) clearTimeout(latestRefreshTimer);
+  if (intradayRefreshTimer) clearTimeout(intradayRefreshTimer);
+  latestRefreshFailures = 0;
+  const generation = ++refreshGeneration;
+  latestRefreshTimer = setTimeout(
+    () => runLatestRefreshLoop(generation),
+    state.refreshInterval * 1000,
+  );
+  intradayRefreshTimer = setTimeout(
+    () => runIntradayRefreshLoop(generation),
+    intradayDelaySeconds() * 1000,
+  );
+}
+
+function hasOpenMarket() {
+  const now = new Date();
+  return state.symbols.some((symbol) => isMarketOpen(symbol.market, now));
+}
+
+function intradayDelaySeconds() {
+  return hasOpenMarket() ? Math.max(15, state.refreshInterval) : 60;
+}
+
+async function runLatestRefreshLoop(generation) {
+  if (generation !== refreshGeneration) return;
+  latestRefreshTimer = null;
+  const now = new Date();
+  const activeSymbols = state.symbols.filter((symbol) => isMarketOpen(symbol.market, now));
+  let delay = 30;
+  if (activeSymbols.length) {
+    const succeeded = await refreshLatest(activeSymbols);
+    latestRefreshFailures = succeeded ? 0 : Math.min(latestRefreshFailures + 1, 5);
+    delay = latestRefreshFailures
+      ? failureBackoffSeconds(state.refreshInterval, latestRefreshFailures)
+      : state.refreshInterval;
+  }
+  if (!quitting && generation === refreshGeneration) {
+    latestRefreshTimer = setTimeout(
+      () => runLatestRefreshLoop(generation),
+      delay * 1000,
+    );
+  }
+}
+
+async function runIntradayRefreshLoop(generation) {
+  if (generation !== refreshGeneration) return;
+  intradayRefreshTimer = null;
+  await refreshAll();
+  if (!quitting && generation === refreshGeneration) {
+    intradayRefreshTimer = setTimeout(
+      () => runIntradayRefreshLoop(generation),
+      intradayDelaySeconds() * 1000,
+    );
+  }
 }
 
 function applyStatePatch(patch) {
@@ -300,6 +458,14 @@ function evaluateQuoteAlert(quote) {
 }
 
 async function refreshAll() {
+  if (intradayRefreshPromise) return intradayRefreshPromise;
+  intradayRefreshPromise = performIntradayRefresh().finally(() => {
+    intradayRefreshPromise = null;
+  });
+  return intradayRefreshPromise;
+}
+
+async function performIntradayRefresh() {
   const symbols = [...state.symbols];
   if (!symbols.length) {
     lastRefresh = new Date().toISOString();
@@ -312,9 +478,20 @@ async function refreshAll() {
   results.forEach((result, index) => {
     const symbol = symbols[index];
     if (result.status === "fulfilled") {
-      quotes[symbol.quoteID] = result.value;
-      quoteCache[symbol.quoteID] = result.value;
-      evaluateQuoteAlert(result.value);
+      const existing = quotes[symbol.quoteID];
+      const sourceTimestamp = latestQuoteTimestamps[symbol.quoteID];
+      const merged = existing && sourceTimestamp
+        ? {
+            ...result.value,
+            lastPrice: existing.lastPrice,
+            changePercent: changePercent(existing.lastPrice, result.value.previousClose),
+            updatedAt: existing.updatedAt,
+            sourceTimestamp,
+          }
+        : result.value;
+      quotes[symbol.quoteID] = merged;
+      quoteCache[symbol.quoteID] = merged;
+      evaluateQuoteAlert(merged);
     } else {
       failures += 1;
       const cached = quotes[symbol.quoteID];
@@ -335,6 +512,57 @@ async function refreshAll() {
   return snapshot();
 }
 
+async function refreshLatest(symbols) {
+  if (latestRefreshPromise) return latestRefreshPromise;
+  latestRefreshPromise = performLatestRefresh(symbols).finally(() => {
+    latestRefreshPromise = null;
+  });
+  return latestRefreshPromise;
+}
+
+async function performLatestRefresh(symbols) {
+  try {
+    const updates = await fetchLatestQuotes(symbols);
+    let applied = 0;
+    for (const update of updates) {
+      const id = update.symbol.quoteID;
+      if (latestQuoteTimestamps[id]
+          && update.sourceTimestamp <= latestQuoteTimestamps[id]) continue;
+      latestQuoteTimestamps[id] = update.sourceTimestamp;
+      const existing = quotes[id];
+      const quote = {
+        symbol: update.symbol,
+        points: existing?.points || [],
+        dayOpen: existing?.dayOpen || update.lastPrice,
+        previousClose: update.previousClose,
+        lastPrice: update.lastPrice,
+        changePercent: changePercent(update.lastPrice, update.previousClose),
+        updatedAt: update.sourceTimestamp,
+        sourceTimestamp: update.sourceTimestamp,
+        isStale: false,
+        source: "腾讯秒级报价",
+      };
+      quotes[id] = quote;
+      quoteCache[id] = quote;
+      evaluateQuoteAlert(quote);
+      applied += 1;
+    }
+    if (applied) {
+      lastRefresh = new Date().toISOString();
+      sourceError = null;
+      send("quotes-updated", quotes);
+      send("refresh-status", snapshot().status);
+    }
+    return updates.length > 0;
+  } catch {
+    if (!Object.keys(quotes).length) {
+      sourceError = "实时价格暂时不可用，分时曲线仍会继续刷新";
+      send("refresh-status", snapshot().status);
+    }
+    return false;
+  }
+}
+
 function registerIPC() {
   ipcMain.handle("bootstrap", () => snapshot());
   ipcMain.handle("state:update", (_event, patch) => applyStatePatch(patch || {}));
@@ -352,6 +580,7 @@ function registerIPC() {
     delete quotes[quoteID];
     delete quoteCache[quoteID];
     delete thresholdStates[quoteID];
+    delete latestQuoteTimestamps[quoteID];
     persistQuotes();
     send("quotes-updated", quotes);
     return { ok: true };
@@ -379,6 +608,8 @@ function registerIPC() {
     await shell.openExternal("https://github.com/YellowPancake");
     return { ok: true };
   });
+  ipcMain.handle("update:check", () => checkForSoftwareUpdate());
+  ipcMain.handle("update:download", () => downloadSoftwareUpdate());
   ipcMain.handle("overlay:show", () => {
     overlayWindow?.showInactive();
     return { ok: true };
@@ -424,12 +655,15 @@ if (!gotLock) {
     createOverlayWindow();
     createTray();
     registerGlobalShortcut();
-    resetRefreshTimer();
-    refreshAll();
+    refreshAll().finally(resetRefreshTimer);
   });
 
   app.on("before-quit", () => {
     quitting = true;
+    if (latestRefreshTimer) clearTimeout(latestRefreshTimer);
+    if (intradayRefreshTimer) clearTimeout(intradayRefreshTimer);
+    refreshGeneration += 1;
+    persistQuotes();
     globalShortcut.unregisterAll();
   });
 

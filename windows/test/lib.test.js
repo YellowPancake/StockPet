@@ -6,14 +6,19 @@ const {
   colorFor,
   evaluatePriceThreshold,
   evaluateThreshold,
+  failureBackoffSeconds,
   hasDrawableIntradayData,
   marketForSearchItem,
+  isMarketOpen,
+  isVersionNewer,
   overlayDragPosition,
   overlayGeometry,
   parseTencentMinute,
+  parseTencentRealtime,
   parseTrend,
   sanitizeState,
   tencentCode,
+  tencentRealtimeCode,
 } = require("../app/lib");
 
 test("overlay geometry scales the whole board linearly", () => {
@@ -55,6 +60,31 @@ test("Tencent symbols are mapped for A/H/US markets", () => {
   assert.equal(tencentCode({ code: "300308", market: "aShare" }), "sz300308");
   assert.equal(tencentCode({ code: "00700", market: "hongKong" }), "hk00700");
   assert.equal(tencentCode({ code: "aapl", market: "unitedStates" }), "usAAPL");
+  assert.equal(tencentRealtimeCode({ code: "00700", market: "hongKong" }), "r_hk00700");
+});
+
+test("Tencent batch realtime quotes are parsed", () => {
+  const symbol = { code: "600519", name: "贵州茅台", market: "aShare", quoteID: "1.600519" };
+  const fields = Array(31).fill("");
+  Object.assign(fields, { 0: "1", 1: "Kweichow Moutai", 2: "600519", 3: "1355.70", 4: "1350", 30: "20260803145240" });
+  const updates = parseTencentRealtime(`v_sh600519="${fields.join("~")}";`, [symbol]);
+  assert.equal(updates.length, 1);
+  assert.equal(updates[0].lastPrice, 1355.7);
+  assert.equal(updates[0].sourceTimestamp, "20260803145240");
+});
+
+test("market sessions and failure backoff protect fast refresh", () => {
+  assert.equal(isMarketOpen("aShare", new Date("2026-08-03T02:00:00Z")), true);
+  assert.equal(isMarketOpen("aShare", new Date("2026-08-03T04:00:00Z")), false);
+  assert.equal(isMarketOpen("unitedStates", new Date("2026-08-03T15:00:00Z")), true);
+  assert.equal(failureBackoffSeconds(1, 1), 3);
+  assert.equal(failureBackoffSeconds(1, 4), 30);
+});
+
+test("semantic versions detect newer releases", () => {
+  assert.equal(isVersionNewer("0.4.0", "0.3.0"), true);
+  assert.equal(isVersionNewer("v1.0.0", "0.9.9"), true);
+  assert.equal(isVersionNewer("0.4.0", "0.4.0"), false);
 });
 
 test("market search results only keep A/H/US classifications", () => {
@@ -126,7 +156,7 @@ test("persisted settings are clamped and a deliberately empty list stays empty",
   assert.equal(state.fontScale, 1.5);
   assert.equal(state.showStockMeta, false);
   assert.equal(state.backgroundOpacity, 0);
-  assert.equal(state.refreshInterval, 5);
+  assert.equal(state.refreshInterval, 1);
 });
 
 test("stock code and market are hidden by default and can be enabled", () => {

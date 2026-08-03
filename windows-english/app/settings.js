@@ -10,6 +10,7 @@ let state = null;
 let status = null;
 let quotes = {};
 let searchResults = [];
+let availableUpdate = null;
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
@@ -165,7 +166,7 @@ function syncControls() {
 
 function renderStatus() {
   if (!status) return;
-  $("#data-source").textContent = status.source || "Tencent intraday · Eastmoney fallback";
+  $("#data-source").textContent = status.source || "Tencent fast quotes · Tencent intraday · Eastmoney fallback";
   $("#last-refresh").textContent = status.lastRefresh
     ? new Date(status.lastRefresh).toLocaleString("en-US")
     : "Not refreshed yet";
@@ -272,6 +273,52 @@ $("#preview-bull").addEventListener("click", () => window.stockPet.previewAlert(
 $("#preview-bear").addEventListener("click", () => window.stockPet.previewAlert("falling"));
 $("#github-author").addEventListener("click", () => window.stockPet.openAuthor());
 
+$("#check-update").addEventListener("click", async () => {
+  const button = $("#check-update");
+  button.disabled = true;
+  $("#update-status").textContent = "Checking for updates…";
+  $("#download-update").hidden = true;
+  $("#update-notes").hidden = true;
+  try {
+    const result = await window.stockPet.checkForUpdate();
+    if (result.status === "available") {
+      availableUpdate = result.update;
+      $("#update-status").textContent = `Version v${result.update.version} is available`;
+      $("#download-update").hidden = false;
+      $("#update-notes").textContent = result.update.notes || "The Windows English update is ready to download.";
+      $("#update-notes").hidden = false;
+    } else {
+      availableUpdate = null;
+      $("#update-status").textContent = "You're up to date";
+    }
+  } catch (error) {
+    $("#update-status").textContent = error.message || "Unable to check for updates. Please try again later.";
+  }
+  button.disabled = false;
+});
+
+$("#download-update").addEventListener("click", async () => {
+  if (!availableUpdate) return;
+  const button = $("#download-update");
+  button.disabled = true;
+  $("#check-update").disabled = true;
+  $("#update-progress").hidden = false;
+  $("#update-progress").removeAttribute("value");
+  $("#update-status").textContent = `Downloading and verifying v${availableUpdate.version}…`;
+  try {
+    const result = await window.stockPet.downloadUpdate();
+    $("#update-status").textContent = result.status === "downloaded"
+      ? "The update was verified; its folder is now open"
+      : "You're up to date";
+    button.hidden = true;
+  } catch (error) {
+    $("#update-status").textContent = error.message || "Unable to download the update. Please try again later.";
+  }
+  $("#update-progress").hidden = true;
+  button.disabled = false;
+  $("#check-update").disabled = false;
+});
+
 $("#price-alert-list").addEventListener("change", async (event) => {
   const item = event.target.closest("[data-price-alert-id]");
   if (!item) return;
@@ -356,6 +403,11 @@ window.stockPet.on("refresh-status", (nextStatus) => {
 window.stockPet.on("quotes-updated", (nextQuotes) => {
   quotes = nextQuotes || {};
   renderPriceAlerts();
+});
+window.stockPet.on("update-download-progress", ({ received, total }) => {
+  const progress = $("#update-progress");
+  progress.hidden = false;
+  if (total > 0) progress.value = received / total;
 });
 
 window.stockPet.bootstrap().then((snapshot) => {

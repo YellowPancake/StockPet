@@ -21,7 +21,7 @@
         <button class="nav-item" data-page="alerts"><span>♧</span>Bull &amp; Bear Alerts</button>
         <button class="nav-item" data-page="data"><span>◎</span>Data &amp; Refresh</button>
       </nav>
-      <div class="version">Windows x64 · 0.3.0</div>
+      <div class="version">Windows x64 · 0.4.0</div>
     </aside>
 
     <main class="content">
@@ -183,8 +183,9 @@
         </header>
         <div class="card settings-card">
           <label class="setting-row">
-            <span><strong>Refresh interval</strong></span>
+            <span><strong>Refresh interval</strong><small>Latest price, change, and alerts; charts update no faster than every 15 seconds</small></span>
             <select id="refreshInterval">
+              <option value="1">1 second (Fast)</option>
               <option value="5">5 seconds</option>
               <option value="10">10 seconds</option>
               <option value="15">15 seconds</option>
@@ -194,7 +195,7 @@
           </label>
           <div class="setting-row">
             <span><strong>Current data source</strong></span>
-            <span id="data-source">Tencent intraday · Eastmoney fallback</span>
+            <span id="data-source">Tencent fast quotes · Tencent intraday · Eastmoney fallback</span>
           </div>
           <div class="setting-row">
             <span><strong>Last refreshed</strong></span>
@@ -210,6 +211,17 @@
             <li>Public market data may be delayed, rate-limited, or changed and should not be used for order decisions.</li>
             <li>Failed requests never generate fake charts. The last successful data is retained and marked stale.</li>
           </ul>
+        </div>
+        <div class="card settings-card update-card">
+          <div class="setting-row">
+            <span><strong>Software Update</strong><small id="update-status">Current version v0.4.0</small></span>
+            <div class="update-actions">
+              <button id="check-update" class="secondary" type="button">Check for Updates</button>
+              <button id="download-update" class="primary compact-button" type="button" hidden>Download Update</button>
+            </div>
+          </div>
+          <progress id="update-progress" max="1" value="0" hidden></progress>
+          <p id="update-notes" class="inline-message" hidden></p>
         </div>
         <div class="card settings-card author-card">
           <div class="setting-row">

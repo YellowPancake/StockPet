@@ -12,12 +12,14 @@
 		0B631D1A21FB811752B03BB1 /* StockStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 643CC492EC969812FD112505 /* StockStore.swift */; };
 		0F5BD1129F006C6C6AEEF66B /* MascotAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42DD66D82AA68E5D9EC4A058 /* MascotAlertView.swift */; };
 		1FBF3F771EBFD225188C490B /* StockModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85FEAAF6B2924B4261419804 /* StockModels.swift */; };
+		2E42F49193464240ED025D5C /* SoftwareUpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 598DCEAD153F1F02AF6123E8 /* SoftwareUpdateService.swift */; };
 		2FB8C424A27402978773D729 /* GlobalHotKeyController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1EE4D069413303C0D0944C1 /* GlobalHotKeyController.swift */; };
 		3954B87067713B0CAE8640EE /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 332D83F9828B1E87666306B8 /* InfoPlist.strings */; };
 		3DC7FA530F64A3AD8F03557D /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42C7B2E12C206317F13E33AB /* SettingsView.swift */; };
 		4844480E66A5446EB787B1A7 /* StockPetApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F5CCCE8736F7199FAD9B5E /* StockPetApp.swift */; };
 		4A15E6A4D3A5C254B4B67353 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = EF7F9D7A30951FB08BC27AE4 /* Localizable.strings */; };
 		4D4C873F88FCD0599FE5611F /* StockModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85FEAAF6B2924B4261419804 /* StockModels.swift */; };
+		5BD7D57AA1EA3F95A7B14D49 /* SoftwareUpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 598DCEAD153F1F02AF6123E8 /* SoftwareUpdateService.swift */; };
 		5DBFCEEFFD179D383DC37651 /* L10n.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4669FABCC327162CF506FD8B /* L10n.swift */; };
 		5FD19486972770068941BD75 /* StockRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 387D1719C7550FDF7A326367 /* StockRowView.swift */; };
 		652C7193EE90D4D4DBAA840D /* FloatingPetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D023907729A86A626525A005 /* FloatingPetView.swift */; };
@@ -74,6 +76,7 @@
 		42DD66D82AA68E5D9EC4A058 /* MascotAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MascotAlertView.swift; sourceTree = "<group>"; };
 		4669FABCC327162CF506FD8B /* L10n.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = L10n.swift; sourceTree = "<group>"; };
 		4969C92FC959B479C72836FC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		598DCEAD153F1F02AF6123E8 /* SoftwareUpdateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoftwareUpdateService.swift; sourceTree = "<group>"; };
 		643CC492EC969812FD112505 /* StockStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockStore.swift; sourceTree = "<group>"; };
 		83F5CCCE8736F7199FAD9B5E /* StockPetApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockPetApp.swift; sourceTree = "<group>"; };
 		85FEAAF6B2924B4261419804 /* StockModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockModels.swift; sourceTree = "<group>"; };
@@ -143,6 +146,7 @@
 			isa = PBXGroup;
 			children = (
 				0B03DEF58EB797856C58357E /* QuoteService.swift */,
+				598DCEAD153F1F02AF6123E8 /* SoftwareUpdateService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -387,6 +391,7 @@
 				00FD2CA971C6E03C4B84FEEE /* MascotAlertView.swift in Sources */,
 				C93599647FBF8280FE73FB0D /* QuoteService.swift in Sources */,
 				3DC7FA530F64A3AD8F03557D /* SettingsView.swift in Sources */,
+				5BD7D57AA1EA3F95A7B14D49 /* SoftwareUpdateService.swift in Sources */,
 				4D4C873F88FCD0599FE5611F /* StockModels.swift in Sources */,
 				4844480E66A5446EB787B1A7 /* StockPetApp.swift in Sources */,
 				5FD19486972770068941BD75 /* StockRowView.swift in Sources */,
@@ -421,6 +426,7 @@
 				0F5BD1129F006C6C6AEEF66B /* MascotAlertView.swift in Sources */,
 				D982A70987A81016114C6540 /* QuoteService.swift in Sources */,
 				7F733F6EE5DD2DF7DE6EC1E5 /* SettingsView.swift in Sources */,
+				2E42F49193464240ED025D5C /* SoftwareUpdateService.swift in Sources */,
 				1FBF3F771EBFD225188C490B /* StockModels.swift in Sources */,
 				09929F2A48E5811F1CE58DE5 /* StockPetApp.swift in Sources */,
 				8CE722319ED89A59D7B785B4 /* StockRowView.swift in Sources */,
@@ -631,7 +637,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -644,7 +650,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 0.3.0;
+				MARKETING_VERSION = 0.4.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -690,7 +696,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -709,7 +715,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 0.3.0;
+				MARKETING_VERSION = 0.4.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;

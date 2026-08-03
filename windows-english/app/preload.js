@@ -8,6 +8,7 @@ const eventChannels = new Set([
   "stock-alert",
   "alert-dismiss",
   "refresh-status",
+  "update-download-progress",
 ]);
 
 contextBridge.exposeInMainWorld("stockPet", {
@@ -21,6 +22,8 @@ contextBridge.exposeInMainWorld("stockPet", {
   previewAlert: (direction) => ipcRenderer.invoke("alert:preview", direction),
   openSettings: () => ipcRenderer.invoke("settings:open"),
   openAuthor: () => ipcRenderer.invoke("external:open-author"),
+  checkForUpdate: () => ipcRenderer.invoke("update:check"),
+  downloadUpdate: () => ipcRenderer.invoke("update:download"),
   showOverlay: () => ipcRenderer.invoke("overlay:show"),
   beginWindowDrag: (x, y) => ipcRenderer.send("overlay:drag-start", { x, y }),
   dragWindow: (x, y) => ipcRenderer.send("overlay:drag-move", { x, y }),

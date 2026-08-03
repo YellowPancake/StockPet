@@ -50,6 +50,48 @@ final class StockPetTests: XCTestCase {
         XCTAssertEqual(MarketQuoteService.tencentCode(for: StockSymbol.initialSymbols[0]), "sh600519")
         XCTAssertEqual(MarketQuoteService.tencentCode(for: StockSymbol.initialSymbols[1]), "hk00700")
         XCTAssertEqual(MarketQuoteService.tencentCode(for: StockSymbol.initialSymbols[2]), "usAAPL")
+        XCTAssertEqual(
+            MarketQuoteService.tencentRealtimeCode(for: StockSymbol.initialSymbols[1]),
+            "r_hk00700"
+        )
+    }
+
+    func testParsesTencentBatchRealtimeQuote() throws {
+        var fields = Array(repeating: "", count: 31)
+        fields[0] = "1"
+        fields[1] = "Kweichow Moutai"
+        fields[2] = "600519"
+        fields[3] = "1355.70"
+        fields[4] = "1350.00"
+        fields[30] = "20260803145240"
+        let raw = "v_sh600519=\"\(fields.joined(separator: "~"))\";"
+
+        let update = try XCTUnwrap(
+            MarketQuoteService.parseTencentRealtime(
+                raw,
+                symbols: [StockSymbol.initialSymbols[0]]
+            ).first
+        )
+        XCTAssertEqual(update.lastPrice, 1355.70, accuracy: 0.001)
+        XCTAssertEqual(update.previousClose, 1350.00, accuracy: 0.001)
+    }
+
+    func testMarketSessionsUseTheirOwnTimeZones() throws {
+        let formatter = ISO8601DateFormatter()
+        let aShareMorning = try XCTUnwrap(formatter.date(from: "2026-08-03T02:00:00Z"))
+        let aShareLunch = try XCTUnwrap(formatter.date(from: "2026-08-03T04:00:00Z"))
+        let usSession = try XCTUnwrap(formatter.date(from: "2026-08-03T15:00:00Z"))
+
+        XCTAssertTrue(StockMarket.aShare.isLikelyTrading(at: aShareMorning))
+        XCTAssertFalse(StockMarket.aShare.isLikelyTrading(at: aShareLunch))
+        XCTAssertTrue(StockMarket.unitedStates.isLikelyTrading(at: usSession))
+    }
+
+    func testSoftwareUpdateVersionComparison() {
+        XCTAssertTrue(SoftwareUpdateService.isVersion("0.4.0", newerThan: "0.3.0"))
+        XCTAssertTrue(SoftwareUpdateService.isVersion("v1.0.0", newerThan: "0.9.9"))
+        XCTAssertFalse(SoftwareUpdateService.isVersion("0.4.0", newerThan: "0.4.0"))
+        XCTAssertFalse(SoftwareUpdateService.isVersion("0.3.9", newerThan: "0.4.0"))
     }
 
     func testSearchMarketsMapToSupportedRegions() {
@@ -165,6 +207,10 @@ private struct AlwaysFailingQuoteService: QuoteProviding {
     }
 
     func fetchIntraday(for symbol: StockSymbol) async throws -> StockQuote {
+        throw URLError(.notConnectedToInternet)
+    }
+
+    func fetchLatestQuotes(for symbols: [StockSymbol]) async throws -> [LatestQuoteUpdate] {
         throw URLError(.notConnectedToInternet)
     }
 }
