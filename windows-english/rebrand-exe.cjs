@@ -28,8 +28,8 @@ async function main() {
   }
 
   for (const versionInfo of ResEdit.Resource.VersionInfo.fromEntries(resources.entries)) {
-    versionInfo.setFileVersion(0, 4, 1, 0, 1033);
-    versionInfo.setProductVersion(0, 4, 1, 0, 1033);
+    versionInfo.setFileVersion(0, 4, 2, 0, 1033);
+    versionInfo.setProductVersion(0, 4, 2, 0, 1033);
     const languages = versionInfo.getAllLanguagesForStringValues();
     const targets = languages.length ? languages : [{ lang: 1033, codepage: 1200 }];
     for (const language of targets) {

@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.4.2
+
+- Added transparent multipart download and reassembly for routes with per-file size limits.
+- The user still receives one verified ZIP; multipart storage is an internal implementation detail.
+
 ## v0.4.1
 
 - Added two independent update routes for version checks and verified package downloads.

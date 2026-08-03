@@ -274,6 +274,22 @@ function releaseDigest(notes, assetName) {
   return match ? `sha256:${match[1].toLowerCase()}` : null;
 }
 
+function releaseParts(attachments, assetName) {
+  const exact = attachments.find((item) => item.name === assetName && item.browser_download_url);
+  if (exact) return [{ url: exact.browser_download_url, size: Number(exact.size) || 0 }];
+  const prefix = `${assetName}.part`;
+  return attachments
+    .filter((item) => item.name?.startsWith(prefix) && item.browser_download_url)
+    .map((item) => ({
+      index: Number(item.name.slice(prefix.length)),
+      url: item.browser_download_url,
+      size: Number(item.size) || 0,
+    }))
+    .filter((item) => Number.isInteger(item.index) && item.index > 0)
+    .sort((left, right) => left.index - right.index)
+    .map(({ url, size }) => ({ url, size }));
+}
+
 module.exports = {
   INITIAL_SYMBOLS,
   MARKETS,
@@ -292,6 +308,7 @@ module.exports = {
   parseTencentRealtime,
   parseTrend,
   releaseDigest,
+  releaseParts,
   sanitizeState,
   tencentCode,
   tencentRealtimeCode,

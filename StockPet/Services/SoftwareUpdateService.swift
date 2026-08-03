@@ -9,8 +9,13 @@ enum SoftwareUpdateRoute: String, CaseIterable, Hashable, Sendable {
 struct SoftwareUpdateDownload: Sendable {
     let route: SoftwareUpdateRoute
     let assetName: String
-    let assetURL: URL
+    let parts: [SoftwareUpdatePart]
     let digest: String
+}
+
+struct SoftwareUpdatePart: Sendable {
+    let url: URL
+    let size: Int64
 }
 
 struct AvailableSoftwareUpdate: Sendable {
@@ -110,28 +115,6 @@ actor SoftwareUpdateService {
         guard let download = update.downloads[route] else {
             throw SoftwareUpdateError.missingRoute
         }
-        var request = URLRequest(
-            url: download.assetURL,
-            cachePolicy: .reloadIgnoringLocalCacheData,
-            timeoutInterval: 180
-        )
-        request.setValue("application/octet-stream", forHTTPHeaderField: "Accept")
-        request.setValue("StockPet/\(update.version)", forHTTPHeaderField: "User-Agent")
-        let (temporaryURL, response) = try await session.download(for: request)
-        guard let http = response as? HTTPURLResponse,
-              (200..<300).contains(http.statusCode)
-        else {
-            throw SoftwareUpdateError.downloadFailed
-        }
-
-        let data = try Data(contentsOf: temporaryURL, options: .mappedIfSafe)
-        let actualDigest = "sha256:" + SHA256.hash(data: data)
-            .map { String(format: "%02x", $0) }
-            .joined()
-        guard actualDigest == download.digest.lowercased() else {
-            throw SoftwareUpdateError.digestMismatch
-        }
-
         let downloads = FileManager.default.urls(
             for: .downloadsDirectory,
             in: .userDomainMask
@@ -141,7 +124,43 @@ actor SoftwareUpdateService {
             assetName: download.assetName,
             version: update.version
         )
-        try FileManager.default.moveItem(at: temporaryURL, to: destination)
+        let temporaryURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("stockpet-update-\(UUID().uuidString).download")
+        FileManager.default.createFile(atPath: temporaryURL.path, contents: nil)
+        let output = try FileHandle(forWritingTo: temporaryURL)
+        var hasher = SHA256()
+        do {
+            for part in download.parts {
+                var request = URLRequest(
+                    url: part.url,
+                    cachePolicy: .reloadIgnoringLocalCacheData,
+                    timeoutInterval: 180
+                )
+                request.setValue("application/octet-stream", forHTTPHeaderField: "Accept")
+                request.setValue("StockPet/\(update.version)", forHTTPHeaderField: "User-Agent")
+                let (partURL, response) = try await session.download(for: request)
+                guard let http = response as? HTTPURLResponse,
+                      (200..<300).contains(http.statusCode)
+                else {
+                    throw SoftwareUpdateError.downloadFailed
+                }
+                let data = try Data(contentsOf: partURL, options: .mappedIfSafe)
+                hasher.update(data: data)
+                try output.write(contentsOf: data)
+            }
+            try output.close()
+            let actualDigest = "sha256:" + hasher.finalize()
+                .map { String(format: "%02x", $0) }
+                .joined()
+            guard actualDigest == download.digest.lowercased() else {
+                throw SoftwareUpdateError.digestMismatch
+            }
+            try FileManager.default.moveItem(at: temporaryURL, to: destination)
+        } catch {
+            try? output.close()
+            try? FileManager.default.removeItem(at: temporaryURL)
+            throw error
+        }
         return destination
     }
 
@@ -169,7 +188,7 @@ actor SoftwareUpdateService {
             download: SoftwareUpdateDownload(
                 route: .routeOne,
                 assetName: asset.name,
-                assetURL: assetURL,
+                parts: [SoftwareUpdatePart(url: assetURL, size: asset.size ?? 0)],
                 digest: digest.lowercased()
             )
         )
@@ -198,8 +217,8 @@ actor SoftwareUpdateService {
         attachmentsRequest.setValue("StockPet", forHTTPHeaderField: "User-Agent")
         let attachmentsData = try await responseData(for: attachmentsRequest)
         let attachments = try JSONDecoder().decode([GiteeAttachment].self, from: attachmentsData)
-        guard let asset = attachments.first(where: { $0.name == assetName }),
-              let assetURL = URL(string: asset.browserDownloadURL),
+        let selectedParts = Self.giteeParts(for: assetName, attachments: attachments)
+        guard !selectedParts.isEmpty,
               let digest = Self.digest(for: assetName, in: release.body ?? "")
         else {
             throw SoftwareUpdateError.missingAsset
@@ -209,8 +228,8 @@ actor SoftwareUpdateService {
             notes: release.body ?? "",
             download: SoftwareUpdateDownload(
                 route: .routeTwo,
-                assetName: asset.name,
-                assetURL: assetURL,
+                assetName: assetName,
+                parts: selectedParts,
                 digest: digest
             )
         )
@@ -237,6 +256,27 @@ actor SoftwareUpdateService {
               let range = Range(match.range(at: 1), in: notes)
         else { return nil }
         return "sha256:" + notes[range].lowercased()
+    }
+
+    private static func giteeParts(
+        for assetName: String,
+        attachments: [GiteeAttachment]
+    ) -> [SoftwareUpdatePart] {
+        if let exact = attachments.first(where: { $0.name == assetName }),
+           let url = URL(string: exact.browserDownloadURL) {
+            return [SoftwareUpdatePart(url: url, size: exact.size ?? 0)]
+        }
+        let prefix = assetName + ".part"
+        return attachments
+            .compactMap { attachment -> (Int, SoftwareUpdatePart)? in
+                guard attachment.name.hasPrefix(prefix),
+                      let index = Int(attachment.name.dropFirst(prefix.count)),
+                      let url = URL(string: attachment.browserDownloadURL)
+                else { return nil }
+                return (index, SoftwareUpdatePart(url: url, size: attachment.size ?? 0))
+            }
+            .sorted { $0.0 < $1.0 }
+            .map(\.1)
     }
 
     static func isVersion(_ candidate: String, newerThan current: String) -> Bool {
@@ -304,11 +344,13 @@ private struct GitHubReleaseAsset: Decodable {
     let name: String
     let browserDownloadURL: String
     let digest: String?
+    let size: Int64?
 
     enum CodingKeys: String, CodingKey {
         case name
         case browserDownloadURL = "browser_download_url"
         case digest
+        case size
     }
 }
 
@@ -327,10 +369,12 @@ private struct GiteeRelease: Decodable {
 private struct GiteeAttachment: Decodable {
     let name: String
     let browserDownloadURL: String
+    let size: Int64?
 
     enum CodingKeys: String, CodingKey {
         case name
         case browserDownloadURL = "browser_download_url"
+        case size
     }
 }
 

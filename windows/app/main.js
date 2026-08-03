@@ -15,8 +15,6 @@ const {
 const fs = require("node:fs");
 const path = require("node:path");
 const { createHash } = require("node:crypto");
-const { Readable, Transform } = require("node:stream");
-const { pipeline } = require("node:stream/promises");
 const {
   changePercent,
   evaluatePriceThreshold,
@@ -27,6 +25,7 @@ const {
   overlayDragPosition,
   overlayGeometry,
   releaseDigest,
+  releaseParts,
   sanitizeState,
 } = require("./lib");
 const { fetchIntraday, fetchLatestQuotes, searchStocks } = require("./quote-service");
@@ -115,7 +114,7 @@ async function githubUpdateCandidate() {
     download: {
       route: "routeOne",
       assetName: asset.name,
-      assetURL: asset.browser_download_url,
+      parts: [{ url: asset.browser_download_url, size: Number(asset.size) || 0 }],
       digest: String(asset.digest).toLowerCase(),
     },
   };
@@ -126,9 +125,9 @@ async function giteeUpdateCandidate() {
   const attachments = await fetchUpdateJSON(
     `https://gitee.com/api/v5/repos/YBigPie/StockPet/releases/${release.id}/attach_files?per_page=100`,
   );
-  const asset = attachments.find((item) => item.name === UPDATE_ASSET_NAME);
+  const parts = releaseParts(attachments, UPDATE_ASSET_NAME);
   const digest = releaseDigest(release.body, UPDATE_ASSET_NAME);
-  if (!asset?.browser_download_url || !digest) {
+  if (!parts.length || !digest) {
     throw new Error("新版本缺少适用于当前系统的安装包");
   }
   return {
@@ -136,8 +135,8 @@ async function giteeUpdateCandidate() {
     notes: release.body || "",
     download: {
       route: "routeTwo",
-      assetName: asset.name,
-      assetURL: asset.browser_download_url,
+      assetName: UPDATE_ASSET_NAME,
+      parts,
       digest,
     },
   };
@@ -185,33 +184,31 @@ async function downloadSoftwareUpdate(route) {
   if (!download) throw new Error("所选下载路线暂时不可用，请尝试另一条路线");
   const destination = availableDownloadPath({ ...update, assetName: download.assetName });
   const temporary = `${destination}.download-${process.pid}-${Date.now()}`;
-  const response = await net.fetch(download.assetURL, {
-    cache: "no-store",
-    headers: {
-      Accept: "application/octet-stream",
-      "User-Agent": `StockPet/${app.getVersion()}`,
-    },
-  });
-  if (!response.ok || !response.body) throw new Error("更新包下载失败，请稍后重试");
-
-  const total = Number(response.headers.get("content-length")) || 0;
+  const total = download.parts.reduce((sum, part) => sum + (Number(part.size) || 0), 0);
   let received = 0;
   let lastProgressAt = 0;
   const hash = createHash("sha256");
-  const verifier = new Transform({
-    transform(chunk, _encoding, callback) {
+  try {
+    await fs.promises.writeFile(temporary, Buffer.alloc(0));
+    for (const part of download.parts) {
+      const response = await net.fetch(part.url, {
+        cache: "no-store",
+        headers: {
+          Accept: "application/octet-stream",
+          "User-Agent": `StockPet/${app.getVersion()}`,
+        },
+      });
+      if (!response.ok) throw new Error("更新包下载失败，请稍后重试");
+      const chunk = Buffer.from(await response.arrayBuffer());
       hash.update(chunk);
       received += chunk.length;
+      await fs.promises.appendFile(temporary, chunk);
       const now = Date.now();
-      if (now - lastProgressAt >= 200 || received === total) {
+      if (now - lastProgressAt >= 200 || received >= total) {
         send("update-download-progress", { received, total });
         lastProgressAt = now;
       }
-      callback(null, chunk);
-    },
-  });
-  try {
-    await pipeline(Readable.fromWeb(response.body), verifier, fs.createWriteStream(temporary));
+    }
     const actualDigest = `sha256:${hash.digest("hex")}`;
     if (actualDigest !== download.digest) throw new Error("更新包校验失败，已停止下载");
     await fs.promises.rename(temporary, destination);
