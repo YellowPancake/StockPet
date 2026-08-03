@@ -163,7 +163,10 @@ function sanitizeState(candidate = {}) {
   return {
     symbols,
     lineOpacity: number(candidate.lineOpacity, 0.92, 0.1, 1),
+    lineWidth: number(candidate.lineWidth, 2.4, 0.8, 5),
     labelOpacity: number(candidate.labelOpacity, 0.92, 0.1, 1),
+    fontScale: number(candidate.fontScale, 1, 0.75, 1.5),
+    showStockMeta: Boolean(candidate.showStockMeta),
     backgroundOpacity: number(candidate.backgroundOpacity, 0.16, 0, 0.95),
     risingThreshold: number(candidate.risingThreshold, 3, 0.1, 30),
     fallingThreshold: number(candidate.fallingThreshold, 3, 0.1, 30),

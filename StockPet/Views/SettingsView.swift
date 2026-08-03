@@ -159,12 +159,36 @@ struct SettingsView: View {
                     range: 0.15...1
                 )
                 Divider()
+                HStack {
+                    Label("曲线线宽", systemImage: "line.diagonal")
+                        .frame(width: 160, alignment: .leading)
+                    Slider(value: $store.lineWidth, in: 0.8...5, step: 0.1)
+                    Text(String(format: "%.1f pt", store.lineWidth))
+                        .font(.caption.monospacedDigit())
+                        .foregroundStyle(.secondary)
+                        .frame(width: 52, alignment: .trailing)
+                }
+                Divider()
                 opacitySlider(
                     title: "名称与数字不透明度",
                     icon: "textformat",
                     value: $store.labelOpacity,
                     range: 0.15...1
                 )
+                Divider()
+                HStack {
+                    Label("字体大小", systemImage: "textformat.size")
+                        .frame(width: 160, alignment: .leading)
+                    Slider(value: $store.fontScale, in: 0.75...1.5, step: 0.05)
+                    Text("\(Int(store.fontScale * 100))%")
+                        .font(.caption.monospacedDigit())
+                        .foregroundStyle(.secondary)
+                        .frame(width: 40, alignment: .trailing)
+                }
+                Divider()
+                Toggle(isOn: $store.showStockMeta) {
+                    Label("显示股票代码与市场", systemImage: "number.square")
+                }
                 Divider()
                 opacitySlider(
                     title: "背景板不透明度",

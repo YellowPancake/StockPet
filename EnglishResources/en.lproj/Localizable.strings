@@ -19,7 +19,10 @@
 "让它融进桌面，而不是挡住工作" = "Blend it into your desktop without getting in the way";
 "整体大小" = "Overall size";
 "曲线不透明度" = "Chart opacity";
+"曲线线宽" = "Chart line width";
 "名称与数字不透明度" = "Text & number opacity";
+"字体大小" = "Font size";
+"显示股票代码与市场" = "Show ticker and market";
 "背景板不透明度" = "Background opacity";
 "紧凑模式" = "Compact mode";
 "始终置顶" = "Always on top";

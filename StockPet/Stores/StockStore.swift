@@ -15,7 +15,16 @@ final class StockStore: ObservableObject {
     @Published var lineOpacity: Double {
         didSet { persist() }
     }
+    @Published var lineWidth: Double {
+        didSet { persist() }
+    }
     @Published var labelOpacity: Double {
+        didSet { persist() }
+    }
+    @Published var fontScale: Double {
+        didSet { persist() }
+    }
+    @Published var showStockMeta: Bool {
         didSet { persist() }
     }
     @Published var backgroundOpacity: Double {
@@ -123,7 +132,10 @@ final class StockStore: ObservableObject {
             symbols = StockSymbol.initialSymbols
         }
         lineOpacity = defaults.object(forKey: Keys.lineOpacity) as? Double ?? 0.92
+        lineWidth = defaults.object(forKey: Keys.lineWidth) as? Double ?? 1.65
         labelOpacity = defaults.object(forKey: Keys.labelOpacity) as? Double ?? 0.92
+        fontScale = defaults.object(forKey: Keys.fontScale) as? Double ?? 1.0
+        showStockMeta = defaults.object(forKey: Keys.showStockMeta) as? Bool ?? false
         backgroundOpacity = defaults.object(forKey: Keys.backgroundOpacity) as? Double ?? 0.16
         risingThreshold = defaults.object(forKey: Keys.risingThreshold) as? Double ?? 3.0
         fallingThreshold = defaults.object(forKey: Keys.fallingThreshold) as? Double ?? 3.0
@@ -264,7 +276,10 @@ final class StockStore: ObservableObject {
 
     func resetAppearance() {
         lineOpacity = 0.92
+        lineWidth = 1.65
         labelOpacity = 0.92
+        fontScale = 1.0
+        showStockMeta = false
         backgroundOpacity = 0.16
         compactMode = false
         displayScale = 1.0
@@ -424,7 +439,10 @@ final class StockStore: ObservableObject {
             defaults.set(data, forKey: Keys.symbols)
         }
         defaults.set(lineOpacity, forKey: Keys.lineOpacity)
+        defaults.set(lineWidth, forKey: Keys.lineWidth)
         defaults.set(labelOpacity, forKey: Keys.labelOpacity)
+        defaults.set(fontScale, forKey: Keys.fontScale)
+        defaults.set(showStockMeta, forKey: Keys.showStockMeta)
         defaults.set(backgroundOpacity, forKey: Keys.backgroundOpacity)
         defaults.set(risingThreshold, forKey: Keys.risingThreshold)
         defaults.set(fallingThreshold, forKey: Keys.fallingThreshold)
@@ -458,7 +476,10 @@ final class StockStore: ObservableObject {
     private enum Keys {
         static let symbols = "stockPet.symbols"
         static let lineOpacity = "stockPet.lineOpacity"
+        static let lineWidth = "stockPet.lineWidth"
         static let labelOpacity = "stockPet.labelOpacity"
+        static let fontScale = "stockPet.fontScale"
+        static let showStockMeta = "stockPet.showStockMeta"
         static let backgroundOpacity = "stockPet.backgroundOpacity"
         static let risingThreshold = "stockPet.risingThreshold"
         static let fallingThreshold = "stockPet.fallingThreshold"

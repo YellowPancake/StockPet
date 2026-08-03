@@ -144,6 +144,19 @@ final class StockPetTests: XCTestCase {
         XCTAssertNotNil(Bundle.main.url(forResource: "bull-moo", withExtension: "wav"))
         XCTAssertNotNil(Bundle.main.url(forResource: "bear-growl", withExtension: "wav"))
     }
+
+    @MainActor
+    func testAppearanceDefaultsHideStockCodeAndMarket() {
+        let suiteName = "StockPetTests.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suiteName)!
+        defaults.removePersistentDomain(forName: suiteName)
+        let store = StockStore(service: AlwaysFailingQuoteService(), defaults: defaults)
+
+        XCTAssertFalse(store.showStockMeta)
+        XCTAssertEqual(store.fontScale, 1.0)
+        XCTAssertEqual(store.lineWidth, 1.65)
+        defaults.removePersistentDomain(forName: suiteName)
+    }
 }
 
 private struct AlwaysFailingQuoteService: QuoteProviding {

@@ -104,7 +104,9 @@ function render() {
   if (!state) return;
   applyDisplayScale();
   document.documentElement.style.setProperty("--line-opacity", state.lineOpacity);
+  document.documentElement.style.setProperty("--chart-line-width", state.lineWidth);
   document.documentElement.style.setProperty("--label-opacity", state.labelOpacity);
+  document.documentElement.style.setProperty("--font-scale", state.fontScale);
   boardElement.style.background = `rgba(19, 22, 30, ${state.backgroundOpacity})`;
   alertElement.style.opacity = state.alertOpacity;
   emptyElement.hidden = state.symbols.length > 0;
@@ -117,12 +119,12 @@ function render() {
     const baseline = baselineY(quote);
     return `
       <article class="stock-row" style="--stock-color:${color}">
-        <div class="identity">
+        <div class="identity ${state.showStockMeta ? "" : "meta-hidden"}">
           <div class="name">${escapeHTML(symbol.name)}</div>
-          <div class="meta">
+          ${state.showStockMeta ? `<div class="meta">
             <span>${escapeHTML(symbol.code)}</span>
             <span class="market">${marketLabels[symbol.market] || ""}</span>
-          </div>
+          </div>` : ""}
         </div>
         <svg class="chart ${path ? "" : "placeholder"}" viewBox="0 0 100 46" preserveAspectRatio="none">
           <line class="baseline" x1="0" y1="${baseline}" x2="100" y2="${baseline}"></line>

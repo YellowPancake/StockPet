@@ -105,7 +105,9 @@ function syncControls() {
   const ranges = {
     displayScale: `${Math.round(state.displayScale * 100)}%`,
     lineOpacity: `${Math.round(state.lineOpacity * 100)}%`,
+    lineWidth: `${state.lineWidth.toFixed(1)} px`,
     labelOpacity: `${Math.round(state.labelOpacity * 100)}%`,
+    fontScale: `${Math.round(state.fontScale * 100)}%`,
     backgroundOpacity: `${Math.round(state.backgroundOpacity * 100)}%`,
     alertOpacity: `${Math.round(state.alertOpacity * 100)}%`,
   };
@@ -117,6 +119,7 @@ function syncControls() {
   for (const id of [
     "alwaysOnTop",
     "clickThrough",
+    "showStockMeta",
     "bullSoundEnabled",
     "bearSoundEnabled",
     "alertsEnabled",
@@ -216,11 +219,13 @@ $("#current-stocks").addEventListener("click", async (event) => {
   if (action === "down") await window.stockPet.moveSymbol(id, 1);
 });
 
-for (const id of ["displayScale", "lineOpacity", "labelOpacity", "backgroundOpacity", "alertOpacity"]) {
+for (const id of ["displayScale", "lineOpacity", "lineWidth", "labelOpacity", "fontScale", "backgroundOpacity", "alertOpacity"]) {
   const input = $(`#${id}`);
   input.addEventListener("input", () => {
     const value = Number(input.value);
-    input.parentElement.querySelector("output").textContent = `${Math.round(value * 100)}%`;
+    input.parentElement.querySelector("output").textContent = id === "lineWidth"
+      ? `${value.toFixed(1)} px`
+      : `${Math.round(value * 100)}%`;
   });
   input.addEventListener("change", () => updateState({ [id]: Number(input.value) }));
 }
@@ -228,6 +233,7 @@ for (const id of ["displayScale", "lineOpacity", "labelOpacity", "backgroundOpac
 for (const id of [
   "alwaysOnTop",
   "clickThrough",
+  "showStockMeta",
   "bullSoundEnabled",
   "bearSoundEnabled",
   "alertsEnabled",
@@ -255,7 +261,10 @@ $("#refreshInterval").addEventListener("change", (event) => {
 $("#reset-appearance").addEventListener("click", () => updateState({
   displayScale: 1,
   lineOpacity: 0.92,
+  lineWidth: 2.4,
   labelOpacity: 0.92,
+  fontScale: 1,
+  showStockMeta: false,
   backgroundOpacity: 0.16,
 }));
 

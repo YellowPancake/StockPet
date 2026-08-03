@@ -1,6 +1,8 @@
 :root {
   color-scheme: dark;
   font-family: "Segoe UI", "Microsoft YaHei UI", sans-serif;
+  --chart-line-width: 2.4;
+  --font-scale: 1;
 }
 
 * {
@@ -62,7 +64,7 @@ body {
   column-gap: 16px;
   align-items: center;
   min-height: 82px;
-  padding: 7px 8px;
+  padding: 5px 8px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
@@ -78,11 +80,22 @@ body {
 
 .name {
   overflow: hidden;
-  font-size: 22px;
+  font-size: calc(22px * var(--font-scale));
   font-weight: 760;
   line-height: 1.18;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.identity.meta-hidden {
+  display: flex;
+  height: 100%;
+  align-items: center;
+}
+
+.identity.meta-hidden .name {
+  font-size: calc(28px * var(--font-scale));
+  line-height: 1.15;
 }
 
 .meta {
@@ -91,7 +104,7 @@ body {
   gap: 8px;
   margin-top: 7px;
   font-family: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
-  font-size: 13px;
+  font-size: calc(13px * var(--font-scale));
   font-weight: 650;
 }
 
@@ -122,7 +135,7 @@ body {
   stroke: var(--stock-color);
   stroke-linecap: round;
   stroke-linejoin: round;
-  stroke-width: 2.4;
+  stroke-width: var(--chart-line-width);
   opacity: var(--line-opacity);
   vector-effect: non-scaling-stroke;
 }
@@ -138,20 +151,22 @@ body {
 
 .last-price {
   font-family: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
-  font-size: 25px;
+  font-size: calc(25px * var(--font-scale));
   font-weight: 780;
   letter-spacing: -0.4px;
+  line-height: 1;
 }
 
 .percent {
   margin-top: 5px;
-  font-size: 18px;
+  font-size: calc(18px * var(--font-scale));
   font-weight: 780;
+  line-height: 1;
 }
 
 .stale {
   margin-right: 6px;
-  font-size: 12px;
+  font-size: calc(12px * var(--font-scale));
 }
 
 .placeholder {

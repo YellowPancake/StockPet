@@ -33,7 +33,10 @@ struct FloatingPetView: View {
                                     quote: store.quotes[symbol.id],
                                     isLoading: store.loadingIDs.contains(symbol.id),
                                     lineOpacity: store.lineOpacity,
+                                    lineWidth: store.lineWidth,
                                     labelOpacity: store.labelOpacity,
+                                    fontScale: store.fontScale,
+                                    showStockMeta: store.showStockMeta,
                                     compact: store.compactMode
                                 )
                                 .frame(height: rowHeight)

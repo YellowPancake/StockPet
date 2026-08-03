@@ -113,14 +113,24 @@ test("persisted settings are clamped and a deliberately empty list stays empty",
     symbols: [],
     displayScale: 9,
     lineOpacity: -2,
+    lineWidth: 99,
+    fontScale: 99,
     backgroundOpacity: 0,
     refreshInterval: 1,
   });
   assert.deepEqual(state.symbols, []);
   assert.equal(state.displayScale, 1.6);
   assert.equal(state.lineOpacity, 0.1);
+  assert.equal(state.lineWidth, 5);
+  assert.equal(state.fontScale, 1.5);
+  assert.equal(state.showStockMeta, false);
   assert.equal(state.backgroundOpacity, 0);
   assert.equal(state.refreshInterval, 5);
+});
+
+test("stock code and market are hidden by default and can be enabled", () => {
+  assert.equal(sanitizeState().showStockMeta, false);
+  assert.equal(sanitizeState({ showStockMeta: true }).showStockMeta, true);
 });
 
 test("persisted watchlist is not capped at ten stocks", () => {

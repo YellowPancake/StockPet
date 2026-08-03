@@ -5,11 +5,18 @@ struct StockRowView: View {
     let quote: StockQuote?
     let isLoading: Bool
     let lineOpacity: Double
+    let lineWidth: Double
     let labelOpacity: Double
+    let fontScale: Double
+    let showStockMeta: Bool
     let compact: Bool
 
     private var changeRole: MarketColorRole {
         symbol.market.colorRole(isRising: (quote?.changePercent ?? 0) >= 0)
+    }
+
+    private var fontMultiplier: CGFloat {
+        CGFloat(fontScale)
     }
 
     var body: some View {
@@ -23,7 +30,8 @@ struct StockRowView: View {
                         points: quote.points,
                         dayOpen: quote.dayOpen,
                         colorRole: changeRole,
-                        opacity: lineOpacity
+                        opacity: lineOpacity,
+                        lineWidth: lineWidth
                     )
                 } else {
                     placeholder
@@ -47,7 +55,12 @@ struct StockRowView: View {
             HStack(spacing: 4) {
                 Text(symbol.name)
                     .lineLimit(1)
-                    .font(.system(size: compact ? 11 : 12, weight: .bold, design: .rounded))
+                    .minimumScaleFactor(0.65)
+                    .font(.system(
+                        size: (showStockMeta ? (compact ? 11 : 12) : (compact ? 14 : 16)) * fontMultiplier,
+                        weight: .bold,
+                        design: .rounded
+                    ))
                     .foregroundStyle(
                         quote == nil
                             ? Color.white.opacity(labelOpacity)
@@ -56,25 +69,28 @@ struct StockRowView: View {
 
                 if quote?.isStale == true {
                     Image(systemName: "clock.badge.exclamationmark")
-                        .font(.system(size: 8))
+                        .font(.system(size: 8 * fontMultiplier))
                         .foregroundStyle(changeRole.color.opacity(labelOpacity))
                 }
             }
 
-            HStack(spacing: 4) {
-                Text(symbol.code)
-                Text(symbol.market.displayName)
-                    .padding(.horizontal, 4)
-                    .padding(.vertical, 1)
-                    .background(changeRole.color.opacity(0.14), in: Capsule())
+            if showStockMeta {
+                HStack(spacing: 4) {
+                    Text(symbol.code)
+                    Text(symbol.market.displayName)
+                        .padding(.horizontal, 4)
+                        .padding(.vertical, 1)
+                        .background(changeRole.color.opacity(0.14), in: Capsule())
+                }
+                .font(.system(size: (compact ? 7 : 8) * fontMultiplier, weight: .semibold, design: .monospaced))
+                .foregroundStyle(
+                    quote == nil
+                        ? Color.white.opacity(labelOpacity)
+                        : changeRole.color.opacity(labelOpacity)
+                )
             }
-            .font(.system(size: compact ? 7 : 8, weight: .semibold, design: .monospaced))
-            .foregroundStyle(
-                quote == nil
-                    ? Color.white.opacity(labelOpacity)
-                    : changeRole.color.opacity(labelOpacity)
-            )
         }
+        .frame(maxHeight: .infinity, alignment: .center)
         .help(quote?.statusMessage ?? "\(symbol.market.displayName) · \(symbol.code)")
     }
 
@@ -83,11 +99,15 @@ struct StockRowView: View {
         if let quote {
             VStack(alignment: .trailing, spacing: compact ? 1 : 3) {
                 Text(priceText(quote.lastPrice))
-                    .font(.system(size: compact ? 11 : 13, weight: .bold, design: .monospaced))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.65)
+                    .font(.system(size: (compact ? 11 : 13) * fontMultiplier, weight: .bold, design: .monospaced))
                     .foregroundStyle(changeRole.color.opacity(labelOpacity))
 
                 Text(percentText(quote.changePercent))
-                    .font(.system(size: compact ? 9 : 10, weight: .black, design: .rounded))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+                    .font(.system(size: (compact ? 9 : 10) * fontMultiplier, weight: .black, design: .rounded))
                     .foregroundStyle(changeRole.color.opacity(labelOpacity))
             }
         } else {
@@ -96,7 +116,7 @@ struct StockRowView: View {
                     .controlSize(.mini)
                     .opacity(isLoading ? 0.6 : 0)
                 Text(tr(isLoading ? "拉取中" : "暂无数据"))
-                    .font(.system(size: 8, weight: .medium))
+                    .font(.system(size: 8 * fontMultiplier, weight: .medium))
                     .foregroundStyle(.white.opacity(labelOpacity))
             }
         }
@@ -135,10 +155,12 @@ struct IntradayChartView: View {
     let dayOpen: Double
     let colorRole: MarketColorRole
     let opacity: Double
+    let lineWidth: Double
 
     var body: some View {
         Canvas { context, size in
             guard points.count > 1 else { return }
+            let chartLineWidth = CGFloat(lineWidth)
 
             let closes = points.map(\.close)
             let minimum = min(closes.min() ?? dayOpen, dayOpen)
@@ -162,7 +184,7 @@ struct IntradayChartView: View {
             context.stroke(
                 baseline,
                 with: .color(.white.opacity(0.15 * opacity)),
-                style: StrokeStyle(lineWidth: 0.7, dash: [3, 4])
+                style: StrokeStyle(lineWidth: max(0.45, chartLineWidth * 0.42), dash: [3, 4])
             )
 
             var line = Path()
@@ -173,13 +195,18 @@ struct IntradayChartView: View {
             context.stroke(
                 line,
                 with: .color(colorRole.color.opacity(opacity)),
-                style: StrokeStyle(lineWidth: 1.65, lineCap: .round, lineJoin: .round)
+                style: StrokeStyle(lineWidth: chartLineWidth, lineCap: .round, lineJoin: .round)
             )
 
             if let last = points.last {
                 let point = coordinate(index: points.count - 1, price: last.close)
                 context.fill(
-                    Path(ellipseIn: CGRect(x: point.x - 2.3, y: point.y - 2.3, width: 4.6, height: 4.6)),
+                    Path(ellipseIn: CGRect(
+                        x: point.x - max(1.8, chartLineWidth * 1.35),
+                        y: point.y - max(1.8, chartLineWidth * 1.35),
+                        width: max(3.6, chartLineWidth * 2.7),
+                        height: max(3.6, chartLineWidth * 2.7)
+                    )),
                     with: .color(colorRole.color.opacity(opacity))
                 )
             }
