@@ -154,7 +154,7 @@ final class StockPetTests: XCTestCase {
 
         XCTAssertFalse(store.showStockMeta)
         XCTAssertEqual(store.fontScale, 1.0)
-        XCTAssertEqual(store.lineWidth, 1.65)
+        XCTAssertEqual(store.chartWidth, 310)
         defaults.removePersistentDomain(forName: suiteName)
     }
 }

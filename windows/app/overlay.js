@@ -19,7 +19,7 @@ let quotes = {};
 let alertTimer = null;
 let dragging = false;
 
-const OVERLAY_BASE_WIDTH = 860;
+const OVERLAY_NON_CHART_WIDTH = 430;
 const OVERLAY_ROW_HEIGHT = 82;
 const OVERLAY_VERTICAL_CHROME = 40;
 
@@ -27,17 +27,18 @@ function applyDisplayScale() {
   if (!state) return;
   const scale = Math.min(1.6, Math.max(0.65, Number(state.displayScale) || 1));
   const visibleRows = Math.max(1, Math.min(state.symbols.length, 8));
+  const baseWidth = OVERLAY_NON_CHART_WIDTH + state.chartWidth;
   const baseHeight = Math.max(
     122,
     visibleRows * OVERLAY_ROW_HEIGHT + OVERLAY_VERTICAL_CHROME,
   );
-  const expectedWindowWidth = Math.round(OVERLAY_BASE_WIDTH * scale);
+  const expectedWindowWidth = Math.round(baseWidth * scale);
   const windowHasResized = Math.abs(window.innerWidth - expectedWindowWidth) <= 4;
   const viewportHeight = windowHasResized ? window.innerHeight / scale : baseHeight;
 
   // The board owns a stable logical canvas. The native window and this canvas are
   // scaled by the same factor, so its background cannot remain at the old size.
-  document.body.style.width = `${OVERLAY_BASE_WIDTH}px`;
+  document.body.style.width = `${baseWidth}px`;
   document.body.style.height = `${Math.min(baseHeight, viewportHeight)}px`;
   document.body.style.transform = `scale(${scale})`;
 }
@@ -104,7 +105,7 @@ function render() {
   if (!state) return;
   applyDisplayScale();
   document.documentElement.style.setProperty("--line-opacity", state.lineOpacity);
-  document.documentElement.style.setProperty("--chart-line-width", state.lineWidth);
+  document.documentElement.style.setProperty("--chart-width", `${state.chartWidth}px`);
   document.documentElement.style.setProperty("--label-opacity", state.labelOpacity);
   document.documentElement.style.setProperty("--font-scale", state.fontScale);
   boardElement.style.background = `rgba(19, 22, 30, ${state.backgroundOpacity})`;

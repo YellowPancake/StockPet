@@ -15,7 +15,7 @@ final class StockStore: ObservableObject {
     @Published var lineOpacity: Double {
         didSet { persist() }
     }
-    @Published var lineWidth: Double {
+    @Published var chartWidth: Double {
         didSet { persist() }
     }
     @Published var labelOpacity: Double {
@@ -132,7 +132,7 @@ final class StockStore: ObservableObject {
             symbols = StockSymbol.initialSymbols
         }
         lineOpacity = defaults.object(forKey: Keys.lineOpacity) as? Double ?? 0.92
-        lineWidth = defaults.object(forKey: Keys.lineWidth) as? Double ?? 1.65
+        chartWidth = defaults.object(forKey: Keys.chartWidth) as? Double ?? 310
         labelOpacity = defaults.object(forKey: Keys.labelOpacity) as? Double ?? 0.92
         fontScale = defaults.object(forKey: Keys.fontScale) as? Double ?? 1.0
         showStockMeta = defaults.object(forKey: Keys.showStockMeta) as? Bool ?? false
@@ -276,7 +276,7 @@ final class StockStore: ObservableObject {
 
     func resetAppearance() {
         lineOpacity = 0.92
-        lineWidth = 1.65
+        chartWidth = 310
         labelOpacity = 0.92
         fontScale = 1.0
         showStockMeta = false
@@ -439,7 +439,7 @@ final class StockStore: ObservableObject {
             defaults.set(data, forKey: Keys.symbols)
         }
         defaults.set(lineOpacity, forKey: Keys.lineOpacity)
-        defaults.set(lineWidth, forKey: Keys.lineWidth)
+        defaults.set(chartWidth, forKey: Keys.chartWidth)
         defaults.set(labelOpacity, forKey: Keys.labelOpacity)
         defaults.set(fontScale, forKey: Keys.fontScale)
         defaults.set(showStockMeta, forKey: Keys.showStockMeta)
@@ -476,7 +476,7 @@ final class StockStore: ObservableObject {
     private enum Keys {
         static let symbols = "stockPet.symbols"
         static let lineOpacity = "stockPet.lineOpacity"
-        static let lineWidth = "stockPet.lineWidth"
+        static let chartWidth = "stockPet.chartWidth"
         static let labelOpacity = "stockPet.labelOpacity"
         static let fontScale = "stockPet.fontScale"
         static let showStockMeta = "stockPet.showStockMeta"

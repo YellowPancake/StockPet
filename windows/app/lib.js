@@ -12,19 +12,27 @@ const INITIAL_SYMBOLS = Object.freeze([
   { code: "AAPL", name: "苹果", market: "unitedStates", quoteID: "105.AAPL" },
 ]);
 
-const OVERLAY_BASE_WIDTH = 860;
+const OVERLAY_NON_CHART_WIDTH = 430;
+const DEFAULT_CHART_WIDTH = 430;
 const OVERLAY_ROW_HEIGHT = 82;
 const OVERLAY_VERTICAL_CHROME = 40;
 
-function overlayGeometry(symbolCount, displayScale, maximumHeight = Number.POSITIVE_INFINITY) {
+function overlayGeometry(
+  symbolCount,
+  displayScale,
+  maximumHeight = Number.POSITIVE_INFINITY,
+  chartWidth = DEFAULT_CHART_WIDTH,
+) {
   const count = Number.isFinite(Number(symbolCount)) ? Number(symbolCount) : 0;
   const scale = Math.min(1.6, Math.max(0.65, Number(displayScale) || 1));
+  const normalizedChartWidth = Math.min(720, Math.max(220, Number(chartWidth) || DEFAULT_CHART_WIDTH));
+  const baseWidth = OVERLAY_NON_CHART_WIDTH + normalizedChartWidth;
   const visibleRows = Math.max(1, Math.min(Math.floor(count), 8));
   const baseHeight = Math.max(122, visibleRows * OVERLAY_ROW_HEIGHT + OVERLAY_VERTICAL_CHROME);
   return {
-    baseWidth: OVERLAY_BASE_WIDTH,
+    baseWidth,
     baseHeight,
-    width: Math.round(OVERLAY_BASE_WIDTH * scale),
+    width: Math.round(baseWidth * scale),
     height: Math.min(Math.round(baseHeight * scale), Math.max(1, Math.floor(maximumHeight))),
     scale,
   };
@@ -163,7 +171,7 @@ function sanitizeState(candidate = {}) {
   return {
     symbols,
     lineOpacity: number(candidate.lineOpacity, 0.92, 0.1, 1),
-    lineWidth: number(candidate.lineWidth, 2.4, 0.8, 5),
+    chartWidth: number(candidate.chartWidth, 430, 220, 720),
     labelOpacity: number(candidate.labelOpacity, 0.92, 0.1, 1),
     fontScale: number(candidate.fontScale, 1, 0.75, 1.5),
     showStockMeta: Boolean(candidate.showStockMeta),

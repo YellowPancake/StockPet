@@ -160,13 +160,13 @@ struct SettingsView: View {
                 )
                 Divider()
                 HStack {
-                    Label("曲线线宽", systemImage: "line.diagonal")
+                    Label("曲线宽度", systemImage: "arrow.left.and.right")
                         .frame(width: 160, alignment: .leading)
-                    Slider(value: $store.lineWidth, in: 0.8...5, step: 0.1)
-                    Text(String(format: "%.1f pt", store.lineWidth))
+                    Slider(value: $store.chartWidth, in: 160...650, step: 10)
+                    Text("\(Int(store.chartWidth)) pt")
                         .font(.caption.monospacedDigit())
                         .foregroundStyle(.secondary)
-                        .frame(width: 52, alignment: .trailing)
+                        .frame(width: 58, alignment: .trailing)
                 }
                 Divider()
                 opacitySlider(

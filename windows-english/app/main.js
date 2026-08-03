@@ -94,7 +94,12 @@ function updateOverlayGeometry() {
   if (!overlayWindow || overlayWindow.isDestroyed()) return;
   const display = screen.getDisplayMatching(overlayWindow.getBounds());
   const maximumHeight = Math.floor(display.workAreaSize.height * 0.84);
-  const geometry = overlayGeometry(state.symbols.length, state.displayScale, maximumHeight);
+  const geometry = overlayGeometry(
+    state.symbols.length,
+    state.displayScale,
+    maximumHeight,
+    state.chartWidth,
+  );
   overlayWindow.webContents.setZoomFactor(1);
   // Keep the native window and the rendered board on the same deterministic size.
   // Animated resizing can briefly expose the old viewport to the renderer and make
@@ -129,7 +134,7 @@ function createOverlayWindow() {
   overlayWindow = new BrowserWindow({
     width: 860,
     height: 272,
-    minWidth: 540,
+    minWidth: 400,
     minHeight: 72,
     frame: false,
     transparent: true,

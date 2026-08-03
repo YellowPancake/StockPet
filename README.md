@@ -63,7 +63,7 @@ Visit [GitHub Releases](https://github.com/YellowPancake/StockPet/releases/lates
 ### Get Started in Three Steps
 
 1. **Add stocks:** double-click Stock Pet to open Settings, then search by company name or ticker, such as `Kweichow Moutai`, `00700`, or `AAPL`.
-2. **Make it yours:** adjust overall size, chart line width, font size, and opacity; show tickers and markets only when you need them.
+2. **Make it yours:** adjust overall size, chart width, font size, and opacity; show tickers and markets only when you need them.
 3. **Put the bull and bear on duty:** set rise and fall thresholds, then choose a convenient show/hide shortcut.
 
 Default shortcut:
@@ -85,7 +85,7 @@ Default shortcut:
 - Every stock has a real intraday chart, with the name on the left and the latest price and percentage change on the right.
 - A-shares and Hong Kong stocks use red for gains and green for losses; US stocks use the opposite convention.
 - Stock names are larger by default; tickers and markets can be shown when needed.
-- Names, prices, percentage changes, and charts share the same movement color, with independent font-size and chart-width controls.
+- Names, prices, percentage changes, and charts share the same movement color, with independent font-size and horizontal chart-width controls.
 - Long watchlists scroll inside the pet instead of making the window grow indefinitely.
 
 ### Bull & Bear Threshold Alerts: They Arrive When Needed
@@ -118,7 +118,7 @@ For example, with a `+3.0%` rise threshold: the first touch at `+3.0%` alerts; a
 </p>
 
 - **Overall scale:** resize the watchlist, charts, and panel together from `65%` to `160%`.
-- **Chart and text sizing:** adjust chart line width and font size independently.
+- **Chart and text sizing:** adjust the chart's horizontal width and font size independently.
 - **Optional ticker and market:** hidden by default to give the larger stock name more room.
 - **Three opacity controls:** tune charts, text and numbers, and the background independently.
 - **Drag anywhere:** keep it wherever it feels least distracting.
@@ -137,7 +137,7 @@ For example, with a `+3.0%` rise threshold: the first touch at `+3.0%` alerts; a
 | Unlimited watchlist | Add, remove, and reorder stocks; long lists scroll |
 | Real intraday charts | Displays minute data and never invents a chart |
 | Market-aware colors | A-shares / Hong Kong: red up and green down; US: green up and red down |
-| Appearance controls | Overall scale, chart line width, font size, ticker/market visibility, and three independent opacity controls |
+| Appearance controls | Overall scale, chart width, font size, ticker/market visibility, and three independent opacity controls |
 | Desktop interaction | Drag, double-click Settings, always on top, and mouse passthrough |
 | Quick hiding | Customizable global shortcut to show or hide the pet |
 | Bull & bear alerts | Previous-close percentages or per-stock targets, live-price target generation, master switch, opacity, and sounds |

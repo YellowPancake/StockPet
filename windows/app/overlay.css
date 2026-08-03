@@ -1,7 +1,7 @@
 :root {
   color-scheme: dark;
   font-family: "Segoe UI", "Microsoft YaHei UI", sans-serif;
-  --chart-line-width: 2.4;
+  --chart-width: 430px;
   --font-scale: 1;
 }
 
@@ -60,7 +60,7 @@ body {
 
 .stock-row {
   display: grid;
-  grid-template-columns: 184px minmax(260px, 430px) 150px;
+  grid-template-columns: 184px var(--chart-width) 150px;
   column-gap: 16px;
   align-items: center;
   min-height: 82px;
@@ -118,7 +118,7 @@ body {
 
 .chart {
   width: 100%;
-  max-width: 430px;
+  max-width: var(--chart-width);
   height: 62px;
   overflow: visible;
 }
@@ -135,7 +135,7 @@ body {
   stroke: var(--stock-color);
   stroke-linecap: round;
   stroke-linejoin: round;
-  stroke-width: var(--chart-line-width);
+  stroke-width: 2.4;
   opacity: var(--line-opacity);
   vector-effect: non-scaling-stroke;
 }

@@ -9,7 +9,7 @@ Portable Windows x64 edition. Extract the complete archive, then run
 - Transparent frameless overlay with dragging, scaling, always-on-top, and mouse passthrough
 - Scrollable stock board and search results
 - Tickers and markets are hidden by default so stock names can be larger; they can be enabled at any time
-- Chart line width and font size are independently adjustable; names, prices, and changes share the text opacity
+- Chart horizontal width and font size are independently adjustable; names, prices, and changes share the text opacity
 - Red-up/green-down for A-share and Hong Kong markets; green-up/red-down for the US market
 - Double-click the stock board to open Settings
 - Customizable global shortcut to show or hide Stock Pet

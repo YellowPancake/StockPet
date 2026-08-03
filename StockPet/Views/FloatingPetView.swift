@@ -10,7 +10,11 @@ struct FloatingPetView: View {
     }
 
     private var baseWidth: CGFloat {
-        store.compactMode ? 460 : 560
+        effectiveChartWidth + (store.compactMode ? 210 : 250)
+    }
+
+    private var effectiveChartWidth: CGFloat {
+        CGFloat(store.chartWidth) * (store.compactMode ? 0.8 : 1)
     }
 
     private var baseHeight: CGFloat {
@@ -33,7 +37,7 @@ struct FloatingPetView: View {
                                     quote: store.quotes[symbol.id],
                                     isLoading: store.loadingIDs.contains(symbol.id),
                                     lineOpacity: store.lineOpacity,
-                                    lineWidth: store.lineWidth,
+                                    chartWidth: effectiveChartWidth,
                                     labelOpacity: store.labelOpacity,
                                     fontScale: store.fontScale,
                                     showStockMeta: store.showStockMeta,

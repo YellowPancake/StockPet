@@ -31,6 +31,7 @@ test("overlay geometry scales the whole board linearly", () => {
   assert.equal(smaller.height, Math.round(normal.height * 0.65));
   assert.equal(larger.width, Math.round(normal.width * 1.6));
   assert.equal(larger.height, Math.round(normal.height * 1.6));
+  assert.equal(overlayGeometry(3, 1, 2000, 620).baseWidth, 1050);
 });
 
 test("overlay dragging uses the original window position without accumulating movement", () => {
@@ -113,7 +114,7 @@ test("persisted settings are clamped and a deliberately empty list stays empty",
     symbols: [],
     displayScale: 9,
     lineOpacity: -2,
-    lineWidth: 99,
+    chartWidth: 999,
     fontScale: 99,
     backgroundOpacity: 0,
     refreshInterval: 1,
@@ -121,7 +122,7 @@ test("persisted settings are clamped and a deliberately empty list stays empty",
   assert.deepEqual(state.symbols, []);
   assert.equal(state.displayScale, 1.6);
   assert.equal(state.lineOpacity, 0.1);
-  assert.equal(state.lineWidth, 5);
+  assert.equal(state.chartWidth, 720);
   assert.equal(state.fontScale, 1.5);
   assert.equal(state.showStockMeta, false);
   assert.equal(state.backgroundOpacity, 0);

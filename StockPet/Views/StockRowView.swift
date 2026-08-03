@@ -5,7 +5,7 @@ struct StockRowView: View {
     let quote: StockQuote?
     let isLoading: Bool
     let lineOpacity: Double
-    let lineWidth: Double
+    let chartWidth: CGFloat
     let labelOpacity: Double
     let fontScale: Double
     let showStockMeta: Bool
@@ -30,14 +30,13 @@ struct StockRowView: View {
                         points: quote.points,
                         dayOpen: quote.dayOpen,
                         colorRole: changeRole,
-                        opacity: lineOpacity,
-                        lineWidth: lineWidth
+                        opacity: lineOpacity
                     )
                 } else {
                     placeholder
                 }
             }
-            .frame(maxWidth: .infinity)
+            .frame(width: chartWidth)
 
             price
                 .frame(width: compact ? 82 : 96, alignment: .trailing)
@@ -155,12 +154,10 @@ struct IntradayChartView: View {
     let dayOpen: Double
     let colorRole: MarketColorRole
     let opacity: Double
-    let lineWidth: Double
 
     var body: some View {
         Canvas { context, size in
             guard points.count > 1 else { return }
-            let chartLineWidth = CGFloat(lineWidth)
 
             let closes = points.map(\.close)
             let minimum = min(closes.min() ?? dayOpen, dayOpen)
@@ -184,7 +181,7 @@ struct IntradayChartView: View {
             context.stroke(
                 baseline,
                 with: .color(.white.opacity(0.15 * opacity)),
-                style: StrokeStyle(lineWidth: max(0.45, chartLineWidth * 0.42), dash: [3, 4])
+                style: StrokeStyle(lineWidth: 0.7, dash: [3, 4])
             )
 
             var line = Path()
@@ -195,17 +192,17 @@ struct IntradayChartView: View {
             context.stroke(
                 line,
                 with: .color(colorRole.color.opacity(opacity)),
-                style: StrokeStyle(lineWidth: chartLineWidth, lineCap: .round, lineJoin: .round)
+                style: StrokeStyle(lineWidth: 1.65, lineCap: .round, lineJoin: .round)
             )
 
             if let last = points.last {
                 let point = coordinate(index: points.count - 1, price: last.close)
                 context.fill(
                     Path(ellipseIn: CGRect(
-                        x: point.x - max(1.8, chartLineWidth * 1.35),
-                        y: point.y - max(1.8, chartLineWidth * 1.35),
-                        width: max(3.6, chartLineWidth * 2.7),
-                        height: max(3.6, chartLineWidth * 2.7)
+                        x: point.x - 2.3,
+                        y: point.y - 2.3,
+                        width: 4.6,
+                        height: 4.6
                     )),
                     with: .color(colorRole.color.opacity(opacity))
                 )
