@@ -30,6 +30,35 @@ enum StockMarket: String, Codable, CaseIterable, Sendable {
             isRising ? .green : .red
         }
     }
+
+    func isLikelyTrading(at date: Date = Date()) -> Bool {
+        let timeZoneIdentifier: String
+        switch self {
+        case .aShare: timeZoneIdentifier = "Asia/Shanghai"
+        case .hongKong: timeZoneIdentifier = "Asia/Hong_Kong"
+        case .unitedStates: timeZoneIdentifier = "America/New_York"
+        }
+        guard let timeZone = TimeZone(identifier: timeZoneIdentifier) else { return true }
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = timeZone
+        let components = calendar.dateComponents([.weekday, .hour, .minute], from: date)
+        guard let weekday = components.weekday,
+              (2...6).contains(weekday),
+              let hour = components.hour,
+              let minute = components.minute
+        else {
+            return false
+        }
+        let minutes = hour * 60 + minute
+        switch self {
+        case .aShare:
+            return (570...690).contains(minutes) || (780...900).contains(minutes)
+        case .hongKong:
+            return (570...720).contains(minutes) || (780...960).contains(minutes)
+        case .unitedStates:
+            return (570...960).contains(minutes)
+        }
+    }
 }
 
 enum MarketColorRole: String, Equatable, Sendable {
@@ -93,6 +122,13 @@ struct StockQuote: Identifiable, Sendable {
         guard previousClose > 0 else { return 0 }
         return (lastPrice - previousClose) / previousClose * 100
     }
+}
+
+struct LatestQuoteUpdate: Sendable {
+    let symbol: StockSymbol
+    let lastPrice: Double
+    let previousClose: Double
+    let updatedAt: Date
 }
 
 enum ThresholdDirection: String, Sendable {

@@ -112,10 +112,14 @@ final class StockStore: ObservableObject {
 
     private let service: any QuoteProviding
     private let defaults: UserDefaults
-    private var refreshTask: Task<Void, Never>?
+    private var intradayRefreshTask: Task<Void, Never>?
+    private var latestRefreshTask: Task<Void, Never>?
     private var dismissAlertTask: Task<Void, Never>?
     private var currentAlertSound: NSSound?
     private var thresholdGates: [String: ThresholdGate] = [:]
+    private var latestQuoteTimestamps: [String: Date] = [:]
+    private var isRefreshingIntraday = false
+    private var isRefreshingLatest = false
     private var hasStarted = false
 
     init(
@@ -148,7 +152,7 @@ final class StockStore: ObservableObject {
         } else {
             priceAlertTargets = [:]
         }
-        refreshInterval = defaults.object(forKey: Keys.refreshInterval) as? Int ?? 15
+        refreshInterval = max(1, defaults.object(forKey: Keys.refreshInterval) as? Int ?? 15)
         clickThrough = defaults.object(forKey: Keys.clickThrough) as? Bool ?? false
         alwaysOnTop = defaults.object(forKey: Keys.alwaysOnTop) as? Bool ?? true
         compactMode = defaults.object(forKey: Keys.compactMode) as? Bool ?? false
@@ -174,8 +178,10 @@ final class StockStore: ObservableObject {
 
     func stop() {
         hasStarted = false
-        refreshTask?.cancel()
-        refreshTask = nil
+        intradayRefreshTask?.cancel()
+        latestRefreshTask?.cancel()
+        intradayRefreshTask = nil
+        latestRefreshTask = nil
     }
 
     func search(_ query: String) async throws -> [StockSymbol] {
@@ -197,6 +203,7 @@ final class StockStore: ObservableObject {
         quotes.removeValue(forKey: symbol.id)
         loadingIDs.remove(symbol.id)
         thresholdGates.removeValue(forKey: symbol.id)
+        latestQuoteTimestamps.removeValue(forKey: symbol.id)
         priceAlertTargets.removeValue(forKey: symbol.id)
     }
 
@@ -205,6 +212,10 @@ final class StockStore: ObservableObject {
     }
 
     func refreshAll() async {
+        guard !isRefreshingIntraday else { return }
+        isRefreshingIntraday = true
+        defer { isRefreshingIntraday = false }
+
         let currentSymbols = symbols
         guard !currentSymbols.isEmpty else {
             lastRefresh = Date()
@@ -229,9 +240,11 @@ final class StockStore: ObservableObject {
             for await outcome in group {
                 switch outcome {
                 case .success(let quote):
-                    quotes[quote.id] = quote
+                    quotes[quote.id] = mergingIntradayQuote(quote)
                     loadingIDs.remove(quote.id)
-                    evaluateThreshold(for: quote)
+                    if let merged = quotes[quote.id] {
+                        evaluateThreshold(for: merged)
+                    }
                 case .failure(let id, let message):
                     failures += 1
                     loadingIDs.remove(id)
@@ -258,8 +271,9 @@ final class StockStore: ObservableObject {
         loadingIDs.insert(symbol.id)
         do {
             let quote = try await service.fetchIntraday(for: symbol)
-            quotes[symbol.id] = quote
-            evaluateThreshold(for: quote)
+            let merged = mergingIntradayQuote(quote)
+            quotes[symbol.id] = merged
+            evaluateThreshold(for: merged)
         } catch {
             if var cached = quotes[symbol.id] {
                 cached.isStale = true
@@ -272,6 +286,54 @@ final class StockStore: ObservableObject {
             }
         }
         loadingIDs.remove(symbol.id)
+    }
+
+    @discardableResult
+    func refreshLatestQuotes(includeClosedMarkets: Bool = false) async -> Bool {
+        guard !isRefreshingLatest else { return true }
+        let now = Date()
+        let candidates = includeClosedMarkets
+            ? symbols
+            : symbols.filter { $0.market.isLikelyTrading(at: now) }
+        guard !candidates.isEmpty else { return true }
+
+        isRefreshingLatest = true
+        defer { isRefreshingLatest = false }
+        do {
+            let updates = try await service.fetchLatestQuotes(for: candidates)
+            var applied = 0
+            for update in updates {
+                if let previousTimestamp = latestQuoteTimestamps[update.symbol.id],
+                   update.updatedAt <= previousTimestamp {
+                    continue
+                }
+                latestQuoteTimestamps[update.symbol.id] = update.updatedAt
+                let existing = quotes[update.symbol.id]
+                let quote = StockQuote(
+                    symbol: update.symbol,
+                    points: existing?.points ?? [],
+                    dayOpen: existing?.dayOpen ?? update.lastPrice,
+                    previousClose: update.previousClose,
+                    lastPrice: update.lastPrice,
+                    updatedAt: update.updatedAt,
+                    isStale: false,
+                    statusMessage: nil
+                )
+                quotes[update.symbol.id] = quote
+                evaluateThreshold(for: quote)
+                applied += 1
+            }
+            if applied > 0 {
+                lastRefresh = Date()
+                sourceError = nil
+            }
+            return !updates.isEmpty
+        } catch {
+            if quotes.isEmpty {
+                sourceError = tr("实时价格暂时不可用，分时曲线仍会继续刷新")
+            }
+            return false
+        }
     }
 
     func resetAppearance() {
@@ -421,17 +483,63 @@ final class StockStore: ObservableObject {
 
     private func restartRefreshLoop() {
         guard hasStarted else { return }
-        refreshTask?.cancel()
-        refreshTask = Task { [weak self] in
+        intradayRefreshTask?.cancel()
+        latestRefreshTask?.cancel()
+
+        intradayRefreshTask = Task { [weak self] in
             guard let self else { return }
             await self.refreshAll()
             while !Task.isCancelled {
-                let seconds = self.refreshInterval
+                let hasOpenMarket = self.symbols.contains {
+                    $0.market.isLikelyTrading(at: Date())
+                }
+                let seconds = hasOpenMarket ? max(15, self.refreshInterval) : 60
                 try? await Task.sleep(for: .seconds(seconds))
                 guard !Task.isCancelled else { break }
                 await self.refreshAll()
             }
         }
+
+        latestRefreshTask = Task { [weak self] in
+            guard let self else { return }
+            var failureCount = 0
+            while !Task.isCancelled {
+                let hasOpenMarket = self.symbols.contains {
+                    $0.market.isLikelyTrading(at: Date())
+                }
+                let waitSeconds: Int
+                if !hasOpenMarket {
+                    waitSeconds = 30
+                } else if failureCount == 0 {
+                    waitSeconds = self.refreshInterval
+                } else {
+                    let backoff = [3, 5, 15, 30, 60][min(failureCount - 1, 4)]
+                    waitSeconds = max(self.refreshInterval, backoff)
+                }
+                try? await Task.sleep(for: .seconds(waitSeconds))
+                guard !Task.isCancelled else { break }
+                let succeeded = await self.refreshLatestQuotes()
+                failureCount = succeeded ? 0 : min(failureCount + 1, 5)
+            }
+        }
+    }
+
+    private func mergingIntradayQuote(_ incoming: StockQuote) -> StockQuote {
+        guard let existing = quotes[incoming.id],
+              let latestTimestamp = latestQuoteTimestamps[incoming.id]
+        else {
+            return incoming
+        }
+        return StockQuote(
+            symbol: incoming.symbol,
+            points: incoming.points,
+            dayOpen: incoming.dayOpen,
+            previousClose: incoming.previousClose,
+            lastPrice: existing.lastPrice,
+            updatedAt: latestTimestamp,
+            isStale: false,
+            statusMessage: nil
+        )
     }
 
     private func persist() {

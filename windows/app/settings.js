@@ -10,6 +10,7 @@ let state = null;
 let status = null;
 let quotes = {};
 let searchResults = [];
+let availableUpdate = null;
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
@@ -165,7 +166,7 @@ function syncControls() {
 
 function renderStatus() {
   if (!status) return;
-  $("#data-source").textContent = status.source || "腾讯分时 · 东方财富备用";
+  $("#data-source").textContent = status.source || "腾讯秒级报价 · 腾讯分时 · 东方财富备用";
   $("#last-refresh").textContent = status.lastRefresh
     ? new Date(status.lastRefresh).toLocaleString("zh-CN")
     : "尚未刷新";
@@ -270,6 +271,52 @@ $("#preview-bull").addEventListener("click", () => window.stockPet.previewAlert(
 $("#preview-bear").addEventListener("click", () => window.stockPet.previewAlert("falling"));
 $("#github-author").addEventListener("click", () => window.stockPet.openAuthor());
 
+$("#check-update").addEventListener("click", async () => {
+  const button = $("#check-update");
+  button.disabled = true;
+  $("#update-status").textContent = "正在检查更新…";
+  $("#download-update").hidden = true;
+  $("#update-notes").hidden = true;
+  try {
+    const result = await window.stockPet.checkForUpdate();
+    if (result.status === "available") {
+      availableUpdate = result.update;
+      $("#update-status").textContent = `发现新版本 v${result.update.version}`;
+      $("#download-update").hidden = false;
+      $("#update-notes").textContent = result.update.notes || "已准备好适用于 Windows 中文版的更新包。";
+      $("#update-notes").hidden = false;
+    } else {
+      availableUpdate = null;
+      $("#update-status").textContent = "已经是最新版本";
+    }
+  } catch (error) {
+    $("#update-status").textContent = error.message || "检查更新失败，请稍后重试";
+  }
+  button.disabled = false;
+});
+
+$("#download-update").addEventListener("click", async () => {
+  if (!availableUpdate) return;
+  const button = $("#download-update");
+  button.disabled = true;
+  $("#check-update").disabled = true;
+  $("#update-progress").hidden = false;
+  $("#update-progress").removeAttribute("value");
+  $("#update-status").textContent = `正在下载并校验 v${availableUpdate.version}…`;
+  try {
+    const result = await window.stockPet.downloadUpdate();
+    $("#update-status").textContent = result.status === "downloaded"
+      ? "更新包已下载并通过校验，已打开文件位置"
+      : "已经是最新版本";
+    button.hidden = true;
+  } catch (error) {
+    $("#update-status").textContent = error.message || "更新包下载失败，请稍后重试";
+  }
+  $("#update-progress").hidden = true;
+  button.disabled = false;
+  $("#check-update").disabled = false;
+});
+
 $("#price-alert-list").addEventListener("change", async (event) => {
   const item = event.target.closest("[data-price-alert-id]");
   if (!item) return;
@@ -354,6 +401,11 @@ window.stockPet.on("refresh-status", (nextStatus) => {
 window.stockPet.on("quotes-updated", (nextQuotes) => {
   quotes = nextQuotes || {};
   renderPriceAlerts();
+});
+window.stockPet.on("update-download-progress", ({ received, total }) => {
+  const progress = $("#update-progress");
+  progress.hidden = false;
+  if (total > 0) progress.value = received / total;
 });
 
 window.stockPet.bootstrap().then((snapshot) => {

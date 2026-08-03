@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.4.0
+
+- Added optional 1-second batch refresh for latest prices, percentage changes, and bull/bear alerts.
+- Separated intraday chart refresh from fast quotes; charts update every 15 seconds or slower.
+- Added market-hours throttling, overlapping-request protection, source timestamp filtering, and progressive retry backoff.
+- Added in-app GitHub update checks and verified package downloads for all four language/platform builds. The app never silently replaces itself.
+
 ## v0.3.0
 
 The first public release of 盘宠 StockPet.
