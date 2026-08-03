@@ -17,6 +17,7 @@ const {
   parseTencentRealtime,
   parseTrend,
   releaseDigest,
+  releaseParts,
   sanitizeState,
   tencentCode,
   tencentRealtimeCode,
@@ -30,6 +31,18 @@ test("release digest selects the exact package", () => {
   ].join("\n");
   assert.equal(releaseDigest(notes, "StockPet-Windows-x64-English.zip"), `sha256:${expected}`);
   assert.equal(releaseDigest(notes, "StockPet-macOS-English.zip"), null);
+});
+
+test("release parts prefer a complete file and otherwise sort numbered chunks", () => {
+  const asset = "StockPet-Windows-x64-English.zip";
+  assert.deepEqual(releaseParts([
+    { name: `${asset}.part02`, browser_download_url: "two", size: 20 },
+    { name: `${asset}.part01`, browser_download_url: "one", size: 10 },
+  ], asset), [{ url: "one", size: 10 }, { url: "two", size: 20 }]);
+  assert.deepEqual(releaseParts([
+    { name: asset, browser_download_url: "complete", size: 30 },
+    { name: `${asset}.part01`, browser_download_url: "one", size: 10 },
+  ], asset), [{ url: "complete", size: 30 }]);
 });
 
 test("overlay geometry scales the whole board linearly", () => {
