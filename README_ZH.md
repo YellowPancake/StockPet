@@ -13,10 +13,10 @@
 </p>
 
 <p align="center">
-  <img alt="macOS 14+" src="https://img.shields.io/badge/macOS-14%2B-111111?logo=apple">
+  <img alt="macOS 13+" src="https://img.shields.io/badge/macOS-13%2B-111111?logo=apple">
   <img alt="Windows 10/11" src="https://img.shields.io/badge/Windows-10%20%2F%2011-0078D4?logo=windows">
   <img alt="A股 港股 美股" src="https://img.shields.io/badge/市场-A股%20%7C%20港股%20%7C%20美股-EA4C61">
-  <img alt="Version 0.4.2" src="https://img.shields.io/badge/version-0.4.2-5B67F1">
+  <img alt="Version 0.4.3" src="https://img.shields.io/badge/version-0.4.3-5B67F1">
   <img alt="MIT License" src="https://img.shields.io/badge/license-MIT-4C9A2A">
 </p>
 
@@ -43,7 +43,7 @@
 
 | 系统 | 中文安装包 |
 | --- | --- |
-| macOS 14 或更高版本 | `StockPet-macOS-Chinese.zip`，支持 Apple 芯片与 Intel 芯片 |
+| macOS 13 或更高版本 | `StockPet-macOS-Chinese.zip`，支持 Apple 芯片与 Intel 芯片 |
 | Windows 10/11 64 位 | `StockPet-Windows-x64-Chinese.zip` |
 
 ### macOS

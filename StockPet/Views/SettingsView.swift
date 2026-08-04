@@ -668,7 +668,7 @@ struct SettingsView: View {
 
     private var currentAppVersion: String {
         Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
-            ?? "0.4.2"
+            ?? "0.4.3"
     }
 
     private var updateAssetName: String {

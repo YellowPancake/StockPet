@@ -13,10 +13,10 @@
 </p>
 
 <p align="center">
-  <img alt="macOS 14+" src="https://img.shields.io/badge/macOS-14%2B-111111?logo=apple">
+  <img alt="macOS 13+" src="https://img.shields.io/badge/macOS-13%2B-111111?logo=apple">
   <img alt="Windows 10/11" src="https://img.shields.io/badge/Windows-10%20%2F%2011-0078D4?logo=windows">
   <img alt="A-share HK US" src="https://img.shields.io/badge/Markets-A--share%20%7C%20HK%20%7C%20US-EA4C61">
-  <img alt="Version 0.4.2" src="https://img.shields.io/badge/version-0.4.2-5B67F1">
+  <img alt="Version 0.4.3" src="https://img.shields.io/badge/version-0.4.3-5B67F1">
   <img alt="MIT License" src="https://img.shields.io/badge/license-MIT-4C9A2A">
 </p>
 
@@ -43,7 +43,7 @@ Visit [GitHub Releases](https://github.com/YellowPancake/StockPet/releases/lates
 
 | System | English package |
 | --- | --- |
-| macOS 14 or later | `StockPet-macOS-English.zip`, for Apple Silicon and Intel Macs |
+| macOS 13 or later | `StockPet-macOS-English.zip`, for Apple Silicon and Intel Macs |
 | 64-bit Windows 10/11 | `StockPet-Windows-x64-English.zip` |
 
 ### macOS

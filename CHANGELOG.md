@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.4.3
+
+- Lowered the minimum supported macOS version from 14 to 13.
+- Added a Ventura-compatible settings-window path while preserving the native macOS 14+ behavior.
+
 ## v0.4.2
 
 - Added transparent multipart download and reassembly for routes with per-file size limits.

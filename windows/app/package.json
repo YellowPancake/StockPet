@@ -1,7 +1,7 @@
 {
   "name": "stock-pet-windows",
   "productName": "Stock Pet",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "透明悬浮的 A 股、港股和美股分时桌宠",
   "main": "main.js",
   "license": "UNLICENSED"
