@@ -2,7 +2,6 @@ import SwiftUI
 
 struct FloatingPetView: View {
     @EnvironmentObject private var store: StockStore
-    @Environment(\.openSettings) private var openSettings
     private let maximumVisibleRows = 8
 
     private var rowHeight: CGFloat {
@@ -65,10 +64,7 @@ struct FloatingPetView: View {
         }
         .frame(width: baseWidth, height: baseHeight)
         .contentShape(Rectangle())
-        .onReceive(NotificationCenter.default.publisher(for: .stockPetOpenSettings)) { _ in
-            NSApp.activate(ignoringOtherApps: true)
-            openSettings()
-        }
+        .modifier(OpenSettingsNotificationModifier())
         .animation(.spring(response: 0.38, dampingFraction: 0.78), value: store.activeAlert?.id)
         .animation(.easeInOut(duration: 0.2), value: store.compactMode)
         .scaleEffect(store.displayScale, anchor: .topLeading)
@@ -93,5 +89,31 @@ struct FloatingPetView: View {
         .font(.system(size: 12, weight: .semibold, design: .rounded))
         .foregroundStyle(.white.opacity(0.6))
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}
+
+private struct OpenSettingsNotificationModifier: ViewModifier {
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if #available(macOS 14.0, *) {
+            content.modifier(ModernOpenSettingsNotificationModifier())
+        } else {
+            content.onReceive(NotificationCenter.default.publisher(for: .stockPetOpenSettings)) { _ in
+                NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+                NSApp.activate(ignoringOtherApps: true)
+            }
+        }
+    }
+}
+
+@available(macOS 14.0, *)
+private struct ModernOpenSettingsNotificationModifier: ViewModifier {
+    @Environment(\.openSettings) private var openSettings
+
+    func body(content: Content) -> some View {
+        content.onReceive(NotificationCenter.default.publisher(for: .stockPetOpenSettings)) { _ in
+            NSApp.activate(ignoringOtherApps: true)
+            openSettings()
+        }
     }
 }

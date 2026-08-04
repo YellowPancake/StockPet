@@ -123,8 +123,15 @@ struct MenuBarContent: View {
 
         Divider()
 
-        SettingsLink {
-            Text(tr("设置…"))
+        if #available(macOS 14.0, *) {
+            SettingsLink {
+                Text(tr("设置…"))
+            }
+        } else {
+            Button(tr("设置…")) {
+                NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+                NSApp.activate(ignoringOtherApps: true)
+            }
         }
 
         Divider()

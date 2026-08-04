@@ -1,7 +1,7 @@
 {
   "name": "stock-pet-windows-english",
   "productName": "Stock Pet",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "A transparent desktop stock companion for A-share, Hong Kong, and US markets",
   "main": "main.js",
   "license": "UNLICENSED"
