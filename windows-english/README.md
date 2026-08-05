@@ -10,9 +10,10 @@ Portable Windows x64 edition. Extract the complete archive, then run
 - Scrollable stock board and search results
 - Tickers and markets are hidden by default so stock names can be larger; they can be enabled at any time
 - Chart horizontal width and font size are independently adjustable; names, prices, and changes share the text opacity
+- Change display can use either percentage or absolute price amount
 - Red-up/green-down for A-share and Hong Kong markets; green-up/red-down for the US market
 - Double-click the stock board to open Settings
-- Customizable global shortcut to show or hide Stock Pet
+- Customizable global shortcut that keeps working while other apps are focused
 - Bull and bear alerts can use previous-close percentages or per-stock target prices
 - Live prices can generate upper and lower targets in one click; opacity and sounds remain configurable
 - Latest prices, changes, and alerts can use 1-second batch refresh; charts update independently every 15 seconds or slower

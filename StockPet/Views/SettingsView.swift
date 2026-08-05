@@ -190,6 +190,19 @@ struct SettingsView: View {
                         .frame(width: 40, alignment: .trailing)
                 }
                 Divider()
+                HStack {
+                    Label("涨跌显示", systemImage: "plus.forwardslash.minus")
+                    Spacer()
+                    Picker("", selection: $store.changeDisplayMode) {
+                        ForEach(ChangeDisplayMode.allCases) { mode in
+                            Text(mode.displayName).tag(mode)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .labelsHidden()
+                    .frame(width: 210)
+                }
+                Divider()
                 Toggle(isOn: $store.showStockMeta) {
                     Label("显示股票代码与市场", systemImage: "number.square")
                 }
@@ -668,7 +681,7 @@ struct SettingsView: View {
 
     private var currentAppVersion: String {
         Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
-            ?? "0.4.3"
+            ?? "0.4.4"
     }
 
     private var updateAssetName: String {

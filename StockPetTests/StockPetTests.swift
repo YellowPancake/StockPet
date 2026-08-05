@@ -10,6 +10,21 @@ final class StockPetTests: XCTestCase {
         XCTAssertEqual(StockMarket.unitedStates.colorRole(isRising: false), .red)
     }
 
+    func testQuoteProvidesPercentageAndAbsoluteChange() {
+        let quote = StockQuote(
+            symbol: StockSymbol.initialSymbols[0],
+            points: [],
+            dayOpen: 100,
+            previousClose: 100,
+            lastPrice: 103.25,
+            updatedAt: Date(),
+            isStale: false,
+            statusMessage: nil
+        )
+        XCTAssertEqual(quote.changePercent, 3.25, accuracy: 0.0001)
+        XCTAssertEqual(quote.changeAmount, 3.25, accuracy: 0.0001)
+    }
+
     func testParsesActualEastmoneyTrendFormat() throws {
         // 真实 trends2 接口字段布局：时间、开、收、高、低、量、额、均价。
         let raw = "2026-07-30 09:31,1323.00,1329.50,1330.00,1322.00,753,99792267.00,1324.911"
@@ -74,6 +89,19 @@ final class StockPetTests: XCTestCase {
         )
         XCTAssertEqual(update.lastPrice, 1355.70, accuracy: 0.001)
         XCTAssertEqual(update.previousClose, 1350.00, accuracy: 0.001)
+    }
+
+    func testTencentBatchToleratesDuplicateLegacySymbols() {
+        let symbol = StockSymbol.initialSymbols[0]
+        let duplicate = StockSymbol(
+            code: symbol.code,
+            name: "Duplicate",
+            market: symbol.market,
+            quoteID: "legacy.\(symbol.code)"
+        )
+        XCTAssertNoThrow(
+            MarketQuoteService.parseTencentRealtime("", symbols: [symbol, duplicate])
+        )
     }
 
     func testMarketSessionsUseTheirOwnTimeZones() throws {
@@ -209,8 +237,26 @@ final class StockPetTests: XCTestCase {
         let store = StockStore(service: AlwaysFailingQuoteService(), defaults: defaults)
 
         XCTAssertFalse(store.showStockMeta)
+        XCTAssertEqual(store.changeDisplayMode, .percentage)
         XCTAssertEqual(store.fontScale, 1.0)
         XCTAssertEqual(store.chartWidth, 310)
+        defaults.removePersistentDomain(forName: suiteName)
+    }
+
+    @MainActor
+    func testCorruptAppearancePreferencesAreClampedAtStartup() {
+        let suiteName = "StockPetTests.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suiteName)!
+        defaults.removePersistentDomain(forName: suiteName)
+        defaults.set(Double.infinity, forKey: "stockPet.displayScale")
+        defaults.set(-500.0, forKey: "stockPet.chartWidth")
+        defaults.set(50.0, forKey: "stockPet.backgroundOpacity")
+
+        let store = StockStore(service: AlwaysFailingQuoteService(), defaults: defaults)
+
+        XCTAssertEqual(store.displayScale, 1)
+        XCTAssertEqual(store.chartWidth, 160)
+        XCTAssertEqual(store.backgroundOpacity, 0.55)
         defaults.removePersistentDomain(forName: suiteName)
     }
 }

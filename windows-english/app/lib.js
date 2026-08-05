@@ -237,6 +237,7 @@ function sanitizeState(candidate = {}) {
     chartWidth: number(candidate.chartWidth, 430, 220, 720),
     labelOpacity: number(candidate.labelOpacity, 0.92, 0.1, 1),
     fontScale: number(candidate.fontScale, 1, 0.75, 1.5),
+    changeDisplayMode: candidate.changeDisplayMode === "amount" ? "amount" : "percentage",
     showStockMeta: Boolean(candidate.showStockMeta),
     backgroundOpacity: number(candidate.backgroundOpacity, 0.16, 0, 0.95),
     risingThreshold: number(candidate.risingThreshold, 3, 0.1, 30),

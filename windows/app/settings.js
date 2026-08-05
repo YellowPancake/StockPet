@@ -130,6 +130,7 @@ function syncControls() {
   }
   $("#shortcutModifier").value = state.shortcutModifier;
   $("#shortcutKey").value = state.shortcutKey;
+  $("#changeDisplayMode").value = state.changeDisplayMode;
   $("#shortcut-options").classList.toggle("disabled", !state.shortcutEnabled);
   $("#shortcutModifier").disabled = !state.shortcutEnabled;
   $("#shortcutKey").disabled = !state.shortcutEnabled;
@@ -245,6 +246,10 @@ for (const id of ["shortcutModifier", "shortcutKey"]) {
   $(`#${id}`).addEventListener("change", (event) => updateState({ [id]: event.target.value }));
 }
 
+$("#changeDisplayMode").addEventListener("change", (event) => {
+  updateState({ changeDisplayMode: event.target.value });
+});
+
 $("#alertBasis").addEventListener("change", (event) => {
   updateState({ alertBasis: event.target.value });
 });
@@ -263,6 +268,7 @@ $("#reset-appearance").addEventListener("click", () => updateState({
   chartWidth: 430,
   labelOpacity: 0.92,
   fontScale: 1,
+  changeDisplayMode: "percentage",
   showStockMeta: false,
   backgroundOpacity: 0.16,
 }));

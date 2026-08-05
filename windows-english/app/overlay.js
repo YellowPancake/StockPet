@@ -116,6 +116,11 @@ function render() {
     const change = Number(quote?.changePercent || 0);
     const color = stockColor(symbol.market, change);
     const sign = change >= 0 ? "+" : "";
+    const amount = quote ? Number(quote.lastPrice) - Number(quote.previousClose) : 0;
+    const amountSign = amount >= 0 ? "+" : "";
+    const changeText = state.changeDisplayMode === "amount"
+      ? `${amountSign}${amount.toFixed(2)}`
+      : `${sign}${change.toFixed(2)}%`;
     const path = linePath(quote?.points, quote?.previousClose);
     const baseline = baselineY(quote);
     return `
@@ -134,7 +139,7 @@ function render() {
         </svg>
         <div class="price-block">
           <div class="last-price">${quote?.isStale ? '<span class="stale">⟳</span>' : ""}${formatPrice(quote?.lastPrice)}</div>
-          <div class="percent">${quote ? `${sign}${change.toFixed(2)}%` : "Loading…"}</div>
+          <div class="percent">${quote ? changeText : "Loading…"}</div>
         </div>
       </article>
     `;

@@ -13,10 +13,10 @@
 </p>
 
 <p align="center">
-  <img alt="macOS 13+" src="https://img.shields.io/badge/macOS-13%2B-111111?logo=apple">
+  <img alt="macOS 14+" src="https://img.shields.io/badge/macOS-14%2B-111111?logo=apple">
   <img alt="Windows 10/11" src="https://img.shields.io/badge/Windows-10%20%2F%2011-0078D4?logo=windows">
   <img alt="A股 港股 美股" src="https://img.shields.io/badge/市场-A股%20%7C%20港股%20%7C%20美股-EA4C61">
-  <img alt="Version 0.4.3" src="https://img.shields.io/badge/version-0.4.3-5B67F1">
+  <img alt="Version 0.4.4" src="https://img.shields.io/badge/version-0.4.4-5B67F1">
   <img alt="MIT License" src="https://img.shields.io/badge/license-MIT-4C9A2A">
 </p>
 
@@ -43,7 +43,7 @@
 
 | 系统 | 中文安装包 |
 | --- | --- |
-| macOS 13 或更高版本 | `StockPet-macOS-Chinese.zip`，支持 Apple 芯片与 Intel 芯片 |
+| macOS 14 或更高版本 | `StockPet-macOS-Chinese.zip`，支持 Apple 芯片与 Intel 芯片 |
 | Windows 10/11 64 位 | `StockPet-Windows-x64-Chinese.zip` |
 
 ### macOS
@@ -82,10 +82,10 @@
 </p>
 
 - 同时查看 A 股、港股和美股，自选股数量不设上限。
-- 每只股票展示真实的当日分时曲线，左侧为名称，右侧为最新价与涨跌幅。
+- 每只股票展示真实的当日分时曲线，左侧为名称，右侧为最新价与所选涨跌显示。
 - A 股、港股红涨绿跌；美股绿涨红跌。
 - 默认只显示更醒目的股票名称；股票代码与市场可按需开启。
-- 名称、价格、涨跌幅与曲线保持同一涨跌色，字体大小和曲线的横向显示宽度可独立调整。
+- 名称、价格、涨跌与曲线保持同一涨跌色；涨跌可选择百分比或涨跌额，字体大小和曲线的横向显示宽度可独立调整。
 - 股票较多时可直接在桌宠内上下滚动。
 - 最新价、涨跌幅和牛熊提醒最快可按 1 秒刷新；分时曲线采用独立的轻量节奏，最快每 15 秒更新一次。
 
@@ -138,6 +138,7 @@
 | 不限自选股数量 | 可添加、删除、排序，长列表支持滚动 |
 | 当日分时曲线 | 展示真实分钟数据，不生成虚构曲线 |
 | 市场配色 | A 股 / 港股红涨绿跌，美股绿涨红跌 |
+| 涨跌显示 | 桌面可在百分比与相对昨收的涨跌额之间切换 |
 | 外观控制 | 整体缩放、曲线横向宽度、字体大小、代码与市场显隐，以及三组独立不透明度 |
 | 桌面交互 | 拖拽、双击设置、始终置顶、鼠标穿透 |
 | 快捷隐藏 | 自定义全局快捷键，一键显示或隐藏 |

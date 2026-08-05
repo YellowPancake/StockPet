@@ -8,6 +8,7 @@ const {
   Menu,
   nativeImage,
   net,
+  powerMonitor,
   screen,
   shell,
   Tray,
@@ -53,6 +54,8 @@ let sourceError = null;
 let quitting = false;
 let overlayDragStart = null;
 let availableUpdate = null;
+let registeredShortcut = null;
+let shortcutHealthTimer = null;
 
 const UPDATE_ASSET_NAME = "StockPet-Windows-x64-English.zip";
 const GITHUB_RELEASES_API = "https://api.github.com/repos/YellowPancake/StockPet/releases/latest";
@@ -281,13 +284,30 @@ function toggleOverlay() {
   rebuildTrayMenu();
 }
 
+function configuredShortcut() {
+  return `${state.shortcutModifier}+${state.shortcutKey}`;
+}
+
 function registerGlobalShortcut() {
   globalShortcut.unregisterAll();
-  if (!state.shortcutEnabled) return;
-  globalShortcut.register(
-    `${state.shortcutModifier}+${state.shortcutKey}`,
-    toggleOverlay,
-  );
+  registeredShortcut = null;
+  if (!state.shortcutEnabled) return true;
+  const accelerator = configuredShortcut();
+  const succeeded = globalShortcut.register(accelerator, () => {
+    setImmediate(toggleOverlay);
+  });
+  if (succeeded && globalShortcut.isRegistered(accelerator)) {
+    registeredShortcut = accelerator;
+    return true;
+  }
+  return false;
+}
+
+function ensureGlobalShortcutRegistered() {
+  if (!state.shortcutEnabled || quitting || !app.isReady()) return;
+  const accelerator = configuredShortcut();
+  if (registeredShortcut === accelerator && globalShortcut.isRegistered(accelerator)) return;
+  registerGlobalShortcut();
 }
 
 function createOverlayWindow() {
@@ -715,6 +735,10 @@ if (!gotLock) {
     createOverlayWindow();
     createTray();
     registerGlobalShortcut();
+    shortcutHealthTimer = setInterval(ensureGlobalShortcutRegistered, 3000);
+    app.on("browser-window-blur", () => setImmediate(ensureGlobalShortcutRegistered));
+    powerMonitor.on("resume", ensureGlobalShortcutRegistered);
+    powerMonitor.on("unlock-screen", ensureGlobalShortcutRegistered);
     refreshAll().finally(resetRefreshTimer);
   });
 
@@ -722,9 +746,11 @@ if (!gotLock) {
     quitting = true;
     if (latestRefreshTimer) clearTimeout(latestRefreshTimer);
     if (intradayRefreshTimer) clearTimeout(intradayRefreshTimer);
+    if (shortcutHealthTimer) clearInterval(shortcutHealthTimer);
     refreshGeneration += 1;
     persistQuotes();
     globalShortcut.unregisterAll();
+    registeredShortcut = null;
   });
 
   app.on("window-all-closed", () => {

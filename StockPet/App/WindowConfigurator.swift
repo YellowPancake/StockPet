@@ -45,7 +45,22 @@ struct WindowConfigurator: NSViewRepresentable {
         window.standardWindowButton(.zoomButton)?.isHidden = true
         window.contentView?.wantsLayer = true
         window.contentView?.layer?.backgroundColor = NSColor.clear.cgColor
+        Self.recoverFrameIfNeeded(for: window)
         coordinator.install(on: window)
+    }
+
+    static func recoverFrameIfNeeded(for window: NSWindow) {
+        let visibleFrames = NSScreen.screens.map(\.visibleFrame)
+        let hasUsefulIntersection = visibleFrames.contains {
+            window.frame.intersection($0).width >= 80 && window.frame.intersection($0).height >= 50
+        }
+        guard !hasUsefulIntersection, let screen = NSScreen.main ?? NSScreen.screens.first else { return }
+        let visible = screen.visibleFrame
+        let origin = NSPoint(
+            x: max(visible.minX, visible.maxX - window.frame.width - 24),
+            y: max(visible.minY, visible.maxY - window.frame.height - 24)
+        )
+        window.setFrameOrigin(origin)
     }
 
     final class Coordinator {

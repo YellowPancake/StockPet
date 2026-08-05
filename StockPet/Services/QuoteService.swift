@@ -290,9 +290,13 @@ actor MarketQuoteService: QuoteProviding {
         _ raw: String,
         symbols: [StockSymbol]
     ) -> [LatestQuoteUpdate] {
-        let byCode = Dictionary(
-            uniqueKeysWithValues: symbols.map { (tencentRealtimeCode(for: $0), $0) }
-        )
+        // Old preference files may contain duplicate entries. Building a
+        // dictionary with uniqueKeysWithValues would trap and terminate the
+        // whole app; keeping the last entry makes startup self-healing.
+        var byCode: [String: StockSymbol] = [:]
+        for symbol in symbols {
+            byCode[tencentRealtimeCode(for: symbol)] = symbol
+        }
 
         return raw
             .split(separator: ";", omittingEmptySubsequences: true)

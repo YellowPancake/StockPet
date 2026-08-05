@@ -2,8 +2,8 @@
 "use strict";
 
 const fs = require("node:fs");
-const { NtExecutable, NtExecutableResource } = require("pe-library");
-const { load } = require("resedit/cjs");
+const ResEdit = require("resedit");
+const { NtExecutable, NtExecutableResource } = ResEdit;
 
 async function main() {
   const [sourcePath, iconPath, outputPath] = process.argv.slice(2);
@@ -11,7 +11,6 @@ async function main() {
     throw new Error("Usage: rebrand-exe.cjs <source.exe> <icon.ico> <output.exe>");
   }
 
-  const ResEdit = await load();
   const executable = NtExecutable.from(fs.readFileSync(sourcePath), { ignoreCert: true });
   const resources = NtExecutableResource.from(executable);
   const iconFile = ResEdit.Data.IconFile.from(fs.readFileSync(iconPath));
@@ -28,8 +27,8 @@ async function main() {
   }
 
   for (const versionInfo of ResEdit.Resource.VersionInfo.fromEntries(resources.entries)) {
-    versionInfo.setFileVersion(0, 4, 3, 0, 1033);
-    versionInfo.setProductVersion(0, 4, 3, 0, 1033);
+    versionInfo.setFileVersion(0, 4, 4, 0, 1033);
+    versionInfo.setProductVersion(0, 4, 4, 0, 1033);
     const languages = versionInfo.getAllLanguagesForStringValues();
     const targets = languages.length ? languages : [{ lang: 1033, codepage: 1200 }];
     for (const language of targets) {

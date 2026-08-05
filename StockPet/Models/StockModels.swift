@@ -122,6 +122,10 @@ struct StockQuote: Identifiable, Sendable {
         guard previousClose > 0 else { return 0 }
         return (lastPrice - previousClose) / previousClose * 100
     }
+
+    var changeAmount: Double {
+        lastPrice - previousClose
+    }
 }
 
 struct LatestQuoteUpdate: Sendable {
@@ -146,6 +150,20 @@ enum AlertBasis: String, Codable, CaseIterable, Identifiable, Sendable {
         switch self {
         case .percentage: tr("昨收涨跌幅")
         case .targetPrice: tr("目标价格")
+        }
+    }
+}
+
+enum ChangeDisplayMode: String, Codable, CaseIterable, Identifiable, Sendable {
+    case percentage
+    case amount
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .percentage: tr("百分比")
+        case .amount: tr("涨跌额")
         }
     }
 }

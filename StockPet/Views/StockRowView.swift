@@ -8,6 +8,7 @@ struct StockRowView: View {
     let chartWidth: CGFloat
     let labelOpacity: Double
     let fontScale: Double
+    let changeDisplayMode: ChangeDisplayMode
     let showStockMeta: Bool
     let compact: Bool
 
@@ -103,7 +104,7 @@ struct StockRowView: View {
                     .font(.system(size: (compact ? 11 : 13) * fontMultiplier, weight: .bold, design: .monospaced))
                     .foregroundStyle(changeRole.color.opacity(labelOpacity))
 
-                Text(percentText(quote.changePercent))
+                Text(changeText(quote))
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
                     .font(.system(size: (compact ? 9 : 10) * fontMultiplier, weight: .black, design: .rounded))
@@ -146,6 +147,15 @@ struct StockRowView: View {
 
     private func percentText(_ value: Double) -> String {
         String(format: "%@%.2f%%", value >= 0 ? "+" : "", value)
+    }
+
+    private func changeText(_ quote: StockQuote) -> String {
+        switch changeDisplayMode {
+        case .percentage:
+            percentText(quote.changePercent)
+        case .amount:
+            String(format: "%@%.2f", quote.changeAmount >= 0 ? "+" : "", quote.changeAmount)
+        }
     }
 }
 
@@ -208,7 +218,6 @@ struct IntradayChartView: View {
                 )
             }
         }
-        .drawingGroup(opaque: false)
         .accessibilityLabel(tr("当日股价分时曲线"))
     }
 }

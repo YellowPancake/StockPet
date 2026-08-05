@@ -188,6 +188,12 @@ test("stock code and market are hidden by default and can be enabled", () => {
   assert.equal(sanitizeState({ showStockMeta: true }).showStockMeta, true);
 });
 
+test("change display defaults to percentage and accepts price amount", () => {
+  assert.equal(sanitizeState().changeDisplayMode, "percentage");
+  assert.equal(sanitizeState({ changeDisplayMode: "amount" }).changeDisplayMode, "amount");
+  assert.equal(sanitizeState({ changeDisplayMode: "invalid" }).changeDisplayMode, "percentage");
+});
+
 test("persisted watchlist is not capped at ten stocks", () => {
   const symbols = Array.from({ length: 12 }, (_value, index) => ({
     code: `TEST${index}`,
