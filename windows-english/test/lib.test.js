@@ -9,16 +9,19 @@ const {
   failureBackoffSeconds,
   hasDrawableIntradayData,
   marketForSearchItem,
+  instrumentTypeForSearchItem,
   isMarketOpen,
   isVersionNewer,
   overlayDragPosition,
   overlayGeometry,
   parseTencentMinute,
+  parseEastmoneyLatest,
   parseTencentRealtime,
   parseTrend,
   releaseDigest,
   releaseParts,
   sanitizeState,
+  shouldScheduleShow,
   tencentCode,
   tencentRealtimeCode,
 } = require("../app/lib");
@@ -116,6 +119,36 @@ test("market search results only keep A/H/US classifications", () => {
   assert.equal(marketForSearchItem({ Classify: "HK", MktNum: "116" }), "hongKong");
   assert.equal(marketForSearchItem({ Classify: "USStock", MktNum: "105" }), "unitedStates");
   assert.equal(marketForSearchItem({ Classify: "Fund", MktNum: "90" }), null);
+});
+
+test("indices keep their market identity instead of colliding with stock codes", () => {
+  const shanghai = { Code: "000001", Classify: "Index", MktNum: "1", QuoteID: "1.000001" };
+  const shenzhen = { Code: "399001", Classify: "Index", MktNum: "0", QuoteID: "0.399001" };
+  const hangSengTech = { Code: "HSTECH", Classify: "UniversalIndex", MktNum: "124" };
+  const nasdaq = { Code: "NDX", Classify: "UniversalIndex", MktNum: "100" };
+  assert.equal(marketForSearchItem(shanghai), "aShare");
+  assert.equal(instrumentTypeForSearchItem(shanghai), "index");
+  assert.equal(tencentCode({ code: "000001", market: "aShare", quoteID: "1.000001", instrumentType: "index" }), "sh000001");
+  assert.equal(tencentCode({ code: "399001", market: "aShare", quoteID: "0.399001", instrumentType: "index" }), "sz399001");
+  assert.equal(marketForSearchItem(hangSengTech), "hongKong");
+  assert.equal(marketForSearchItem(nasdaq), "unitedStates");
+  assert.equal(sanitizeState({ symbols: [{ code: "000001", name: "Shanghai Composite", market: "aShare", quoteID: "1.000001" }] }).symbols[0].instrumentType, "index");
+});
+
+test("Eastmoney index batch quotes use quote IDs and decimal scaling", () => {
+  const symbol = { code: "000001", name: "Shanghai Composite", market: "aShare", quoteID: "1.000001", instrumentType: "index" };
+  const updates = parseEastmoneyLatest({ data: { diff: [{ f12: "000001", f13: 1, f2: 390035, f18: 387843, f124: 1786002242, f152: 2 }] } }, [symbol]);
+  assert.equal(updates[0].symbol, symbol);
+  assert.equal(updates[0].lastPrice, 3900.35);
+  assert.equal(updates[0].previousClose, 3878.43);
+});
+
+test("daily visibility schedule supports daytime and overnight windows", () => {
+  assert.equal(shouldScheduleShow(10 * 60, "09:30", "15:30"), true);
+  assert.equal(shouldScheduleShow(16 * 60, "09:30", "15:30"), false);
+  assert.equal(shouldScheduleShow(23 * 60, "21:00", "07:00"), true);
+  assert.equal(shouldScheduleShow(12 * 60, "21:00", "07:00"), false);
+  assert.equal(shouldScheduleShow(12 * 60, "09:30", "09:30"), null);
 });
 
 test("minute formats are parsed into chart points", () => {

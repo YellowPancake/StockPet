@@ -6,6 +6,8 @@
 - Added a choice between percentage change and absolute price change on the desktop.
 - Hardened Windows global shortcut registration so show/hide remains available while other applications are focused and after sleep or unlock.
 - Added startup recovery and safer preference migration on macOS.
+- Added index-aware search and quote routing for major A-share, Hong Kong, and US indices, fixing the `000001` Shanghai Composite / Ping An Bank collision.
+- Added an optional daily local-time schedule for automatically showing and hiding Stock Pet.
 
 ## v0.4.3
 

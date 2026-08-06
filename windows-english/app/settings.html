@@ -119,6 +119,15 @@
               </select>
             </span>
           </div>
+          <label class="setting-row">
+            <span><strong>Show/hide Stock Pet on a schedule</strong><small>Runs daily using your computer's local time</small></span>
+            <input id="visibilityScheduleEnabled" class="switch" type="checkbox" />
+          </label>
+          <div id="visibility-schedule-options">
+            <label class="setting-row"><span><strong>Show every day</strong></span><input id="scheduledShowTime" type="time" /></label>
+            <label class="setting-row"><span><strong>Hide every day</strong></span><input id="scheduledHideTime" type="time" /></label>
+            <p class="subtle">Show and hide times must be different.</p>
+          </div>
         </div>
         <button id="reset-appearance" class="secondary">Restore default appearance</button>
       </section>

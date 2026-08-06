@@ -13,6 +13,7 @@ const marketLabels = {
   hongKong: "HK",
   unitedStates: "US",
 };
+const indexMarketLabels = { aShare: "A-share Index", hongKong: "HK Index", unitedStates: "US Index" };
 
 let state = null;
 let quotes = {};
@@ -129,7 +130,7 @@ function render() {
           <div class="name">${escapeHTML(symbol.name)}</div>
           ${state.showStockMeta ? `<div class="meta">
             <span>${escapeHTML(symbol.code)}</span>
-            <span class="market">${marketLabels[symbol.market] || ""}</span>
+            <span class="market">${symbol.instrumentType === "index" ? indexMarketLabels[symbol.market] : (marketLabels[symbol.market] || "")}</span>
           </div>` : ""}
         </div>
         <svg class="chart ${path ? "" : "placeholder"}" viewBox="0 0 100 46" preserveAspectRatio="none">

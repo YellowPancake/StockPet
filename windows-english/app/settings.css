@@ -562,6 +562,16 @@ select {
   opacity: 0.45;
 }
 
+#visibility-schedule-options.disabled {
+  opacity: 0.45;
+}
+
+#visibility-schedule-options .subtle {
+  margin: 8px 20px 14px;
+  color: #8b8f98;
+  font-size: 13px;
+}
+
 #page-alerts .setting-row:has(input:disabled) {
   opacity: 0.45;
 }

@@ -119,6 +119,15 @@
               </select>
             </span>
           </div>
+          <label class="setting-row">
+            <span><strong>定时显示/隐藏桌宠</strong><small>按电脑本地时间每天自动执行</small></span>
+            <input id="visibilityScheduleEnabled" class="switch" type="checkbox" />
+          </label>
+          <div id="visibility-schedule-options">
+            <label class="setting-row"><span><strong>每天显示</strong></span><input id="scheduledShowTime" type="time" /></label>
+            <label class="setting-row"><span><strong>每天隐藏</strong></span><input id="scheduledHideTime" type="time" /></label>
+            <p class="subtle">显示和隐藏时间不能相同。</p>
+          </div>
         </div>
         <button id="reset-appearance" class="secondary">恢复默认外观</button>
       </section>

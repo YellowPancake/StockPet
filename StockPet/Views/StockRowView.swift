@@ -77,7 +77,7 @@ struct StockRowView: View {
             if showStockMeta {
                 HStack(spacing: 4) {
                     Text(symbol.code)
-                    Text(symbol.market.displayName)
+                    Text(symbol.displayMarketName)
                         .padding(.horizontal, 4)
                         .padding(.vertical, 1)
                         .background(changeRole.color.opacity(0.14), in: Capsule())
@@ -91,7 +91,7 @@ struct StockRowView: View {
             }
         }
         .frame(maxHeight: .infinity, alignment: .center)
-        .help(quote?.statusMessage ?? "\(symbol.market.displayName) · \(symbol.code)")
+        .help(quote?.statusMessage ?? "\(symbol.displayMarketName) · \(symbol.code)")
     }
 
     @ViewBuilder

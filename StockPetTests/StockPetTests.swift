@@ -164,6 +164,81 @@ final class StockPetTests: XCTestCase {
         XCTAssertEqual(MarketQuoteService.market(for: unitedStates), .unitedStates)
     }
 
+    func testSearchKeepsIndexIdentityAndExchangeRouting() {
+        let shanghai = SearchItem(
+            code: "000001", name: "上证指数", classification: "Index",
+            marketNumber: "1", quoteID: "1.000001"
+        )
+        let shenzhen = SearchItem(
+            code: "399001", name: "深证成指", classification: "Index",
+            marketNumber: "0", quoteID: "0.399001"
+        )
+        let hangSengTech = SearchItem(
+            code: "HSTECH", name: "恒生科技指数", classification: "UniversalIndex",
+            marketNumber: "124", quoteID: "124.HSTECH"
+        )
+        let nasdaq = SearchItem(
+            code: "NDX", name: "纳斯达克", classification: "UniversalIndex",
+            marketNumber: "100", quoteID: "100.NDX"
+        )
+        XCTAssertEqual(MarketQuoteService.market(for: shanghai), .aShare)
+        XCTAssertEqual(MarketQuoteService.instrumentType(for: shanghai), .index)
+        XCTAssertEqual(MarketQuoteService.market(for: hangSengTech), .hongKong)
+        XCTAssertEqual(MarketQuoteService.market(for: nasdaq), .unitedStates)
+        XCTAssertTrue(StockSymbol(
+            code: "000001", name: "上证指数", market: .aShare, quoteID: "1.000001"
+        ).isIndex)
+        XCTAssertEqual(
+            MarketQuoteService.tencentCode(for: StockSymbol(
+                code: shanghai.code, name: shanghai.name, market: .aShare,
+                quoteID: shanghai.quoteID, instrumentType: .index
+            )),
+            "sh000001"
+        )
+        XCTAssertEqual(
+            MarketQuoteService.tencentCode(for: StockSymbol(
+                code: shenzhen.code, name: shenzhen.name, market: .aShare,
+                quoteID: shenzhen.quoteID, instrumentType: .index
+            )),
+            "sz399001"
+        )
+    }
+
+    func testEastmoneyIndexBatchUsesQuoteIDAndDecimalScaling() {
+        let symbol = StockSymbol(
+            code: "000001", name: "上证指数", market: .aShare,
+            quoteID: "1.000001", instrumentType: .index
+        )
+        let response = EastmoneyLatestEnvelope(data: EastmoneyLatestPayload(diff: [
+            EastmoneyLatestItem(
+                code: "000001", marketNumber: 1, lastPrice: 390_035,
+                previousClose: 387_843, timestamp: 1_786_002_242, decimals: 2
+            )
+        ]))
+        let updates = MarketQuoteService.parseEastmoneyLatest(response, symbols: [symbol])
+        let update = try? XCTUnwrap(updates.first)
+        XCTAssertEqual(update?.lastPrice ?? 0, 3900.35, accuracy: 0.0001)
+        XCTAssertEqual(update?.previousClose ?? 0, 3878.43, accuracy: 0.0001)
+    }
+
+    func testDailyVisibilityScheduleSupportsDaytimeAndOvernight() {
+        XCTAssertEqual(
+            DailyVisibilitySchedule.shouldShow(nowMinutes: 600, showMinutes: 570, hideMinutes: 930),
+            true
+        )
+        XCTAssertEqual(
+            DailyVisibilitySchedule.shouldShow(nowMinutes: 960, showMinutes: 570, hideMinutes: 930),
+            false
+        )
+        XCTAssertEqual(
+            DailyVisibilitySchedule.shouldShow(nowMinutes: 1_380, showMinutes: 1_260, hideMinutes: 420),
+            true
+        )
+        XCTAssertNil(
+            DailyVisibilitySchedule.shouldShow(nowMinutes: 600, showMinutes: 570, hideMinutes: 570)
+        )
+    }
+
     func testThresholdGateOnlyRealertsAfterReturningInside() {
         var gate = ThresholdGate()
 

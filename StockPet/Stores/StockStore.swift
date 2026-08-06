@@ -112,6 +112,26 @@ final class StockStore: ObservableObject {
             notifyShortcutChanged()
         }
     }
+    @Published var visibilityScheduleEnabled: Bool {
+        didSet {
+            persist()
+            notifyVisibilityScheduleChanged()
+        }
+    }
+    @Published var scheduledShowMinutes: Int {
+        didSet {
+            scheduledShowMinutes = DailyVisibilitySchedule.normalizedMinutes(scheduledShowMinutes)
+            persist()
+            notifyVisibilityScheduleChanged()
+        }
+    }
+    @Published var scheduledHideMinutes: Int {
+        didSet {
+            scheduledHideMinutes = DailyVisibilitySchedule.normalizedMinutes(scheduledHideMinutes)
+            persist()
+            notifyVisibilityScheduleChanged()
+        }
+    }
 
     private let service: any QuoteProviding
     private let defaults: UserDefaults
@@ -186,6 +206,13 @@ final class StockStore: ObservableObject {
         shortcutKey = ShortcutKeyOption(
             rawValue: defaults.string(forKey: Keys.shortcutKey) ?? ""
         ) ?? .s
+        visibilityScheduleEnabled = defaults.object(forKey: Keys.visibilityScheduleEnabled) as? Bool ?? false
+        scheduledShowMinutes = DailyVisibilitySchedule.normalizedMinutes(
+            defaults.object(forKey: Keys.scheduledShowMinutes) as? Int ?? 9 * 60 + 30
+        )
+        scheduledHideMinutes = DailyVisibilitySchedule.normalizedMinutes(
+            defaults.object(forKey: Keys.scheduledHideMinutes) as? Int ?? 15 * 60 + 30
+        )
     }
 
     func start() {
@@ -601,10 +628,17 @@ final class StockStore: ObservableObject {
         defaults.set(shortcutEnabled, forKey: Keys.shortcutEnabled)
         defaults.set(shortcutModifier.rawValue, forKey: Keys.shortcutModifier)
         defaults.set(shortcutKey.rawValue, forKey: Keys.shortcutKey)
+        defaults.set(visibilityScheduleEnabled, forKey: Keys.visibilityScheduleEnabled)
+        defaults.set(scheduledShowMinutes, forKey: Keys.scheduledShowMinutes)
+        defaults.set(scheduledHideMinutes, forKey: Keys.scheduledHideMinutes)
     }
 
     private func notifyShortcutChanged() {
         NotificationCenter.default.post(name: .stockPetShortcutChanged, object: nil)
+    }
+
+    private func notifyVisibilityScheduleChanged() {
+        NotificationCenter.default.post(name: .stockPetVisibilityScheduleChanged, object: nil)
     }
 
     private enum FetchOutcome: Sendable {
@@ -637,5 +671,8 @@ final class StockStore: ObservableObject {
         static let shortcutEnabled = "stockPet.shortcutEnabled"
         static let shortcutModifier = "stockPet.shortcutModifier"
         static let shortcutKey = "stockPet.shortcutKey"
+        static let visibilityScheduleEnabled = "stockPet.visibilityScheduleEnabled"
+        static let scheduledShowMinutes = "stockPet.scheduledShowMinutes"
+        static let scheduledHideMinutes = "stockPet.scheduledHideMinutes"
     }
 }

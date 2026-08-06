@@ -58,19 +58,58 @@ function changePercent(lastPrice, previousClose) {
 function marketForSearchItem(item) {
   const classification = String(item.Classify || "").toLowerCase();
   const marketNumber = String(item.MktNum || "");
-  if (classification === "astock" || ["0", "1"].includes(marketNumber)) {
+  const code = String(item.Code || "").toUpperCase();
+  if (classification === "index" && ["0", "1"].includes(marketNumber)) {
     return "aShare";
   }
-  if (classification === "hk" || marketNumber === "116") {
+  if (classification === "34" && code === "899050") return "aShare";
+  if (classification === "universalindex") {
+    if (marketNumber === "124") return "hongKong";
+    if (["DJIA", "IXIC", "NDX", "NDX100", "SPX", "RUT", "VIX"].includes(code)) {
+      return "unitedStates";
+    }
+    return null;
+  }
+  if (classification === "hk" || ["100", "116"].includes(marketNumber)) {
     return "hongKong";
   }
   if (classification === "usstock" || ["105", "106", "107"].includes(marketNumber)) {
     return "unitedStates";
   }
+  if (classification === "astock" || ["0", "1"].includes(marketNumber)) {
+    return "aShare";
+  }
   return null;
 }
 
+function instrumentTypeForSearchItem(item) {
+  const classification = String(item.Classify || "").toLowerCase();
+  const marketNumber = String(item.MktNum || "");
+  const code = String(item.Code || "").toUpperCase();
+  return classification === "index" || classification === "universalindex"
+    || (classification === "hk" && marketNumber === "100")
+    || (classification === "34" && code === "899050")
+    ? "index" : "stock";
+}
+
+function instrumentTypeForSymbol(symbol) {
+  if (symbol.instrumentType === "index") return "index";
+  const marketNumber = String(symbol.quoteID || "").split(".")[0];
+  const code = String(symbol.code || "").toUpperCase();
+  if (symbol.market === "aShare"
+      && ((marketNumber === "1" && code.startsWith("000"))
+        || (marketNumber === "0" && (code.startsWith("399") || code === "899050")))) return "index";
+  if (symbol.market === "hongKong" && ["100", "124"].includes(marketNumber)) return "index";
+  if (symbol.market === "unitedStates" && marketNumber === "100") return "index";
+  return "stock";
+}
+
 function tencentCode(symbol) {
+  if (symbol.instrumentType === "index" && symbol.market === "aShare") {
+    const marketNumber = String(symbol.quoteID || "").split(".")[0];
+    if (marketNumber === "1") return `sh${symbol.code}`;
+    if (marketNumber === "0") return `sz${symbol.code}`;
+  }
   if (symbol.market === "hongKong") return `hk${symbol.code}`;
   if (symbol.market === "unitedStates") return `us${symbol.code.toUpperCase()}`;
   if (symbol.code.startsWith("6")) return `sh${symbol.code}`;
@@ -96,6 +135,26 @@ function parseTencentRealtime(raw, symbols) {
     const sourceTimestamp = String(fields[30] || "").replaceAll('"', "").trim();
     if (!(lastPrice > 0) || !(previousClose > 0) || !sourceTimestamp) return [];
     return [{ symbol, lastPrice, previousClose, sourceTimestamp }];
+  });
+}
+
+function parseEastmoneyLatest(response, symbols) {
+  const byQuoteID = new Map(symbols.map((symbol) => [symbol.quoteID, symbol]));
+  return (response?.data?.diff || []).flatMap((item) => {
+    const symbol = byQuoteID.get(`${item.f13}.${item.f12}`);
+    const divisor = 10 ** (Number.isInteger(Number(item.f152)) ? Number(item.f152) : 2);
+    const lastPrice = Number(item.f2) / divisor;
+    const previousClose = Number(item.f18) / divisor;
+    if (!symbol || !(lastPrice > 0) || !(previousClose > 0)) return [];
+    return [{
+      symbol,
+      lastPrice,
+      previousClose,
+      sourceTimestamp: Number(item.f124) > 0
+        ? new Date(Number(item.f124) * 1000).toISOString()
+        : new Date().toISOString(),
+      source: "eastmoney",
+    }];
   });
 }
 
@@ -213,6 +272,10 @@ function sanitizeState(candidate = {}) {
   const symbols = Array.isArray(candidate.symbols)
     ? candidate.symbols
         .filter((item) => item && item.code && item.name && MARKETS[item.market] && item.quoteID)
+        .map((item) => ({
+          ...item,
+          instrumentType: instrumentTypeForSymbol(item),
+        }))
     : [...INITIAL_SYMBOLS];
   const number = (value, fallback, min, max) => {
     const parsed = Number(value);
@@ -264,7 +327,33 @@ function sanitizeState(candidate = {}) {
     shortcutKey: ["S", "P", "H", "K", "D", "F", "Space"].includes(candidate.shortcutKey)
       ? candidate.shortcutKey
       : "S",
+    visibilityScheduleEnabled: Boolean(candidate.visibilityScheduleEnabled),
+    scheduledShowTime: normalizeClockTime(candidate.scheduledShowTime, "09:30"),
+    scheduledHideTime: normalizeClockTime(candidate.scheduledHideTime, "15:30"),
   };
+}
+
+function normalizeClockTime(value, fallback = "00:00") {
+  const match = String(value || "").match(/^(\d{1,2}):(\d{2})$/);
+  if (!match) return fallback;
+  const hour = Number(match[1]);
+  const minute = Number(match[2]);
+  if (hour > 23 || minute > 59) return fallback;
+  return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
+}
+
+function minutesFromClock(value) {
+  const normalized = normalizeClockTime(value);
+  const [hour, minute] = normalized.split(":").map(Number);
+  return hour * 60 + minute;
+}
+
+function shouldScheduleShow(nowMinutes, showTime, hideTime) {
+  const show = minutesFromClock(showTime);
+  const hide = minutesFromClock(hideTime);
+  if (show === hide) return null;
+  if (show < hide) return nowMinutes >= show && nowMinutes < hide;
+  return nowMinutes >= show || nowMinutes < hide;
 }
 
 function releaseDigest(notes, assetName) {
@@ -301,15 +390,21 @@ module.exports = {
   failureBackoffSeconds,
   hasDrawableIntradayData,
   marketForSearchItem,
+  instrumentTypeForSearchItem,
+  instrumentTypeForSymbol,
   isMarketOpen,
   isVersionNewer,
   overlayDragPosition,
   overlayGeometry,
   parseTencentMinute,
+  parseEastmoneyLatest,
   parseTencentRealtime,
   parseTrend,
   releaseDigest,
   releaseParts,
+  normalizeClockTime,
+  minutesFromClock,
+  shouldScheduleShow,
   sanitizeState,
   tencentCode,
   tencentRealtimeCode,

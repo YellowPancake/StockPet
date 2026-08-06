@@ -125,6 +125,7 @@ For example, with a `+3.0%` rise threshold: the first touch at `+3.0%` alerts; a
 - **Drag anywhere:** keep it wherever it feels least distracting.
 - **Double-click Settings:** double-click the panel or a chart to open Settings.
 - **Global show/hide shortcut:** enable it, disable it, or choose a different key combination.
+- **Daily visibility schedule:** optionally choose a local show time and hide time, such as `09:30` and `15:30`.
 - **Mouse passthrough:** lock the pet so it never blocks clicks or scrolling below it.
 - **Always on top:** keep the market at the edge of your view while switching apps.
 
@@ -134,7 +135,7 @@ For example, with a `+3.0%` rise threshold: the first touch at `+3.0%` alerts; a
 
 | Feature | What it does |
 | --- | --- |
-| Three markets | Search and add A-shares, Hong Kong stocks, and US stocks |
+| Three markets and indices | Search and add A-shares, Hong Kong stocks, US stocks, and major indices such as the Shanghai Composite, Hang Seng, and Nasdaq |
 | Unlimited watchlist | Add, remove, and reorder stocks; long lists scroll |
 | Real intraday charts | Displays minute data and never invents a chart |
 | Market-aware colors | A-shares / Hong Kong: red up and green down; US: green up and red down |
@@ -142,6 +143,7 @@ For example, with a `+3.0%` rise threshold: the first touch at `+3.0%` alerts; a
 | Appearance controls | Overall scale, chart width, font size, ticker/market visibility, and three independent opacity controls |
 | Desktop interaction | Drag, double-click Settings, always on top, and mouse passthrough |
 | Quick hiding | Customizable global shortcut to show or hide the pet |
+| Scheduled visibility | Automatically show and hide the pet at editable local times each day |
 | Bull & bear alerts | Previous-close percentages or per-stock targets, live-price target generation, master switch, opacity, and sounds |
 | Anti-repeat logic | Re-arms after the price returns inside the threshold |
 | Fast quote refresh | Optional 1-second batch quotes for latest prices, changes, and alerts; charts update separately at 15 seconds or slower |
@@ -151,8 +153,8 @@ For example, with a `+3.0%` rise threshold: the first touch at `+3.0%` alerts; a
 
 ## Data and Risk Notes
 
-- Search covers A-shares, Hong Kong stocks, and US stocks.
-- Tencent fast quotes and intraday data are the primary sources; Eastmoney is the intraday fallback.
+- Search covers A-shares, Hong Kong stocks, US stocks, and major indices in those markets.
+- Tencent fast quotes and intraday data are the primary sources for stocks; index identity and index quotes use Eastmoney market identifiers to avoid ambiguous ticker collisions.
 - The selected refresh interval controls latest prices, percentage changes, and alerts. Intraday charts update no faster than every 15 seconds. Outside likely market hours the app slows requests automatically, and repeated failures use progressive backoff.
 - The `1 second` option is a request interval, not a guarantee that exchanges or public endpoints publish a new trade every second.
 - Software Update downloads the package only after you choose to do so. It verifies the SHA-256 digest published by GitHub and reveals the file in Downloads; it does not silently replace the running app.

@@ -55,12 +55,16 @@ actor MarketQuoteService: QuoteProviding {
                 code: item.code,
                 name: localizedStockName(item.name, code: item.code),
                 market: market,
-                quoteID: quoteID
+                quoteID: quoteID,
+                instrumentType: Self.instrumentType(for: item)
             )
         }
     }
 
     func fetchIntraday(for symbol: StockSymbol) async throws -> StockQuote {
+        if symbol.isIndex {
+            return try await fetchEastmoneyIntraday(for: symbol)
+        }
         do {
             return try await fetchTencentIntraday(for: symbol)
         } catch {
@@ -71,13 +75,24 @@ actor MarketQuoteService: QuoteProviding {
     func fetchLatestQuotes(for symbols: [StockSymbol]) async throws -> [LatestQuoteUpdate] {
         guard !symbols.isEmpty else { return [] }
 
+        let stocks = symbols.filter { !$0.isIndex }
+        let indices = symbols.filter(\.isIndex)
         var updates: [LatestQuoteUpdate] = []
         var lastError: Error?
-        for start in stride(from: 0, to: symbols.count, by: 40) {
-            let end = min(start + 40, symbols.count)
-            let batch = Array(symbols[start..<end])
+        for start in stride(from: 0, to: stocks.count, by: 40) {
+            let end = min(start + 40, stocks.count)
+            let batch = Array(stocks[start..<end])
             do {
                 updates.append(contentsOf: try await fetchTencentLatestBatch(batch))
+            } catch {
+                lastError = error
+            }
+        }
+        for start in stride(from: 0, to: indices.count, by: 40) {
+            let end = min(start + 40, indices.count)
+            let batch = Array(indices[start..<end])
+            do {
+                updates.append(contentsOf: try await fetchEastmoneyLatestBatch(batch))
             } catch {
                 lastError = error
             }
@@ -86,6 +101,26 @@ actor MarketQuoteService: QuoteProviding {
             throw lastError
         }
         return updates
+    }
+
+    private func fetchEastmoneyLatestBatch(
+        _ symbols: [StockSymbol]
+    ) async throws -> [LatestQuoteUpdate] {
+        guard !symbols.isEmpty else { return [] }
+        var components = URLComponents()
+        components.scheme = "https"
+        components.host = "push2delay.eastmoney.com"
+        components.path = "/api/qt/ulist.np/get"
+        components.queryItems = [
+            URLQueryItem(name: "secids", value: symbols.map(\.quoteID).joined(separator: ",")),
+            URLQueryItem(name: "fields", value: "f12,f13,f14,f2,f18,f124,f152")
+        ]
+        guard let url = components.url else { throw QuoteServiceError.invalidURL }
+        let data = try await request(url, timeout: 3)
+        let response = try decoder.decode(EastmoneyLatestEnvelope.self, from: data)
+        let parsed = Self.parseEastmoneyLatest(response, symbols: symbols)
+        guard !parsed.isEmpty else { throw QuoteServiceError.invalidResponse }
+        return parsed
     }
 
     private func fetchTencentLatestBatch(
@@ -228,17 +263,42 @@ actor MarketQuoteService: QuoteProviding {
 
     static func market(for item: SearchItem) -> StockMarket? {
         let classification = item.classification.lowercased()
-        if classification == "astock" || ["0", "1"].contains(item.marketNumber) {
+        if classification == "index" && ["0", "1"].contains(item.marketNumber) {
             return .aShare
         }
-        if classification == "hk" || item.marketNumber == "116" {
+        if classification == "34" && item.code == "899050" {
+            return .aShare
+        }
+        if classification == "universalindex" {
+            if item.marketNumber == "124" { return .hongKong }
+            if usIndexCodes.contains(item.code.uppercased()) { return .unitedStates }
+            return nil
+        }
+        if classification == "hk" || ["100", "116"].contains(item.marketNumber) {
             return .hongKong
         }
         if classification == "usstock" || ["105", "106", "107"].contains(item.marketNumber) {
             return .unitedStates
         }
+        if classification == "astock" || ["0", "1"].contains(item.marketNumber) {
+            return .aShare
+        }
         return nil
     }
+
+    static func instrumentType(for item: SearchItem) -> InstrumentType {
+        let classification = item.classification.lowercased()
+        if classification == "index" || classification == "universalindex" ||
+            (classification == "hk" && item.marketNumber == "100") ||
+            (classification == "34" && item.code == "899050") {
+            return .index
+        }
+        return .stock
+    }
+
+    private static let usIndexCodes: Set<String> = [
+        "DJIA", "IXIC", "NDX", "NDX100", "SPX", "RUT", "VIX"
+    ]
 
     static func hasDrawableIntradayData(_ points: [IntradayPoint]) -> Bool {
         points.count >= 2
@@ -260,6 +320,13 @@ actor MarketQuoteService: QuoteProviding {
     }
 
     static func tencentCode(for symbol: StockSymbol) -> String {
+        if symbol.isIndex {
+            let marketNumber = symbol.quoteID.split(separator: ".", maxSplits: 1).first.map(String.init)
+            if symbol.market == .aShare {
+                if marketNumber == "1" { return "sh\(symbol.code)" }
+                if marketNumber == "0" { return "sz\(symbol.code)" }
+            }
+        }
         switch symbol.market {
         case .aShare:
             if symbol.code.hasPrefix("6") {
@@ -326,6 +393,32 @@ actor MarketQuoteService: QuoteProviding {
                     updatedAt: updatedAt
                 )
             }
+    }
+
+    static func parseEastmoneyLatest(
+        _ response: EastmoneyLatestEnvelope,
+        symbols: [StockSymbol]
+    ) -> [LatestQuoteUpdate] {
+        let byQuoteID = Dictionary(uniqueKeysWithValues: symbols.map { ($0.quoteID, $0) })
+        return (response.data?.diff ?? []).compactMap { item in
+            guard let code = item.code,
+                  let marketNumber = item.marketNumber,
+                  let symbol = byQuoteID["\(marketNumber).\(code)"],
+                  let rawPrice = item.lastPrice,
+                  let rawPreviousClose = item.previousClose
+            else { return nil }
+            let divisor = pow(10, Double(item.decimals ?? 2))
+            let lastPrice = rawPrice / divisor
+            let previousClose = rawPreviousClose / divisor
+            guard lastPrice > 0, previousClose > 0 else { return nil }
+            let updatedAt = item.timestamp.map(Date.init(timeIntervalSince1970:)) ?? Date()
+            return LatestQuoteUpdate(
+                symbol: symbol,
+                lastPrice: lastPrice,
+                previousClose: previousClose,
+                updatedAt: updatedAt
+            )
+        }
     }
 
     private static func realtimeDate(_ raw: String, market: StockMarket) -> Date? {
@@ -500,6 +593,32 @@ struct TrendPayload: Decodable {
     enum CodingKeys: String, CodingKey {
         case previousClose = "preClose"
         case trends
+    }
+}
+
+struct EastmoneyLatestEnvelope: Decodable {
+    let data: EastmoneyLatestPayload?
+}
+
+struct EastmoneyLatestPayload: Decodable {
+    let diff: [EastmoneyLatestItem]
+}
+
+struct EastmoneyLatestItem: Decodable {
+    let code: String?
+    let marketNumber: Int?
+    let lastPrice: Double?
+    let previousClose: Double?
+    let timestamp: Double?
+    let decimals: Int?
+
+    enum CodingKeys: String, CodingKey {
+        case code = "f12"
+        case marketNumber = "f13"
+        case lastPrice = "f2"
+        case previousClose = "f18"
+        case timestamp = "f124"
+        case decimals = "f152"
     }
 }
 

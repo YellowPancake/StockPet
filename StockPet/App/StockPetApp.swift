@@ -16,11 +16,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private let store = StockStore()
     private let hotKeyController = GlobalHotKeyController()
     private var shortcutObserver: NSObjectProtocol?
+    private var visibilityScheduleObserver: NSObjectProtocol?
+    private var wakeObserver: NSObjectProtocol?
     private var settingsObserver: NSObjectProtocol?
     private var statusItem: NSStatusItem?
     private var petWindowController: NSWindowController?
     private var settingsWindowController: NSWindowController?
     private var petSizeObserver: AnyCancellable?
+    private var visibilityScheduleTimer: Timer?
 
     private enum MenuTag: Int {
         case togglePet = 1
@@ -70,7 +73,26 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
                 self?.showSettings()
             }
         }
+        visibilityScheduleObserver = NotificationCenter.default.addObserver(
+            forName: .stockPetVisibilityScheduleChanged,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor in
+                self?.configureVisibilitySchedule(reconcileNow: true)
+            }
+        }
+        wakeObserver = NSWorkspace.shared.notificationCenter.addObserver(
+            forName: NSWorkspace.didWakeNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor in
+                self?.configureVisibilitySchedule(reconcileNow: true)
+            }
+        }
         updateGlobalShortcut()
+        configureVisibilitySchedule(reconcileNow: true)
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
             StartupDiagnostics.shared.mark("store-starting")
@@ -89,6 +111,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         if let settingsObserver {
             NotificationCenter.default.removeObserver(settingsObserver)
         }
+        if let visibilityScheduleObserver {
+            NotificationCenter.default.removeObserver(visibilityScheduleObserver)
+        }
+        if let wakeObserver {
+            NSWorkspace.shared.notificationCenter.removeObserver(wakeObserver)
+        }
+        visibilityScheduleTimer?.invalidate()
         petSizeObserver?.cancel()
         store.stop()
         StartupDiagnostics.shared.finish()
@@ -112,13 +141,56 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             return
         }
 
-        if window.isVisible {
-            window.orderOut(nil)
-        } else {
+        setPetWindowVisible(!window.isVisible)
+    }
+
+    private func setPetWindowVisible(_ visible: Bool) {
+        guard let window = petWindow else { return }
+        if visible {
             WindowConfigurator.recoverFrameIfNeeded(for: window)
             window.orderFrontRegardless()
+        } else {
+            window.orderOut(nil)
         }
         updateMenuItems()
+    }
+
+    private func configureVisibilitySchedule(reconcileNow: Bool) {
+        visibilityScheduleTimer?.invalidate()
+        visibilityScheduleTimer = nil
+        guard store.visibilityScheduleEnabled,
+              store.scheduledShowMinutes != store.scheduledHideMinutes
+        else { return }
+
+        let now = Date()
+        let calendar = Calendar.current
+        let parts = calendar.dateComponents([.hour, .minute], from: now)
+        let nowMinutes = (parts.hour ?? 0) * 60 + (parts.minute ?? 0)
+        if reconcileNow,
+           let shouldShow = DailyVisibilitySchedule.shouldShow(
+               nowMinutes: nowMinutes,
+               showMinutes: store.scheduledShowMinutes,
+               hideMinutes: store.scheduledHideMinutes
+           ) {
+            setPetWindowVisible(shouldShow)
+        }
+
+        let nextDates = [store.scheduledShowMinutes, store.scheduledHideMinutes].compactMap { minutes in
+            calendar.nextDate(
+                after: now,
+                matching: DateComponents(hour: minutes / 60, minute: minutes % 60, second: 0),
+                matchingPolicy: .nextTime
+            )
+        }
+        guard let nextDate = nextDates.min() else { return }
+        let timer = Timer(fire: nextDate, interval: 0, repeats: false) { [weak self] _ in
+            Task { @MainActor in
+                self?.configureVisibilitySchedule(reconcileNow: true)
+            }
+        }
+        timer.tolerance = 1
+        RunLoop.main.add(timer, forMode: .common)
+        visibilityScheduleTimer = timer
     }
 
     private var petWindow: NSWindow? {
@@ -163,8 +235,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
         window.orderFrontRegardless()
         DispatchQueue.main.async { [weak self] in
-            self?.resizePetWindowToFit()
-            self?.recoverPetWindowIfNeeded()
+            guard let self else { return }
+            self.resizePetWindowToFit()
+            if self.store.visibilityScheduleEnabled {
+                WindowConfigurator.recoverFrameIfNeeded(for: window)
+                self.configureVisibilitySchedule(reconcileNow: true)
+            } else {
+                self.recoverPetWindowIfNeeded()
+            }
             StartupDiagnostics.shared.mark("pet-window-ready")
         }
         StartupDiagnostics.shared.mark("pet-window-created")

@@ -28,6 +28,7 @@ const {
   releaseDigest,
   releaseParts,
   sanitizeState,
+  shouldScheduleShow,
 } = require("./lib");
 const { fetchIntraday, fetchLatestQuotes, searchStocks } = require("./quote-service");
 
@@ -56,6 +57,7 @@ let overlayDragStart = null;
 let availableUpdate = null;
 let registeredShortcut = null;
 let shortcutHealthTimer = null;
+let visibilityScheduleTimer = null;
 
 const UPDATE_ASSET_NAME = "StockPet-Windows-x64-English.zip";
 const GITHUB_RELEASES_API = "https://api.github.com/repos/YellowPancake/StockPet/releases/latest";
@@ -284,6 +286,35 @@ function toggleOverlay() {
   rebuildTrayMenu();
 }
 
+function setOverlayVisible(visible) {
+  if (!overlayWindow) return;
+  visible ? overlayWindow.showInactive() : overlayWindow.hide();
+  rebuildTrayMenu();
+}
+
+function resetVisibilitySchedule(reconcileNow = true) {
+  if (visibilityScheduleTimer) clearTimeout(visibilityScheduleTimer);
+  visibilityScheduleTimer = null;
+  if (!state.visibilityScheduleEnabled || state.scheduledShowTime === state.scheduledHideTime) return;
+
+  const now = new Date();
+  const nowMinutes = now.getHours() * 60 + now.getMinutes();
+  if (reconcileNow) {
+    const visible = shouldScheduleShow(nowMinutes, state.scheduledShowTime, state.scheduledHideTime);
+    if (visible !== null) setOverlayVisible(visible);
+  }
+  const nextDate = (clock) => {
+    const [hour, minute] = clock.split(":").map(Number);
+    const result = new Date(now);
+    result.setHours(hour, minute, 0, 0);
+    if (result <= now) result.setDate(result.getDate() + 1);
+    return result;
+  };
+  const next = [nextDate(state.scheduledShowTime), nextDate(state.scheduledHideTime)]
+    .sort((left, right) => left - right)[0];
+  visibilityScheduleTimer = setTimeout(() => resetVisibilitySchedule(true), next - now);
+}
+
 function configuredShortcut() {
   return `${state.shortcutModifier}+${state.shortcutKey}`;
 }
@@ -337,7 +368,8 @@ function createOverlayWindow() {
   overlayWindow.loadFile(path.join(__dirname, "overlay.html"));
   overlayWindow.once("ready-to-show", () => {
     updateOverlayGeometry();
-    overlayWindow.showInactive();
+    if (state.visibilityScheduleEnabled) resetVisibilitySchedule(true);
+    else overlayWindow.showInactive();
   });
   overlayWindow.on("closed", () => {
     overlayDragStart = null;
@@ -478,12 +510,18 @@ function applyStatePatch(patch) {
     patch.shortcutModifier !== undefined ||
     patch.shortcutKey !== undefined
   );
+  const scheduleChanged = (
+    patch.visibilityScheduleEnabled !== undefined ||
+    patch.scheduledShowTime !== undefined ||
+    patch.scheduledHideTime !== undefined
+  );
   state = sanitizeState({ ...state, ...patch });
   thresholdStates = {};
   persistState();
   notifyStateChanged();
   if (!state.alertsEnabled) send("alert-dismiss", null);
   if (shortcutChanged) registerGlobalShortcut();
+  if (scheduleChanged) resetVisibilitySchedule(true);
   if (state.refreshInterval !== previousRefreshInterval) resetRefreshTimer();
   return state;
 }
@@ -620,7 +658,7 @@ async function performLatestRefresh(symbols) {
         updatedAt: update.sourceTimestamp,
         sourceTimestamp: update.sourceTimestamp,
         isStale: false,
-        source: "Tencent fast quote",
+        source: update.source === "eastmoney" ? "Eastmoney index quotes" : "Tencent fast quote",
       };
       quotes[id] = quote;
       quoteCache[id] = quote;
@@ -735,10 +773,17 @@ if (!gotLock) {
     createOverlayWindow();
     createTray();
     registerGlobalShortcut();
+    resetVisibilitySchedule(true);
     shortcutHealthTimer = setInterval(ensureGlobalShortcutRegistered, 3000);
     app.on("browser-window-blur", () => setImmediate(ensureGlobalShortcutRegistered));
-    powerMonitor.on("resume", ensureGlobalShortcutRegistered);
-    powerMonitor.on("unlock-screen", ensureGlobalShortcutRegistered);
+    powerMonitor.on("resume", () => {
+      ensureGlobalShortcutRegistered();
+      resetVisibilitySchedule(true);
+    });
+    powerMonitor.on("unlock-screen", () => {
+      ensureGlobalShortcutRegistered();
+      resetVisibilitySchedule(true);
+    });
     refreshAll().finally(resetRefreshTimer);
   });
 
@@ -747,6 +792,7 @@ if (!gotLock) {
     if (latestRefreshTimer) clearTimeout(latestRefreshTimer);
     if (intradayRefreshTimer) clearTimeout(intradayRefreshTimer);
     if (shortcutHealthTimer) clearInterval(shortcutHealthTimer);
+    if (visibilityScheduleTimer) clearTimeout(visibilityScheduleTimer);
     refreshGeneration += 1;
     persistQuotes();
     globalShortcut.unregisterAll();

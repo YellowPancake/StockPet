@@ -72,7 +72,7 @@ struct SettingsView: View {
                     LazyVStack(spacing: 0) {
                         ForEach(results) { symbol in
                             HStack {
-                                MarketBadge(market: symbol.market)
+                                MarketBadge(symbol: symbol)
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(symbol.name).fontWeight(.semibold)
                                     Text(symbol.code).font(.caption.monospaced()).foregroundStyle(.secondary)
@@ -112,10 +112,10 @@ struct SettingsView: View {
             List {
                 ForEach(store.symbols) { symbol in
                     HStack(spacing: 10) {
-                        MarketBadge(market: symbol.market)
+                        MarketBadge(symbol: symbol)
                         VStack(alignment: .leading, spacing: 2) {
                             Text(symbol.name).fontWeight(.semibold)
-                            Text("\(symbol.code) · \(symbol.market.displayName)")
+                            Text("\(symbol.code) · \(symbol.displayMarketName)")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         }
@@ -142,7 +142,8 @@ struct SettingsView: View {
     }
 
     private var appearanceView: some View {
-        VStack(alignment: .leading, spacing: 22) {
+        ScrollView(.vertical) {
+            VStack(alignment: .leading, spacing: 22) {
             pageTitle("外观与交互", subtitle: "让它融进桌面，而不是挡住工作")
 
             SettingsCard {
@@ -265,8 +266,33 @@ struct SettingsView: View {
                 .opacity(store.shortcutEnabled ? 1 : 0.45)
             }
 
+            SettingsCard {
+                Toggle(isOn: $store.visibilityScheduleEnabled) {
+                    Label("定时显示/隐藏桌宠", systemImage: "clock.badge.checkmark")
+                }
+                Divider()
+                VStack(spacing: 12) {
+                    DatePicker(
+                        "每天显示",
+                        selection: scheduleTimeBinding(\StockStore.scheduledShowMinutes),
+                        displayedComponents: .hourAndMinute
+                    )
+                    DatePicker(
+                        "每天隐藏",
+                        selection: scheduleTimeBinding(\StockStore.scheduledHideMinutes),
+                        displayedComponents: .hourAndMinute
+                    )
+                }
+                .disabled(!store.visibilityScheduleEnabled)
+                .opacity(store.visibilityScheduleEnabled ? 1 : 0.45)
+                Text("按电脑本地时间执行；显示和隐藏时间不能相同。")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
             Button("恢复默认外观") {
                 store.resetAppearance()
+            }
             }
         }
     }
@@ -357,6 +383,23 @@ struct SettingsView: View {
         }
     }
 
+    private func scheduleTimeBinding(
+        _ keyPath: ReferenceWritableKeyPath<StockStore, Int>
+    ) -> Binding<Date> {
+        Binding {
+            let minutes = DailyVisibilitySchedule.normalizedMinutes(store[keyPath: keyPath])
+            return Calendar.current.date(
+                bySettingHour: minutes / 60,
+                minute: minutes % 60,
+                second: 0,
+                of: Date()
+            ) ?? Date()
+        } set: { date in
+            let parts = Calendar.current.dateComponents([.hour, .minute], from: date)
+            store[keyPath: keyPath] = (parts.hour ?? 0) * 60 + (parts.minute ?? 0)
+        }
+    }
+
     private var priceAlertControls: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
@@ -424,7 +467,7 @@ struct SettingsView: View {
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(symbol.name).fontWeight(.semibold)
-                    Text("\(symbol.code) · \(symbol.market.displayName)")
+                    Text("\(symbol.code) · \(symbol.displayMarketName)")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -851,10 +894,10 @@ private struct SettingsCard<Content: View>: View {
 }
 
 private struct MarketBadge: View {
-    let market: StockMarket
+    let symbol: StockSymbol
 
     var body: some View {
-        Text(market.displayName)
+        Text(symbol.displayMarketName)
             .font(.caption2.bold())
             .padding(.horizontal, 7)
             .padding(.vertical, 4)
@@ -863,7 +906,7 @@ private struct MarketBadge: View {
     }
 
     private var badgeColor: Color {
-        switch market {
+        switch symbol.market {
         case .aShare: .red.opacity(0.78)
         case .hongKong: .orange.opacity(0.82)
         case .unitedStates: .blue.opacity(0.82)
