@@ -21,7 +21,7 @@
         <button class="nav-item" data-page="alerts"><span>♧</span>Bull &amp; Bear Alerts</button>
         <button class="nav-item" data-page="data"><span>◎</span>Data &amp; Refresh</button>
       </nav>
-      <div class="version">Windows x64 · 0.4.3</div>
+      <div class="version">Windows x64 · 0.4.4</div>
     </aside>
 
     <main class="content">
@@ -72,6 +72,13 @@
             <span class="range-control"><input id="fontScale" type="range" min="0.75" max="1.5" step="0.05" /><output></output></span>
           </label>
           <label class="setting-row">
+            <span><strong>Change display</strong><small>Percentage or price change from the previous close</small></span>
+            <select id="changeDisplayMode">
+              <option value="percentage">Percentage</option>
+              <option value="amount">Price change</option>
+            </select>
+          </label>
+          <label class="setting-row">
             <span><strong>Show ticker and market</strong><small>Hidden by default so the stock name can be larger</small></span>
             <input id="showStockMeta" class="switch" type="checkbox" />
           </label>
@@ -111,6 +118,15 @@
                 <option value="Space">Space</option>
               </select>
             </span>
+          </div>
+          <label class="setting-row">
+            <span><strong>Show/hide Stock Pet on a schedule</strong><small>Runs daily using your computer's local time</small></span>
+            <input id="visibilityScheduleEnabled" class="switch" type="checkbox" />
+          </label>
+          <div id="visibility-schedule-options">
+            <label class="setting-row"><span><strong>Show every day</strong></span><input id="scheduledShowTime" type="time" /></label>
+            <label class="setting-row"><span><strong>Hide every day</strong></span><input id="scheduledHideTime" type="time" /></label>
+            <p class="subtle">Show and hide times must be different.</p>
           </div>
         </div>
         <button id="reset-appearance" class="secondary">Restore default appearance</button>
@@ -214,7 +230,7 @@
         </div>
         <div class="card settings-card update-card">
           <div class="setting-row">
-            <span><strong>Software Update</strong><small id="update-status">Current version v0.4.3</small></span>
+            <span><strong>Software Update</strong><small id="update-status">Current version v0.4.4</small></span>
             <div class="update-actions">
               <button id="check-update" class="secondary" type="button">Check for Updates</button>
               <button id="download-update-route-one" class="primary compact-button" type="button" hidden>Route 1</button>

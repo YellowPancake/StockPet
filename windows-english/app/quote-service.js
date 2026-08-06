@@ -4,7 +4,9 @@ const { net } = require("electron");
 const {
   changePercent,
   hasDrawableIntradayData,
+  instrumentTypeForSearchItem,
   marketForSearchItem,
+  parseEastmoneyLatest,
   parseTencentMinute,
   parseTencentRealtime,
   parseTrend,
@@ -72,6 +74,7 @@ async function searchStocks(query) {
       name: englishStockName(item.Name, item.Code),
       market,
       quoteID,
+      instrumentType: instrumentTypeForSearchItem(item),
     }];
   });
 }
@@ -145,6 +148,7 @@ async function fetchEastmoney(symbol) {
 }
 
 async function fetchIntraday(symbol) {
+  if (symbol.instrumentType === "index") return fetchEastmoney(symbol);
   try {
     return await fetchTencent(symbol);
   } catch {
@@ -155,14 +159,29 @@ async function fetchIntraday(symbol) {
 async function fetchLatestQuotes(symbols) {
   const updates = [];
   let lastError = null;
-  for (let start = 0; start < symbols.length; start += 40) {
-    const batch = symbols.slice(start, start + 40);
+  const stocks = symbols.filter((symbol) => symbol.instrumentType !== "index");
+  const indices = symbols.filter((symbol) => symbol.instrumentType === "index");
+  for (let start = 0; start < stocks.length; start += 40) {
+    const batch = stocks.slice(start, start + 40);
     const codes = batch.map(tencentRealtimeCode).join(",");
     try {
       const text = await requestText(
         `https://qt.gtimg.cn/q=${encodeURIComponent(codes)}&_=${Date.now()}`,
       );
       updates.push(...parseTencentRealtime(text, batch));
+    } catch (error) {
+      lastError = error;
+    }
+  }
+  for (let start = 0; start < indices.length; start += 40) {
+    const batch = indices.slice(start, start + 40);
+    const params = new URLSearchParams({
+      secids: batch.map((symbol) => symbol.quoteID).join(","),
+      fields: "f12,f13,f14,f2,f18,f124,f152",
+    });
+    try {
+      const response = await requestJSON(`https://push2delay.eastmoney.com/api/qt/ulist.np/get?${params}`);
+      updates.push(...parseEastmoneyLatest(response, batch));
     } catch (error) {
       lastError = error;
     }

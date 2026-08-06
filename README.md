@@ -13,10 +13,10 @@
 </p>
 
 <p align="center">
-  <img alt="macOS 13+" src="https://img.shields.io/badge/macOS-13%2B-111111?logo=apple">
+  <img alt="macOS 14+" src="https://img.shields.io/badge/macOS-14%2B-111111?logo=apple">
   <img alt="Windows 10/11" src="https://img.shields.io/badge/Windows-10%20%2F%2011-0078D4?logo=windows">
   <img alt="A-share HK US" src="https://img.shields.io/badge/Markets-A--share%20%7C%20HK%20%7C%20US-EA4C61">
-  <img alt="Version 0.4.3" src="https://img.shields.io/badge/version-0.4.3-5B67F1">
+  <img alt="Version 0.4.4" src="https://img.shields.io/badge/version-0.4.4-5B67F1">
   <img alt="MIT License" src="https://img.shields.io/badge/license-MIT-4C9A2A">
 </p>
 
@@ -35,7 +35,7 @@
 
 Keeping a full market app open while working takes up screen space, frequent switching interrupts your flow, and coworkers or managers may easily notice it.
 
-Stock Pet keeps company names, today's intraday charts, latest prices, and percentage changes on the desktop, with support for A-shares, Hong Kong stocks, and US stocks. It stays quiet during normal work and brings out a little bull or bear when an alert condition is met. Scaling, opacity, mouse passthrough, and quick hiding keep market watching from interrupting your work—and make casual checks less noticeable.
+Stock Pet keeps company names, today's intraday charts, latest prices, and price changes on the desktop, with support for A-shares, Hong Kong stocks, and US stocks. It stays quiet during normal work and brings out a little bull or bear when an alert condition is met. Scaling, opacity, mouse passthrough, and quick hiding keep market watching from interrupting your work—and make casual checks less noticeable.
 
 ## Quick Start
 
@@ -43,7 +43,7 @@ Visit [GitHub Releases](https://github.com/YellowPancake/StockPet/releases/lates
 
 | System | English package |
 | --- | --- |
-| macOS 13 or later | `StockPet-macOS-English.zip`, for Apple Silicon and Intel Macs |
+| macOS 14 or later | `StockPet-macOS-English.zip`, for Apple Silicon and Intel Macs |
 | 64-bit Windows 10/11 | `StockPet-Windows-x64-English.zip` |
 
 ### macOS
@@ -82,10 +82,10 @@ Default shortcut:
 </p>
 
 - Watch A-shares, Hong Kong stocks, and US stocks together, with no watchlist limit.
-- Every stock has a real intraday chart, with the name on the left and the latest price and percentage change on the right.
+- Every stock has a real intraday chart, with the name on the left and the latest price and selected change format on the right.
 - A-shares and Hong Kong stocks use red for gains and green for losses; US stocks use the opposite convention.
 - Stock names are larger by default; tickers and markets can be shown when needed.
-- Names, prices, percentage changes, and charts share the same movement color, with independent font-size and horizontal chart-width controls.
+- Names, prices, changes, and charts share the same movement color. Changes can be shown as a percentage or an absolute amount, with independent font-size and horizontal chart-width controls.
 - Long watchlists scroll inside the pet instead of making the window grow indefinitely.
 - Latest prices, percentage changes, and alerts can refresh as often as once per second; intraday charts use a separate, lighter schedule and update no faster than every 15 seconds.
 
@@ -125,6 +125,7 @@ For example, with a `+3.0%` rise threshold: the first touch at `+3.0%` alerts; a
 - **Drag anywhere:** keep it wherever it feels least distracting.
 - **Double-click Settings:** double-click the panel or a chart to open Settings.
 - **Global show/hide shortcut:** enable it, disable it, or choose a different key combination.
+- **Daily visibility schedule:** optionally choose a local show time and hide time, such as `09:30` and `15:30`.
 - **Mouse passthrough:** lock the pet so it never blocks clicks or scrolling below it.
 - **Always on top:** keep the market at the edge of your view while switching apps.
 
@@ -134,13 +135,15 @@ For example, with a `+3.0%` rise threshold: the first touch at `+3.0%` alerts; a
 
 | Feature | What it does |
 | --- | --- |
-| Three markets | Search and add A-shares, Hong Kong stocks, and US stocks |
+| Three markets and indices | Search and add A-shares, Hong Kong stocks, US stocks, and major indices such as the Shanghai Composite, Hang Seng, and Nasdaq |
 | Unlimited watchlist | Add, remove, and reorder stocks; long lists scroll |
 | Real intraday charts | Displays minute data and never invents a chart |
 | Market-aware colors | A-shares / Hong Kong: red up and green down; US: green up and red down |
+| Change display | Switch the desktop between percentage change and absolute price change |
 | Appearance controls | Overall scale, chart width, font size, ticker/market visibility, and three independent opacity controls |
 | Desktop interaction | Drag, double-click Settings, always on top, and mouse passthrough |
 | Quick hiding | Customizable global shortcut to show or hide the pet |
+| Scheduled visibility | Automatically show and hide the pet at editable local times each day |
 | Bull & bear alerts | Previous-close percentages or per-stock targets, live-price target generation, master switch, opacity, and sounds |
 | Anti-repeat logic | Re-arms after the price returns inside the threshold |
 | Fast quote refresh | Optional 1-second batch quotes for latest prices, changes, and alerts; charts update separately at 15 seconds or slower |
@@ -150,8 +153,8 @@ For example, with a `+3.0%` rise threshold: the first touch at `+3.0%` alerts; a
 
 ## Data and Risk Notes
 
-- Search covers A-shares, Hong Kong stocks, and US stocks.
-- Tencent fast quotes and intraday data are the primary sources; Eastmoney is the intraday fallback.
+- Search covers A-shares, Hong Kong stocks, US stocks, and major indices in those markets.
+- Tencent fast quotes and intraday data are the primary sources for stocks; index identity and index quotes use Eastmoney market identifiers to avoid ambiguous ticker collisions.
 - The selected refresh interval controls latest prices, percentage changes, and alerts. Intraday charts update no faster than every 15 seconds. Outside likely market hours the app slows requests automatically, and repeated failures use progressive backoff.
 - The `1 second` option is a request interval, not a guarantee that exchanges or public endpoints publish a new trade every second.
 - Software Update downloads the package only after you choose to do so. It verifies the SHA-256 digest published by GitHub and reveals the file in Downloads; it does not silently replace the running app.

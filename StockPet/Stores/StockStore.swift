@@ -24,6 +24,9 @@ final class StockStore: ObservableObject {
     @Published var fontScale: Double {
         didSet { persist() }
     }
+    @Published var changeDisplayMode: ChangeDisplayMode {
+        didSet { persist() }
+    }
     @Published var showStockMeta: Bool {
         didSet { persist() }
     }
@@ -109,6 +112,26 @@ final class StockStore: ObservableObject {
             notifyShortcutChanged()
         }
     }
+    @Published var visibilityScheduleEnabled: Bool {
+        didSet {
+            persist()
+            notifyVisibilityScheduleChanged()
+        }
+    }
+    @Published var scheduledShowMinutes: Int {
+        didSet {
+            scheduledShowMinutes = DailyVisibilitySchedule.normalizedMinutes(scheduledShowMinutes)
+            persist()
+            notifyVisibilityScheduleChanged()
+        }
+    }
+    @Published var scheduledHideMinutes: Int {
+        didSet {
+            scheduledHideMinutes = DailyVisibilitySchedule.normalizedMinutes(scheduledHideMinutes)
+            persist()
+            notifyVisibilityScheduleChanged()
+        }
+    }
 
     private let service: any QuoteProviding
     private let defaults: UserDefaults
@@ -129,20 +152,35 @@ final class StockStore: ObservableObject {
         self.service = service
         self.defaults = defaults
 
+        func storedDouble(
+            _ key: String,
+            default defaultValue: Double,
+            range: ClosedRange<Double>
+        ) -> Double {
+            guard let value = defaults.object(forKey: key) as? Double,
+                  value.isFinite
+            else { return defaultValue }
+            return min(max(value, range.lowerBound), range.upperBound)
+        }
+
         if let data = defaults.data(forKey: Keys.symbols),
            let decoded = try? JSONDecoder().decode([StockSymbol].self, from: data) {
-            symbols = decoded
+            var seen = Set<String>()
+            symbols = decoded.filter { seen.insert($0.id).inserted }
         } else {
             symbols = StockSymbol.initialSymbols
         }
-        lineOpacity = defaults.object(forKey: Keys.lineOpacity) as? Double ?? 0.92
-        chartWidth = defaults.object(forKey: Keys.chartWidth) as? Double ?? 310
-        labelOpacity = defaults.object(forKey: Keys.labelOpacity) as? Double ?? 0.92
-        fontScale = defaults.object(forKey: Keys.fontScale) as? Double ?? 1.0
+        lineOpacity = storedDouble(Keys.lineOpacity, default: 0.92, range: 0.15...1)
+        chartWidth = storedDouble(Keys.chartWidth, default: 310, range: 160...650)
+        labelOpacity = storedDouble(Keys.labelOpacity, default: 0.92, range: 0.15...1)
+        fontScale = storedDouble(Keys.fontScale, default: 1, range: 0.75...1.5)
+        changeDisplayMode = ChangeDisplayMode(
+            rawValue: defaults.string(forKey: Keys.changeDisplayMode) ?? ""
+        ) ?? .percentage
         showStockMeta = defaults.object(forKey: Keys.showStockMeta) as? Bool ?? false
-        backgroundOpacity = defaults.object(forKey: Keys.backgroundOpacity) as? Double ?? 0.16
-        risingThreshold = defaults.object(forKey: Keys.risingThreshold) as? Double ?? 3.0
-        fallingThreshold = defaults.object(forKey: Keys.fallingThreshold) as? Double ?? 3.0
+        backgroundOpacity = storedDouble(Keys.backgroundOpacity, default: 0.16, range: 0...0.55)
+        risingThreshold = storedDouble(Keys.risingThreshold, default: 3, range: 0.5...15)
+        fallingThreshold = storedDouble(Keys.fallingThreshold, default: 3, range: 0.5...15)
         alertBasis = AlertBasis(
             rawValue: defaults.string(forKey: Keys.alertBasis) ?? ""
         ) ?? .percentage
@@ -156,11 +194,11 @@ final class StockStore: ObservableObject {
         clickThrough = defaults.object(forKey: Keys.clickThrough) as? Bool ?? false
         alwaysOnTop = defaults.object(forKey: Keys.alwaysOnTop) as? Bool ?? true
         compactMode = defaults.object(forKey: Keys.compactMode) as? Bool ?? false
-        displayScale = defaults.object(forKey: Keys.displayScale) as? Double ?? 1.0
+        displayScale = storedDouble(Keys.displayScale, default: 1, range: 0.65...1.6)
         bullSoundEnabled = defaults.object(forKey: Keys.bullSoundEnabled) as? Bool ?? true
         bearSoundEnabled = defaults.object(forKey: Keys.bearSoundEnabled) as? Bool ?? true
         alertsEnabled = defaults.object(forKey: Keys.alertsEnabled) as? Bool ?? true
-        alertOpacity = defaults.object(forKey: Keys.alertOpacity) as? Double ?? 0.94
+        alertOpacity = storedDouble(Keys.alertOpacity, default: 0.94, range: 0.15...1)
         shortcutEnabled = defaults.object(forKey: Keys.shortcutEnabled) as? Bool ?? true
         shortcutModifier = ShortcutModifierOption(
             rawValue: defaults.string(forKey: Keys.shortcutModifier) ?? ""
@@ -168,10 +206,18 @@ final class StockStore: ObservableObject {
         shortcutKey = ShortcutKeyOption(
             rawValue: defaults.string(forKey: Keys.shortcutKey) ?? ""
         ) ?? .s
+        visibilityScheduleEnabled = defaults.object(forKey: Keys.visibilityScheduleEnabled) as? Bool ?? false
+        scheduledShowMinutes = DailyVisibilitySchedule.normalizedMinutes(
+            defaults.object(forKey: Keys.scheduledShowMinutes) as? Int ?? 9 * 60 + 30
+        )
+        scheduledHideMinutes = DailyVisibilitySchedule.normalizedMinutes(
+            defaults.object(forKey: Keys.scheduledHideMinutes) as? Int ?? 15 * 60 + 30
+        )
     }
 
     func start() {
         guard !hasStarted else { return }
+        StartupDiagnostics.shared.mark("store-start")
         hasStarted = true
         restartRefreshLoop()
     }
@@ -213,6 +259,10 @@ final class StockStore: ObservableObject {
 
     func refreshAll() async {
         guard !isRefreshingIntraday else { return }
+        let isInitialRefresh = lastRefresh == nil
+        if isInitialRefresh {
+            StartupDiagnostics.shared.mark("initial-refresh-start")
+        }
         isRefreshingIntraday = true
         defer { isRefreshingIntraday = false }
 
@@ -240,6 +290,9 @@ final class StockStore: ObservableObject {
             for await outcome in group {
                 switch outcome {
                 case .success(let quote):
+                    if isInitialRefresh {
+                        StartupDiagnostics.shared.mark("initial-quote-received-\(quote.symbol.code)")
+                    }
                     quotes[quote.id] = mergingIntradayQuote(quote)
                     loadingIDs.remove(quote.id)
                     if let merged = quotes[quote.id] {
@@ -265,6 +318,9 @@ final class StockStore: ObservableObject {
         sourceError = failures == currentSymbols.count
             ? tr("行情连接暂不可用，已保留上次成功数据")
             : nil
+        if isInitialRefresh {
+            StartupDiagnostics.shared.mark("initial-refresh-finished-failures-\(failures)")
+        }
     }
 
     func refresh(_ symbol: StockSymbol) async {
@@ -341,6 +397,7 @@ final class StockStore: ObservableObject {
         chartWidth = 310
         labelOpacity = 0.92
         fontScale = 1.0
+        changeDisplayMode = .percentage
         showStockMeta = false
         backgroundOpacity = 0.16
         compactMode = false
@@ -550,6 +607,7 @@ final class StockStore: ObservableObject {
         defaults.set(chartWidth, forKey: Keys.chartWidth)
         defaults.set(labelOpacity, forKey: Keys.labelOpacity)
         defaults.set(fontScale, forKey: Keys.fontScale)
+        defaults.set(changeDisplayMode.rawValue, forKey: Keys.changeDisplayMode)
         defaults.set(showStockMeta, forKey: Keys.showStockMeta)
         defaults.set(backgroundOpacity, forKey: Keys.backgroundOpacity)
         defaults.set(risingThreshold, forKey: Keys.risingThreshold)
@@ -570,10 +628,17 @@ final class StockStore: ObservableObject {
         defaults.set(shortcutEnabled, forKey: Keys.shortcutEnabled)
         defaults.set(shortcutModifier.rawValue, forKey: Keys.shortcutModifier)
         defaults.set(shortcutKey.rawValue, forKey: Keys.shortcutKey)
+        defaults.set(visibilityScheduleEnabled, forKey: Keys.visibilityScheduleEnabled)
+        defaults.set(scheduledShowMinutes, forKey: Keys.scheduledShowMinutes)
+        defaults.set(scheduledHideMinutes, forKey: Keys.scheduledHideMinutes)
     }
 
     private func notifyShortcutChanged() {
         NotificationCenter.default.post(name: .stockPetShortcutChanged, object: nil)
+    }
+
+    private func notifyVisibilityScheduleChanged() {
+        NotificationCenter.default.post(name: .stockPetVisibilityScheduleChanged, object: nil)
     }
 
     private enum FetchOutcome: Sendable {
@@ -587,6 +652,7 @@ final class StockStore: ObservableObject {
         static let chartWidth = "stockPet.chartWidth"
         static let labelOpacity = "stockPet.labelOpacity"
         static let fontScale = "stockPet.fontScale"
+        static let changeDisplayMode = "stockPet.changeDisplayMode"
         static let showStockMeta = "stockPet.showStockMeta"
         static let backgroundOpacity = "stockPet.backgroundOpacity"
         static let risingThreshold = "stockPet.risingThreshold"
@@ -605,5 +671,8 @@ final class StockStore: ObservableObject {
         static let shortcutEnabled = "stockPet.shortcutEnabled"
         static let shortcutModifier = "stockPet.shortcutModifier"
         static let shortcutKey = "stockPet.shortcutKey"
+        static let visibilityScheduleEnabled = "stockPet.visibilityScheduleEnabled"
+        static let scheduledShowMinutes = "stockPet.scheduledShowMinutes"
+        static let scheduledHideMinutes = "stockPet.scheduledHideMinutes"
     }
 }

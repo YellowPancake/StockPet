@@ -25,8 +25,10 @@
 		652C7193EE90D4D4DBAA840D /* FloatingPetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D023907729A86A626525A005 /* FloatingPetView.swift */; };
 		6D56185FC85B4AE0C3BF767B /* StockPetEnglishTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F03C84922C944E8A3B96191 /* StockPetEnglishTests.swift */; };
 		7C3DEC5BFB97815AC726E993 /* GlobalHotKeyController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1EE4D069413303C0D0944C1 /* GlobalHotKeyController.swift */; };
+		7EFF832567A7B6B27F64BA29 /* StartupDiagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30155AB3A5FD2E6857F3A3B6 /* StartupDiagnostics.swift */; };
 		7F733F6EE5DD2DF7DE6EC1E5 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42C7B2E12C206317F13E33AB /* SettingsView.swift */; };
 		823A84688E637D9EB75F73FD /* StockPetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCFEA7E0FF66798B70C4756D /* StockPetTests.swift */; };
+		84E9A0C9FB3EEF700193D232 /* StartupDiagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30155AB3A5FD2E6857F3A3B6 /* StartupDiagnostics.swift */; };
 		8A550FA39E6E074F0465E0A3 /* WindowConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEE91BAA216640B55B058D80 /* WindowConfigurator.swift */; };
 		8CE722319ED89A59D7B785B4 /* StockRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 387D1719C7550FDF7A326367 /* StockRowView.swift */; };
 		90F70AD1CBEA5A8C6B1A0B83 /* bull-moo.wav in Resources */ = {isa = PBXBuildFile; fileRef = A1124137716B1A76226A5891 /* bull-moo.wav */; };
@@ -69,6 +71,7 @@
 		0FA0167D166047CA9C9F6A09 /* Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Localizable.strings; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		27DCF7E08C464A0588B99499 /* bear-growl.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = "bear-growl.wav"; sourceTree = "<group>"; };
 		2F03C84922C944E8A3B96191 /* StockPetEnglishTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockPetEnglishTests.swift; sourceTree = "<group>"; };
+		30155AB3A5FD2E6857F3A3B6 /* StartupDiagnostics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartupDiagnostics.swift; sourceTree = "<group>"; };
 		332D83F9828B1E87666306B8 /* InfoPlist.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = InfoPlist.strings; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		3426BA86AFE0EF583C2A338D /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		387D1719C7550FDF7A326367 /* StockRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockRowView.swift; sourceTree = "<group>"; };
@@ -164,6 +167,7 @@
 			isa = PBXGroup;
 			children = (
 				B1EE4D069413303C0D0944C1 /* GlobalHotKeyController.swift */,
+				30155AB3A5FD2E6857F3A3B6 /* StartupDiagnostics.swift */,
 				83F5CCCE8736F7199FAD9B5E /* StockPetApp.swift */,
 				FEE91BAA216640B55B058D80 /* WindowConfigurator.swift */,
 			);
@@ -392,6 +396,7 @@
 				C93599647FBF8280FE73FB0D /* QuoteService.swift in Sources */,
 				3DC7FA530F64A3AD8F03557D /* SettingsView.swift in Sources */,
 				5BD7D57AA1EA3F95A7B14D49 /* SoftwareUpdateService.swift in Sources */,
+				7EFF832567A7B6B27F64BA29 /* StartupDiagnostics.swift in Sources */,
 				4D4C873F88FCD0599FE5611F /* StockModels.swift in Sources */,
 				4844480E66A5446EB787B1A7 /* StockPetApp.swift in Sources */,
 				5FD19486972770068941BD75 /* StockRowView.swift in Sources */,
@@ -427,6 +432,7 @@
 				D982A70987A81016114C6540 /* QuoteService.swift in Sources */,
 				7F733F6EE5DD2DF7DE6EC1E5 /* SettingsView.swift in Sources */,
 				2E42F49193464240ED025D5C /* SoftwareUpdateService.swift in Sources */,
+				84E9A0C9FB3EEF700193D232 /* StartupDiagnostics.swift in Sources */,
 				1FBF3F771EBFD225188C490B /* StockModels.swift in Sources */,
 				09929F2A48E5811F1CE58DE5 /* StockPetApp.swift in Sources */,
 				8CE722319ED89A59D7B785B4 /* StockRowView.swift in Sources */,
@@ -637,7 +643,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 12;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -649,8 +655,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 0.4.3;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 0.4.4;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -696,7 +702,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 12;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -714,8 +720,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 0.4.3;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 0.4.4;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;

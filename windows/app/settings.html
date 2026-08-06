@@ -21,7 +21,7 @@
         <button class="nav-item" data-page="alerts"><span>♧</span>牛熊提醒</button>
         <button class="nav-item" data-page="data"><span>◎</span>数据与刷新</button>
       </nav>
-      <div class="version">Windows x64 · 0.4.3</div>
+      <div class="version">Windows x64 · 0.4.4</div>
     </aside>
 
     <main class="content">
@@ -72,6 +72,13 @@
             <span class="range-control"><input id="fontScale" type="range" min="0.75" max="1.5" step="0.05" /><output></output></span>
           </label>
           <label class="setting-row">
+            <span><strong>涨跌显示</strong><small>百分比或相对昨收的涨跌额</small></span>
+            <select id="changeDisplayMode">
+              <option value="percentage">百分比</option>
+              <option value="amount">涨跌额</option>
+            </select>
+          </label>
+          <label class="setting-row">
             <span><strong>显示股票代码与市场</strong><small>默认隐藏，只保留更醒目的股票名称</small></span>
             <input id="showStockMeta" class="switch" type="checkbox" />
           </label>
@@ -111,6 +118,15 @@
                 <option value="Space">空格</option>
               </select>
             </span>
+          </div>
+          <label class="setting-row">
+            <span><strong>定时显示/隐藏桌宠</strong><small>按电脑本地时间每天自动执行</small></span>
+            <input id="visibilityScheduleEnabled" class="switch" type="checkbox" />
+          </label>
+          <div id="visibility-schedule-options">
+            <label class="setting-row"><span><strong>每天显示</strong></span><input id="scheduledShowTime" type="time" /></label>
+            <label class="setting-row"><span><strong>每天隐藏</strong></span><input id="scheduledHideTime" type="time" /></label>
+            <p class="subtle">显示和隐藏时间不能相同。</p>
           </div>
         </div>
         <button id="reset-appearance" class="secondary">恢复默认外观</button>
@@ -214,7 +230,7 @@
         </div>
         <div class="card settings-card update-card">
           <div class="setting-row">
-            <span><strong>软件更新</strong><small id="update-status">当前版本 v0.4.3</small></span>
+            <span><strong>软件更新</strong><small id="update-status">当前版本 v0.4.4</small></span>
             <div class="update-actions">
               <button id="check-update" class="secondary" type="button">检查更新</button>
               <button id="download-update-route-one" class="primary compact-button" type="button" hidden>路线一</button>

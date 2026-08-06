@@ -13,6 +13,7 @@ const marketLabels = {
   hongKong: "港股",
   unitedStates: "美股",
 };
+const indexMarketLabels = { aShare: "A股指数", hongKong: "港股指数", unitedStates: "美股指数" };
 
 let state = null;
 let quotes = {};
@@ -116,6 +117,11 @@ function render() {
     const change = Number(quote?.changePercent || 0);
     const color = stockColor(symbol.market, change);
     const sign = change >= 0 ? "+" : "";
+    const amount = quote ? Number(quote.lastPrice) - Number(quote.previousClose) : 0;
+    const amountSign = amount >= 0 ? "+" : "";
+    const changeText = state.changeDisplayMode === "amount"
+      ? `${amountSign}${amount.toFixed(2)}`
+      : `${sign}${change.toFixed(2)}%`;
     const path = linePath(quote?.points, quote?.previousClose);
     const baseline = baselineY(quote);
     return `
@@ -124,7 +130,7 @@ function render() {
           <div class="name">${escapeHTML(symbol.name)}</div>
           ${state.showStockMeta ? `<div class="meta">
             <span>${escapeHTML(symbol.code)}</span>
-            <span class="market">${marketLabels[symbol.market] || ""}</span>
+            <span class="market">${symbol.instrumentType === "index" ? indexMarketLabels[symbol.market] : (marketLabels[symbol.market] || "")}</span>
           </div>` : ""}
         </div>
         <svg class="chart ${path ? "" : "placeholder"}" viewBox="0 0 100 46" preserveAspectRatio="none">
@@ -134,7 +140,7 @@ function render() {
         </svg>
         <div class="price-block">
           <div class="last-price">${quote?.isStale ? '<span class="stale">⟳</span>' : ""}${formatPrice(quote?.lastPrice)}</div>
-          <div class="percent">${quote ? `${sign}${change.toFixed(2)}%` : "加载中…"}</div>
+          <div class="percent">${quote ? changeText : "加载中…"}</div>
         </div>
       </article>
     `;

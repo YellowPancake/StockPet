@@ -5,6 +5,9 @@ const marketLabels = {
   hongKong: "港股",
   unitedStates: "美股",
 };
+const indexMarketLabels = { aShare: "A股指数", hongKong: "港股指数", unitedStates: "美股指数" };
+const marketLabel = (symbol) => symbol.instrumentType === "index"
+  ? indexMarketLabels[symbol.market] : marketLabels[symbol.market];
 
 let state = null;
 let status = null;
@@ -36,7 +39,7 @@ function renderStocks() {
         <div class="stock-item">
           <div>
             <div class="stock-name">${escapeHTML(symbol.name)}</div>
-            <div class="stock-meta">${escapeHTML(symbol.code)} · ${marketLabels[symbol.market]}</div>
+            <div class="stock-meta">${escapeHTML(symbol.code)} · ${marketLabel(symbol)}</div>
           </div>
           <div class="stock-actions">
             <button data-action="up" data-id="${escapeHTML(symbol.quoteID)}" ${index === 0 ? "disabled" : ""} title="上移">↑</button>
@@ -53,7 +56,7 @@ function renderSearchResults() {
     <div class="search-result">
       <div>
         <div class="result-name">${escapeHTML(symbol.name)}</div>
-        <div class="result-meta">${escapeHTML(symbol.code)} · ${marketLabels[symbol.market]}</div>
+        <div class="result-meta">${escapeHTML(symbol.code)} · ${marketLabel(symbol)}</div>
       </div>
       <button class="small-button" data-add-index="${index}">添加</button>
     </div>
@@ -83,7 +86,7 @@ function renderPriceAlerts() {
               <input class="switch price-alert-enabled" type="checkbox" ${enabled ? "checked" : ""} ${quote?.lastPrice > 0 || enabled ? "" : "disabled"} />
               <div>
                 <div class="stock-name">${escapeHTML(symbol.name)}</div>
-                <div class="stock-meta">${escapeHTML(symbol.code)} · ${marketLabels[symbol.market]}</div>
+                <div class="stock-meta">${escapeHTML(symbol.code)} · ${marketLabel(symbol)}</div>
               </div>
               <div class="live-price">${formatLivePrice(symbol, quote?.lastPrice)}</div>
             </div>
@@ -125,14 +128,21 @@ function syncControls() {
     "bearSoundEnabled",
     "alertsEnabled",
     "shortcutEnabled",
+    "visibilityScheduleEnabled",
   ]) {
     $(`#${id}`).checked = state[id];
   }
   $("#shortcutModifier").value = state.shortcutModifier;
   $("#shortcutKey").value = state.shortcutKey;
+  $("#scheduledShowTime").value = state.scheduledShowTime;
+  $("#scheduledHideTime").value = state.scheduledHideTime;
+  $("#changeDisplayMode").value = state.changeDisplayMode;
   $("#shortcut-options").classList.toggle("disabled", !state.shortcutEnabled);
   $("#shortcutModifier").disabled = !state.shortcutEnabled;
   $("#shortcutKey").disabled = !state.shortcutEnabled;
+  $("#visibility-schedule-options").classList.toggle("disabled", !state.visibilityScheduleEnabled);
+  $("#scheduledShowTime").disabled = !state.visibilityScheduleEnabled;
+  $("#scheduledHideTime").disabled = !state.visibilityScheduleEnabled;
   $("#alertBasis").value = state.alertBasis;
   const targetMode = state.alertBasis === "targetPrice";
   $("#percentage-alert-controls").hidden = targetMode;
@@ -237,6 +247,7 @@ for (const id of [
   "bearSoundEnabled",
   "alertsEnabled",
   "shortcutEnabled",
+  "visibilityScheduleEnabled",
 ]) {
   $(`#${id}`).addEventListener("change", (event) => updateState({ [id]: event.target.checked }));
 }
@@ -244,6 +255,14 @@ for (const id of [
 for (const id of ["shortcutModifier", "shortcutKey"]) {
   $(`#${id}`).addEventListener("change", (event) => updateState({ [id]: event.target.value }));
 }
+
+for (const id of ["scheduledShowTime", "scheduledHideTime"]) {
+  $(`#${id}`).addEventListener("change", (event) => updateState({ [id]: event.target.value }));
+}
+
+$("#changeDisplayMode").addEventListener("change", (event) => {
+  updateState({ changeDisplayMode: event.target.value });
+});
 
 $("#alertBasis").addEventListener("change", (event) => {
   updateState({ alertBasis: event.target.value });
@@ -263,6 +282,7 @@ $("#reset-appearance").addEventListener("click", () => updateState({
   chartWidth: 430,
   labelOpacity: 0.92,
   fontScale: 1,
+  changeDisplayMode: "percentage",
   showStockMeta: false,
   backgroundOpacity: 0.16,
 }));

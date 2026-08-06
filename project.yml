@@ -2,14 +2,14 @@ name: StockPet
 options:
   bundleIdPrefix: com.bingge
   deploymentTarget:
-    macOS: "13.0"
+    macOS: "14.0"
   xcodeVersion: "16.0"
 settings:
   base:
     SWIFT_VERSION: "5.0"
-    MACOSX_DEPLOYMENT_TARGET: "13.0"
-    CURRENT_PROJECT_VERSION: 8
-    MARKETING_VERSION: 0.4.3
+    MACOSX_DEPLOYMENT_TARGET: "14.0"
+    CURRENT_PROJECT_VERSION: 12
+    MARKETING_VERSION: 0.4.4
     CODE_SIGN_STYLE: Automatic
 targets:
   StockPet:

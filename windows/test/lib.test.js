@@ -9,16 +9,19 @@ const {
   failureBackoffSeconds,
   hasDrawableIntradayData,
   marketForSearchItem,
+  instrumentTypeForSearchItem,
   isMarketOpen,
   isVersionNewer,
   overlayDragPosition,
   overlayGeometry,
   parseTencentMinute,
+  parseEastmoneyLatest,
   parseTencentRealtime,
   parseTrend,
   releaseDigest,
   releaseParts,
   sanitizeState,
+  shouldScheduleShow,
   tencentCode,
   tencentRealtimeCode,
 } = require("../app/lib");
@@ -118,6 +121,36 @@ test("market search results only keep A/H/US classifications", () => {
   assert.equal(marketForSearchItem({ Classify: "Fund", MktNum: "90" }), null);
 });
 
+test("indices keep their market identity instead of colliding with stock codes", () => {
+  const shanghai = { Code: "000001", Classify: "Index", MktNum: "1", QuoteID: "1.000001" };
+  const shenzhen = { Code: "399001", Classify: "Index", MktNum: "0", QuoteID: "0.399001" };
+  const hangSengTech = { Code: "HSTECH", Classify: "UniversalIndex", MktNum: "124" };
+  const nasdaq = { Code: "NDX", Classify: "UniversalIndex", MktNum: "100" };
+  assert.equal(marketForSearchItem(shanghai), "aShare");
+  assert.equal(instrumentTypeForSearchItem(shanghai), "index");
+  assert.equal(tencentCode({ ...shanghai, code: "000001", market: "aShare", quoteID: "1.000001", instrumentType: "index" }), "sh000001");
+  assert.equal(tencentCode({ ...shenzhen, code: "399001", market: "aShare", quoteID: "0.399001", instrumentType: "index" }), "sz399001");
+  assert.equal(marketForSearchItem(hangSengTech), "hongKong");
+  assert.equal(marketForSearchItem(nasdaq), "unitedStates");
+  assert.equal(sanitizeState({ symbols: [{ code: "000001", name: "上证指数", market: "aShare", quoteID: "1.000001" }] }).symbols[0].instrumentType, "index");
+});
+
+test("Eastmoney index batch quotes use quote IDs and decimal scaling", () => {
+  const symbol = { code: "000001", name: "上证指数", market: "aShare", quoteID: "1.000001", instrumentType: "index" };
+  const updates = parseEastmoneyLatest({ data: { diff: [{ f12: "000001", f13: 1, f2: 390035, f18: 387843, f124: 1786002242, f152: 2 }] } }, [symbol]);
+  assert.equal(updates[0].symbol, symbol);
+  assert.equal(updates[0].lastPrice, 3900.35);
+  assert.equal(updates[0].previousClose, 3878.43);
+});
+
+test("daily visibility schedule supports daytime and overnight windows", () => {
+  assert.equal(shouldScheduleShow(10 * 60, "09:30", "15:30"), true);
+  assert.equal(shouldScheduleShow(16 * 60, "09:30", "15:30"), false);
+  assert.equal(shouldScheduleShow(23 * 60, "21:00", "07:00"), true);
+  assert.equal(shouldScheduleShow(12 * 60, "21:00", "07:00"), false);
+  assert.equal(shouldScheduleShow(12 * 60, "09:30", "09:30"), null);
+});
+
 test("minute formats are parsed into chart points", () => {
   assert.deepEqual(parseTencentMinute("0930 12.34 100", "20260730"), {
     time: "2026-07-30 09:30",
@@ -186,6 +219,12 @@ test("persisted settings are clamped and a deliberately empty list stays empty",
 test("stock code and market are hidden by default and can be enabled", () => {
   assert.equal(sanitizeState().showStockMeta, false);
   assert.equal(sanitizeState({ showStockMeta: true }).showStockMeta, true);
+});
+
+test("change display defaults to percentage and accepts price amount", () => {
+  assert.equal(sanitizeState().changeDisplayMode, "percentage");
+  assert.equal(sanitizeState({ changeDisplayMode: "amount" }).changeDisplayMode, "amount");
+  assert.equal(sanitizeState({ changeDisplayMode: "invalid" }).changeDisplayMode, "percentage");
 });
 
 test("persisted watchlist is not capped at ten stocks", () => {

@@ -66,6 +66,11 @@ enum MarketColorRole: String, Equatable, Sendable {
     case green
 }
 
+enum InstrumentType: String, Codable, Sendable {
+    case stock
+    case index
+}
+
 struct StockSymbol: Identifiable, Codable, Hashable, Sendable {
     var id: String { quoteID }
 
@@ -73,6 +78,44 @@ struct StockSymbol: Identifiable, Codable, Hashable, Sendable {
     let name: String
     let market: StockMarket
     let quoteID: String
+    let instrumentType: InstrumentType?
+
+    init(
+        code: String,
+        name: String,
+        market: StockMarket,
+        quoteID: String,
+        instrumentType: InstrumentType? = nil
+    ) {
+        self.code = code
+        self.name = name
+        self.market = market
+        self.quoteID = quoteID
+        self.instrumentType = instrumentType
+    }
+
+    var isIndex: Bool {
+        if instrumentType == .index { return true }
+        let marketNumber = quoteID.split(separator: ".", maxSplits: 1).first.map(String.init)
+        switch market {
+        case .aShare:
+            return (marketNumber == "1" && code.hasPrefix("000")) ||
+                (marketNumber == "0" && (code.hasPrefix("399") || code == "899050"))
+        case .hongKong:
+            return marketNumber == "100" || marketNumber == "124"
+        case .unitedStates:
+            return marketNumber == "100"
+        }
+    }
+
+    var displayMarketName: String {
+        guard isIndex else { return market.displayName }
+        switch market {
+        case .aShare: return tr("A股指数")
+        case .hongKong: return tr("港股指数")
+        case .unitedStates: return tr("美股指数")
+        }
+    }
 
     static let initialSymbols: [StockSymbol] = [
         StockSymbol(
@@ -122,6 +165,10 @@ struct StockQuote: Identifiable, Sendable {
         guard previousClose > 0 else { return 0 }
         return (lastPrice - previousClose) / previousClose * 100
     }
+
+    var changeAmount: Double {
+        lastPrice - previousClose
+    }
 }
 
 struct LatestQuoteUpdate: Sendable {
@@ -146,6 +193,20 @@ enum AlertBasis: String, Codable, CaseIterable, Identifiable, Sendable {
         switch self {
         case .percentage: tr("昨收涨跌幅")
         case .targetPrice: tr("目标价格")
+        }
+    }
+}
+
+enum ChangeDisplayMode: String, Codable, CaseIterable, Identifiable, Sendable {
+    case percentage
+    case amount
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .percentage: tr("百分比")
+        case .amount: tr("涨跌额")
         }
     }
 }
@@ -209,6 +270,24 @@ enum ShortcutKeyOption: String, Codable, CaseIterable, Identifiable {
 
 extension Notification.Name {
     static let stockPetShortcutChanged = Notification.Name("stockPet.shortcutChanged")
+    static let stockPetVisibilityScheduleChanged = Notification.Name("stockPet.visibilityScheduleChanged")
+}
+
+struct DailyVisibilitySchedule {
+    static func normalizedMinutes(_ value: Int) -> Int {
+        min(max(value, 0), 1_439)
+    }
+
+    static func shouldShow(nowMinutes: Int, showMinutes: Int, hideMinutes: Int) -> Bool? {
+        let now = normalizedMinutes(nowMinutes)
+        let show = normalizedMinutes(showMinutes)
+        let hide = normalizedMinutes(hideMinutes)
+        guard show != hide else { return nil }
+        if show < hide {
+            return now >= show && now < hide
+        }
+        return now >= show || now < hide
+    }
 }
 
 struct ThresholdGate {

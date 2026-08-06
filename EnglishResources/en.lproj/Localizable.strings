@@ -1,6 +1,9 @@
 "A股" = "A-share";
 "港股" = "HK";
 "美股" = "US";
+"A股指数" = "A-share Index";
+"港股指数" = "HK Index";
+"美股指数" = "US Index";
 "空格" = "Space";
 
 "Stock Pet 设置" = "Stock Pet Settings";
@@ -22,6 +25,9 @@
 "曲线宽度" = "Chart width";
 "名称与数字不透明度" = "Text & number opacity";
 "字体大小" = "Font size";
+"涨跌显示" = "Change display";
+"百分比" = "Percentage";
+"涨跌额" = "Price change";
 "显示股票代码与市场" = "Show ticker and market";
 "背景板不透明度" = "Background opacity";
 "紧凑模式" = "Compact mode";
@@ -30,6 +36,10 @@
 "锁定后需从菜单栏的曲线图标关闭穿透。" = "Use the chart icon in the menu bar to turn mouse passthrough off.";
 "快捷键显示/隐藏桌宠" = "Show/hide Stock Pet with a shortcut";
 "快捷键组合" = "Shortcut";
+"定时显示/隐藏桌宠" = "Show/hide Stock Pet on a schedule";
+"每天显示" = "Show every day";
+"每天隐藏" = "Hide every day";
+"按电脑本地时间执行；显示和隐藏时间不能相同。" = "Uses your computer's local time; show and hide times must be different.";
 "恢复默认外观" = "Restore default appearance";
 
 "牛熊提醒" = "Bull & Bear Alerts";
