@@ -296,9 +296,9 @@ function sanitizeState(candidate = {}) {
   );
   return {
     symbols,
-    lineOpacity: number(candidate.lineOpacity, 0.92, 0.1, 1),
+    lineOpacity: number(candidate.lineOpacity, 0.92, 0, 1),
     chartWidth: number(candidate.chartWidth, 430, 220, 720),
-    labelOpacity: number(candidate.labelOpacity, 0.92, 0.1, 1),
+    labelOpacity: number(candidate.labelOpacity, 0.92, 0, 1),
     fontScale: number(candidate.fontScale, 1, 0.75, 1.5),
     changeDisplayMode: candidate.changeDisplayMode === "amount" ? "amount" : "percentage",
     showStockMeta: Boolean(candidate.showStockMeta),

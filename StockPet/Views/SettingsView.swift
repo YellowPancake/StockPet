@@ -161,7 +161,7 @@ struct SettingsView: View {
                     title: "曲线不透明度",
                     icon: "waveform.path.ecg",
                     value: $store.lineOpacity,
-                    range: 0.15...1
+                    range: 0...1
                 )
                 Divider()
                 HStack {
@@ -178,7 +178,7 @@ struct SettingsView: View {
                     title: "名称与数字不透明度",
                     icon: "textformat",
                     value: $store.labelOpacity,
-                    range: 0.15...1
+                    range: 0...1
                 )
                 Divider()
                 HStack {
@@ -724,7 +724,7 @@ struct SettingsView: View {
 
     private var currentAppVersion: String {
         Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
-            ?? "0.4.4"
+            ?? "0.4.5"
     }
 
     private var updateAssetName: String {
