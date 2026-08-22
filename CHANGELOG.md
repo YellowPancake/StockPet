@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.4.5
+
+- Allowed chart and text/number opacity to be reduced all the way to 0% on macOS and Windows.
+
 ## v0.4.4
 
 - Restored the minimum supported macOS version to 14 after real-device compatibility testing.

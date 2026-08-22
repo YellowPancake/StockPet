@@ -208,7 +208,8 @@ test("persisted settings are clamped and a deliberately empty list stays empty",
   });
   assert.deepEqual(state.symbols, []);
   assert.equal(state.displayScale, 1.6);
-  assert.equal(state.lineOpacity, 0.1);
+  assert.equal(state.lineOpacity, 0);
+  assert.equal(sanitizeState({ labelOpacity: -2 }).labelOpacity, 0);
   assert.equal(state.chartWidth, 720);
   assert.equal(state.fontScale, 1.5);
   assert.equal(state.showStockMeta, false);

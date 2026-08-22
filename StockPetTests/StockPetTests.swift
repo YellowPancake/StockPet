@@ -326,12 +326,16 @@ final class StockPetTests: XCTestCase {
         defaults.set(Double.infinity, forKey: "stockPet.displayScale")
         defaults.set(-500.0, forKey: "stockPet.chartWidth")
         defaults.set(50.0, forKey: "stockPet.backgroundOpacity")
+        defaults.set(-1.0, forKey: "stockPet.lineOpacity")
+        defaults.set(-1.0, forKey: "stockPet.labelOpacity")
 
         let store = StockStore(service: AlwaysFailingQuoteService(), defaults: defaults)
 
         XCTAssertEqual(store.displayScale, 1)
         XCTAssertEqual(store.chartWidth, 160)
         XCTAssertEqual(store.backgroundOpacity, 0.55)
+        XCTAssertEqual(store.lineOpacity, 0)
+        XCTAssertEqual(store.labelOpacity, 0)
         defaults.removePersistentDomain(forName: suiteName)
     }
 }

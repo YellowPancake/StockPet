@@ -170,9 +170,9 @@ final class StockStore: ObservableObject {
         } else {
             symbols = StockSymbol.initialSymbols
         }
-        lineOpacity = storedDouble(Keys.lineOpacity, default: 0.92, range: 0.15...1)
+        lineOpacity = storedDouble(Keys.lineOpacity, default: 0.92, range: 0...1)
         chartWidth = storedDouble(Keys.chartWidth, default: 310, range: 160...650)
-        labelOpacity = storedDouble(Keys.labelOpacity, default: 0.92, range: 0.15...1)
+        labelOpacity = storedDouble(Keys.labelOpacity, default: 0.92, range: 0...1)
         fontScale = storedDouble(Keys.fontScale, default: 1, range: 0.75...1.5)
         changeDisplayMode = ChangeDisplayMode(
             rawValue: defaults.string(forKey: Keys.changeDisplayMode) ?? ""
