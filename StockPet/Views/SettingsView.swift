@@ -164,6 +164,15 @@ struct SettingsView: View {
                     range: 0...1
                 )
                 Divider()
+                Toggle(isOn: $store.hideChart) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Label("隐藏分时曲线", systemImage: "waveform.path.badge.minus")
+                        Text("隐藏后自动收紧上下与左右间隔。")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                Divider()
                 HStack {
                     Label("曲线宽度", systemImage: "arrow.left.and.right")
                         .frame(width: 160, alignment: .leading)
@@ -687,11 +696,13 @@ struct SettingsView: View {
                 }
                 HStack {
                     ForEach(SoftwareUpdateRoute.allCases, id: \.self) { route in
-                        if update.downloads[route] != nil {
-                            Button(route == .routeOne ? tr("路线一") : tr("路线二")) {
-                                downloadSoftwareUpdate(update, route: route)
-                            }
+                        Button(route == .routeOne ? tr("路线一") : tr("路线二")) {
+                            downloadSoftwareUpdate(update, route: route)
                         }
+                        .disabled(update.downloads[route] == nil)
+                        .help(update.downloads[route] == nil
+                              ? tr("该路线暂时不可用，请稍后重新检查")
+                              : tr("下载并校验更新包"))
                     }
                 }
             }
@@ -724,7 +735,7 @@ struct SettingsView: View {
 
     private var currentAppVersion: String {
         Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
-            ?? "0.4.5"
+            ?? "0.4.6"
     }
 
     private var updateAssetName: String {

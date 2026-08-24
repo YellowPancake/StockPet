@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.4.6
+
+- Added an option to hide intraday charts and automatically tighten horizontal and vertical spacing.
+- Increased the desktop view to show up to 10 stocks at once, with vertical scrolling beyond 10.
+- Kept both update-route buttons visible when an update is available and clearly disabled a temporarily unavailable route.
+
 ## v0.4.5
 
 - Allowed chart and text/number opacity to be reduced all the way to 0% on macOS and Windows.

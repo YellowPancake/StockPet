@@ -21,7 +21,7 @@
         <button class="nav-item" data-page="alerts"><span>♧</span>Bull &amp; Bear Alerts</button>
         <button class="nav-item" data-page="data"><span>◎</span>Data &amp; Refresh</button>
       </nav>
-      <div class="version">Windows x64 · 0.4.5</div>
+      <div class="version">Windows x64 · 0.4.6</div>
     </aside>
 
     <main class="content">
@@ -58,6 +58,10 @@
           <label class="setting-row">
             <span><strong>Chart opacity</strong></span>
             <span class="range-control"><input id="lineOpacity" type="range" min="0" max="1" step="0.05" /><output></output></span>
+          </label>
+          <label class="setting-row">
+            <span><strong>Hide intraday charts</strong><small>Tighten horizontal and vertical spacing automatically</small></span>
+            <input id="hideChart" class="switch" type="checkbox" />
           </label>
           <label class="setting-row">
             <span><strong>Chart width</strong><small>Adjust the horizontal space occupied by each chart</small></span>
@@ -230,7 +234,7 @@
         </div>
         <div class="card settings-card update-card">
           <div class="setting-row">
-            <span><strong>Software Update</strong><small id="update-status">Current version v0.4.5</small></span>
+            <span><strong>Software Update</strong><small id="update-status">Current version v0.4.6</small></span>
             <div class="update-actions">
               <button id="check-update" class="secondary" type="button">Check for Updates</button>
               <button id="download-update-route-one" class="primary compact-button" type="button" hidden>Route 1</button>

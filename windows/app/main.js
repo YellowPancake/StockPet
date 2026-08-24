@@ -254,6 +254,7 @@ function updateOverlayGeometry() {
     state.displayScale,
     maximumHeight,
     state.chartWidth,
+    state.hideChart,
   );
   overlayWindow.webContents.setZoomFactor(1);
   // Keep the native window and the rendered board on the same deterministic size.

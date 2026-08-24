@@ -312,10 +312,25 @@ final class StockPetTests: XCTestCase {
         let store = StockStore(service: AlwaysFailingQuoteService(), defaults: defaults)
 
         XCTAssertFalse(store.showStockMeta)
+        XCTAssertFalse(store.hideChart)
         XCTAssertEqual(store.changeDisplayMode, .percentage)
         XCTAssertEqual(store.fontScale, 1.0)
         XCTAssertEqual(store.chartWidth, 310)
         defaults.removePersistentDomain(forName: suiteName)
+    }
+
+    @MainActor
+    func testHideChartPreferenceIsRestoredAndReset() {
+        let suite = "StockPetTests.hideChart.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+        defaults.set(true, forKey: "stockPet.hideChart")
+
+        let store = StockStore(service: AlwaysFailingQuoteService(), defaults: defaults)
+        XCTAssertTrue(store.hideChart)
+
+        store.resetAppearance()
+        XCTAssertFalse(store.hideChart)
     }
 
     @MainActor

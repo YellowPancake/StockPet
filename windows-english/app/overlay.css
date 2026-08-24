@@ -68,6 +68,13 @@ body {
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
+#board.chart-hidden .stock-row {
+  grid-template-columns: 184px 150px;
+  column-gap: 18px;
+  min-height: 64px;
+  padding-block: 3px;
+}
+
 .stock-row:last-child {
   border-bottom: 0;
 }

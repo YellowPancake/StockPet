@@ -64,6 +64,15 @@ test("overlay geometry scales the whole board linearly", () => {
   assert.equal(larger.width, Math.round(normal.width * 1.6));
   assert.equal(larger.height, Math.round(normal.height * 1.6));
   assert.equal(overlayGeometry(3, 1, 2000, 620).baseWidth, 1050);
+  assert.equal(overlayGeometry(10, 1, 2000).baseHeight, 860);
+  assert.equal(overlayGeometry(14, 1, 2000).baseHeight, 860);
+  assert.deepEqual(overlayGeometry(10, 1, 2000, 620, true), {
+    baseWidth: 420,
+    baseHeight: 680,
+    width: 420,
+    height: 680,
+    scale: 1,
+  });
 });
 
 test("overlay dragging uses the original window position without accumulating movement", () => {
@@ -220,6 +229,11 @@ test("persisted settings are clamped and a deliberately empty list stays empty",
 test("stock code and market are hidden by default and can be enabled", () => {
   assert.equal(sanitizeState().showStockMeta, false);
   assert.equal(sanitizeState({ showStockMeta: true }).showStockMeta, true);
+});
+
+test("intraday charts are shown by default and can be hidden", () => {
+  assert.equal(sanitizeState().hideChart, false);
+  assert.equal(sanitizeState({ hideChart: true }).hideChart, true);
 });
 
 test("change display defaults to percentage and accepts price amount", () => {
