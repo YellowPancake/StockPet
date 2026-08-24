@@ -21,17 +21,22 @@ let alertTimer = null;
 let dragging = false;
 
 const OVERLAY_NON_CHART_WIDTH = 430;
+const OVERLAY_HIDDEN_CHART_WIDTH = 420;
 const OVERLAY_ROW_HEIGHT = 82;
+const OVERLAY_HIDDEN_CHART_ROW_HEIGHT = 64;
 const OVERLAY_VERTICAL_CHROME = 40;
 
 function applyDisplayScale() {
   if (!state) return;
   const scale = Math.min(1.6, Math.max(0.65, Number(state.displayScale) || 1));
-  const visibleRows = Math.max(1, Math.min(state.symbols.length, 8));
-  const baseWidth = OVERLAY_NON_CHART_WIDTH + state.chartWidth;
+  const visibleRows = Math.max(1, Math.min(state.symbols.length, 10));
+  const rowHeight = state.hideChart ? OVERLAY_HIDDEN_CHART_ROW_HEIGHT : OVERLAY_ROW_HEIGHT;
+  const baseWidth = state.hideChart
+    ? OVERLAY_HIDDEN_CHART_WIDTH
+    : OVERLAY_NON_CHART_WIDTH + state.chartWidth;
   const baseHeight = Math.max(
-    122,
-    visibleRows * OVERLAY_ROW_HEIGHT + OVERLAY_VERTICAL_CHROME,
+    104,
+    visibleRows * rowHeight + OVERLAY_VERTICAL_CHROME,
   );
   const expectedWindowWidth = Math.round(baseWidth * scale);
   const windowHasResized = Math.abs(window.innerWidth - expectedWindowWidth) <= 4;
@@ -109,6 +114,7 @@ function render() {
   document.documentElement.style.setProperty("--chart-width", `${state.chartWidth}px`);
   document.documentElement.style.setProperty("--label-opacity", state.labelOpacity);
   document.documentElement.style.setProperty("--font-scale", state.fontScale);
+  boardElement.classList.toggle("chart-hidden", state.hideChart);
   boardElement.style.background = `rgba(19, 22, 30, ${state.backgroundOpacity})`;
   alertElement.style.opacity = state.alertOpacity;
   emptyElement.hidden = state.symbols.length > 0;
@@ -133,11 +139,11 @@ function render() {
             <span class="market">${symbol.instrumentType === "index" ? indexMarketLabels[symbol.market] : (marketLabels[symbol.market] || "")}</span>
           </div>` : ""}
         </div>
-        <svg class="chart ${path ? "" : "placeholder"}" viewBox="0 0 100 46" preserveAspectRatio="none">
+        ${state.hideChart ? "" : `<svg class="chart ${path ? "" : "placeholder"}" viewBox="0 0 100 46" preserveAspectRatio="none">
           <line class="baseline" x1="0" y1="${baseline}" x2="100" y2="${baseline}"></line>
           ${path ? `<path class="line" d="${path}"></path>` : '<path class="line" d="M0,23 L100,23"></path>'}
           ${path ? `<circle class="dot" cx="100" cy="${path.split(",").at(-1)}" r="1.4"></circle>` : ""}
-        </svg>
+        </svg>`}
         <div class="price-block">
           <div class="last-price">${quote?.isStale ? '<span class="stale">⟳</span>' : ""}${formatPrice(quote?.lastPrice)}</div>
           <div class="percent">${quote ? changeText : "加载中…"}</div>

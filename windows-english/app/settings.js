@@ -123,6 +123,7 @@ function syncControls() {
   for (const id of [
     "alwaysOnTop",
     "clickThrough",
+    "hideChart",
     "showStockMeta",
     "bullSoundEnabled",
     "bearSoundEnabled",
@@ -244,6 +245,7 @@ for (const id of ["displayScale", "lineOpacity", "chartWidth", "labelOpacity", "
 for (const id of [
   "alwaysOnTop",
   "clickThrough",
+  "hideChart",
   "showStockMeta",
   "bullSoundEnabled",
   "bearSoundEnabled",
@@ -282,6 +284,7 @@ $("#reset-appearance").addEventListener("click", () => updateState({
   displayScale: 1,
   lineOpacity: 0.92,
   chartWidth: 430,
+  hideChart: false,
   labelOpacity: 0.92,
   fontScale: 1,
   changeDisplayMode: "percentage",
@@ -305,8 +308,12 @@ $("#check-update").addEventListener("click", async () => {
     if (result.status === "available") {
       availableUpdate = result.update;
       $("#update-status").textContent = `Version v${result.update.version} is available`;
-      $("#download-update-route-one").hidden = !result.update.downloads?.routeOne;
-      $("#download-update-route-two").hidden = !result.update.downloads?.routeTwo;
+      $("#download-update-route-one").hidden = false;
+      $("#download-update-route-two").hidden = false;
+      $("#download-update-route-one").disabled = !result.update.downloads?.routeOne;
+      $("#download-update-route-two").disabled = !result.update.downloads?.routeTwo;
+      $("#download-update-route-one").title = result.update.downloads?.routeOne ? "" : "This route is temporarily unavailable. Please try again later.";
+      $("#download-update-route-two").title = result.update.downloads?.routeTwo ? "" : "This route is temporarily unavailable. Please try again later.";
       $("#update-notes").textContent = result.update.notes || "The Windows English update is ready to download.";
       $("#update-notes").hidden = false;
     } else {
@@ -322,6 +329,10 @@ $("#check-update").addEventListener("click", async () => {
 async function downloadAvailableUpdate(route) {
   if (!availableUpdate) return;
   const buttons = [$("#download-update-route-one"), $("#download-update-route-two")];
+  const routeAvailability = {
+    routeOne: Boolean(availableUpdate?.downloads?.routeOne),
+    routeTwo: Boolean(availableUpdate?.downloads?.routeTwo),
+  };
   buttons.forEach((button) => { button.disabled = true; });
   $("#check-update").disabled = true;
   $("#update-progress").hidden = false;
@@ -337,7 +348,8 @@ async function downloadAvailableUpdate(route) {
     $("#update-status").textContent = error.message || "Unable to download the update. Please try again later.";
   }
   $("#update-progress").hidden = true;
-  buttons.forEach((button) => { button.disabled = false; });
+  $("#download-update-route-one").disabled = !routeAvailability.routeOne;
+  $("#download-update-route-two").disabled = !routeAvailability.routeTwo;
   $("#check-update").disabled = false;
 }
 

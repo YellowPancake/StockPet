@@ -18,6 +18,9 @@ final class StockStore: ObservableObject {
     @Published var chartWidth: Double {
         didSet { persist() }
     }
+    @Published var hideChart: Bool {
+        didSet { persist() }
+    }
     @Published var labelOpacity: Double {
         didSet { persist() }
     }
@@ -172,6 +175,7 @@ final class StockStore: ObservableObject {
         }
         lineOpacity = storedDouble(Keys.lineOpacity, default: 0.92, range: 0...1)
         chartWidth = storedDouble(Keys.chartWidth, default: 310, range: 160...650)
+        hideChart = defaults.object(forKey: Keys.hideChart) as? Bool ?? false
         labelOpacity = storedDouble(Keys.labelOpacity, default: 0.92, range: 0...1)
         fontScale = storedDouble(Keys.fontScale, default: 1, range: 0.75...1.5)
         changeDisplayMode = ChangeDisplayMode(
@@ -395,6 +399,7 @@ final class StockStore: ObservableObject {
     func resetAppearance() {
         lineOpacity = 0.92
         chartWidth = 310
+        hideChart = false
         labelOpacity = 0.92
         fontScale = 1.0
         changeDisplayMode = .percentage
@@ -605,6 +610,7 @@ final class StockStore: ObservableObject {
         }
         defaults.set(lineOpacity, forKey: Keys.lineOpacity)
         defaults.set(chartWidth, forKey: Keys.chartWidth)
+        defaults.set(hideChart, forKey: Keys.hideChart)
         defaults.set(labelOpacity, forKey: Keys.labelOpacity)
         defaults.set(fontScale, forKey: Keys.fontScale)
         defaults.set(changeDisplayMode.rawValue, forKey: Keys.changeDisplayMode)
@@ -650,6 +656,7 @@ final class StockStore: ObservableObject {
         static let symbols = "stockPet.symbols"
         static let lineOpacity = "stockPet.lineOpacity"
         static let chartWidth = "stockPet.chartWidth"
+        static let hideChart = "stockPet.hideChart"
         static let labelOpacity = "stockPet.labelOpacity"
         static let fontScale = "stockPet.fontScale"
         static let changeDisplayMode = "stockPet.changeDisplayMode"

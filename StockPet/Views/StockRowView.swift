@@ -6,6 +6,7 @@ struct StockRowView: View {
     let isLoading: Bool
     let lineOpacity: Double
     let chartWidth: CGFloat
+    let hideChart: Bool
     let labelOpacity: Double
     let fontScale: Double
     let changeDisplayMode: ChangeDisplayMode
@@ -25,19 +26,21 @@ struct StockRowView: View {
             label
                 .frame(width: compact ? 88 : 108, alignment: .leading)
 
-            Group {
-                if let quote, quote.points.count > 1 {
-                    IntradayChartView(
-                        points: quote.points,
-                        dayOpen: quote.dayOpen,
-                        colorRole: changeRole,
-                        opacity: lineOpacity
-                    )
-                } else {
-                    placeholder
+            if !hideChart {
+                Group {
+                    if let quote, quote.points.count > 1 {
+                        IntradayChartView(
+                            points: quote.points,
+                            dayOpen: quote.dayOpen,
+                            colorRole: changeRole,
+                            opacity: lineOpacity
+                        )
+                    } else {
+                        placeholder
+                    }
                 }
+                .frame(width: chartWidth)
             }
-            .frame(width: chartWidth)
 
             price
                 .frame(width: compact ? 82 : 96, alignment: .trailing)

@@ -21,7 +21,7 @@
         <button class="nav-item" data-page="alerts"><span>♧</span>牛熊提醒</button>
         <button class="nav-item" data-page="data"><span>◎</span>数据与刷新</button>
       </nav>
-      <div class="version">Windows x64 · 0.4.5</div>
+      <div class="version">Windows x64 · 0.4.6</div>
     </aside>
 
     <main class="content">
@@ -58,6 +58,10 @@
           <label class="setting-row">
             <span><strong>曲线不透明度</strong></span>
             <span class="range-control"><input id="lineOpacity" type="range" min="0" max="1" step="0.05" /><output></output></span>
+          </label>
+          <label class="setting-row">
+            <span><strong>隐藏分时曲线</strong><small>隐藏后自动收紧上下与左右间隔</small></span>
+            <input id="hideChart" class="switch" type="checkbox" />
           </label>
           <label class="setting-row">
             <span><strong>曲线宽度</strong><small>调整分时曲线占据的横向空间</small></span>
@@ -230,7 +234,7 @@
         </div>
         <div class="card settings-card update-card">
           <div class="setting-row">
-            <span><strong>软件更新</strong><small id="update-status">当前版本 v0.4.5</small></span>
+            <span><strong>软件更新</strong><small id="update-status">当前版本 v0.4.6</small></span>
             <div class="update-actions">
               <button id="check-update" class="secondary" type="button">检查更新</button>
               <button id="download-update-route-one" class="primary compact-button" type="button" hidden>路线一</button>

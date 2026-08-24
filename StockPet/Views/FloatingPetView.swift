@@ -2,14 +2,17 @@ import SwiftUI
 
 struct FloatingPetView: View {
     @EnvironmentObject private var store: StockStore
-    private let maximumVisibleRows = 8
+    private let maximumVisibleRows = 10
 
     private var rowHeight: CGFloat {
-        store.compactMode ? 45 : 58
+        if store.hideChart {
+            return store.compactMode ? 38 : 48
+        }
+        return store.compactMode ? 45 : 58
     }
 
     private var baseWidth: CGFloat {
-        effectiveChartWidth + (store.compactMode ? 210 : 250)
+        (store.hideChart ? 0 : effectiveChartWidth) + (store.compactMode ? 210 : 250)
     }
 
     private var effectiveChartWidth: CGFloat {
@@ -37,6 +40,7 @@ struct FloatingPetView: View {
                                     isLoading: store.loadingIDs.contains(symbol.id),
                                     lineOpacity: store.lineOpacity,
                                     chartWidth: effectiveChartWidth,
+                                    hideChart: store.hideChart,
                                     labelOpacity: store.labelOpacity,
                                     fontScale: store.fontScale,
                                     changeDisplayMode: store.changeDisplayMode,
@@ -67,6 +71,7 @@ struct FloatingPetView: View {
         .contentShape(Rectangle())
         .animation(.spring(response: 0.38, dampingFraction: 0.78), value: store.activeAlert?.id)
         .animation(.easeInOut(duration: 0.2), value: store.compactMode)
+        .animation(.easeInOut(duration: 0.2), value: store.hideChart)
         .scaleEffect(store.displayScale, anchor: .topLeading)
         .frame(
             width: baseWidth * store.displayScale,
